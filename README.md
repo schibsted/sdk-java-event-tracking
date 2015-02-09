@@ -1,1 +1,1 @@
-# sdk-java-event-tracking
+# data-collector-sdk-java
