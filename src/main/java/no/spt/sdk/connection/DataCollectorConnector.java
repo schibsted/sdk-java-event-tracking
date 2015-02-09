@@ -25,7 +25,7 @@ public class DataCollectorConnector {
 
     private CloseableHttpClient httpClient;
     private Options options;
-    private ASJsonConverter jsonConcerter;
+    private ASJsonConverter jsonConverter;
 
     public DataCollectorConnector() {
         this(Options.getDefault());
@@ -34,15 +34,14 @@ public class DataCollectorConnector {
     public DataCollectorConnector(Options options) {
         this.httpClient = HttpClients.createDefault();
         this.options = options;
-        this.jsonConcerter = new GsonASJsonConverter();
+        this.jsonConverter = new GsonASJsonConverter();
     }
 
     public DataTrackingResponse send(List<Activity> batch) throws DataTrackingException, IOException {
         HttpPost post = new HttpPost(options.getDataCollectorUrl());
         post.addHeader("Content-Type", "application/json; charset=utf-8");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // TODO Make the data collector accept arrays
-        out.write(jsonConcerter.serialize(batch)
+        out.write(jsonConverter.serialize(batch)
                                .getBytes());
         post.setEntity(new ByteArrayEntity(out.toByteArray()));
 
