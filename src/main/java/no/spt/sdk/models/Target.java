@@ -2,7 +2,7 @@ package no.spt.sdk.models;
 
 public class Target extends ASObject {
 
-    public Target(AbstractBuilder<?, ?> builder) {
+    public Target(Builder builder) {
         super(builder);
     }
 
@@ -15,7 +15,6 @@ public class Target extends ASObject {
         public Builder(String objectType) {
             super(objectType);
         }
-
 
         public Target build() {
             return new Target(this);

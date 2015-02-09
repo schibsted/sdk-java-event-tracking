@@ -8,12 +8,6 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public class ASObject {
 
-    protected String id;
-    protected String objectType;
-    protected String url;
-    protected String displayName;
-    protected String content;
-
     protected final Map<String,Object> map;
 
     public ASObject(ASObject.AbstractBuilder<?,?> builder) {

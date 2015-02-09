@@ -1,35 +1,34 @@
 package no.spt.sdk.models;
 
-public class Campaign {
+public class Campaign extends ASObject {
 
-    private String campaignSource;
-    private String campaignName;
-    private String campaignMedium;
-
-    private Campaign() {
-
+    public Campaign(Builder builder) {
+        super(builder);
     }
 
-    public static class Builder {
-        private Campaign _temp = new Campaign();
+    public static class Builder extends ASObject.Builder {
+
+        public Builder() {
+        }
 
         public Builder campaignSource(String campaignSource) {
-            _temp.campaignSource = campaignSource;
+            set("campaignSource", campaignSource);
             return this;
         }
 
         public Builder campaignName(String campaignName) {
-            _temp.campaignName = campaignName;
+            set("campaignName", campaignName);
             return this;
         }
 
         public Builder campaignMedium(String campaignMedium) {
-            _temp.campaignMedium = campaignMedium;
+            set("campaignMedium", campaignMedium);
             return this;
         }
 
         public Campaign build() {
-            return _temp;
+            return new Campaign(this);
         }
     }
+
 }

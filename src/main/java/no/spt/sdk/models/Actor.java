@@ -6,7 +6,6 @@ public class Actor extends ASObject {
         super(builder);
     }
 
-
     public static class Builder extends ASObject.Builder {
 
         public Builder() {
