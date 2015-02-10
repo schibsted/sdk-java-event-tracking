@@ -20,18 +20,18 @@ public class ASObject {
 
     public static class Builder extends AbstractBuilder<ASObject, Builder> {
 
-        public Builder() {
-
+        public Builder(String type, String id) {
+            super(type, id);
         }
-
-        public Builder(String objectType) {
-            objectType(objectType);
-        }
-
     }
 
     public static abstract class AbstractBuilder<A extends ASObject, B extends AbstractBuilder<A,B>> {
         private final Map<String, Object> map = newLinkedHashMap();
+
+        public AbstractBuilder(String type, String id) {
+            type(type);
+            id(id);
+        }
 
         public B set(String key, Object value) {
             if (value == null) {
@@ -66,16 +66,8 @@ public class ASObject {
             return set("provider", builder.build());
         }
 
-        public B referrer(String referrer) {
-            return set("referrer", referrer);
-        }
-
-        public B referrer(ASObject.Builder builder) {
-            return set("referrer", builder.build());
-        }
-
-        public B objectType(String objectType) {
-            return set("objectType", objectType);
+        public B type(String type) {
+            return set("@type", type);
         }
 
         public B url(String url) {
@@ -91,7 +83,7 @@ public class ASObject {
         }
 
         public B id(String id) {
-            return set("id", id);
+            return set("@id", id);
         }
 
         public ASObject build() {

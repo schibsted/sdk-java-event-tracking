@@ -6,13 +6,10 @@ public class Actor extends ASObject {
         super(builder);
     }
 
-    public static class Builder extends ASObject.Builder {
+    public static class Builder extends ASObject.AbstractBuilder {
 
-        public Builder() {
-        }
-
-        public Builder(String objectType) {
-            super(objectType);
+        public Builder(String type, String id) {
+            super(type, id);
         }
 
         public Actor build() {

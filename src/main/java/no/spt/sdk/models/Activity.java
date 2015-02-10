@@ -1,55 +1,59 @@
 package no.spt.sdk.models;
 
+
+import com.google.gson.annotations.SerializedName;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 public class Activity {
 
     private static final DateFormat ISO_8601_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
-    private String verb;
+    @SerializedName("@context")
+    private List<Object> context;
+    @SerializedName("@type")
+    private String type;
     private String published;
-    private String language;
     private ASObject actor;
-    private ASObject generator;
+    private ASObject provider;
     private ASObject object;
     private ASObject target;
     private ASObject result;
 
     private Activity() {
-
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("spt", "http://www.spt.no/activityStreams");
+        context = Arrays.asList("http://www.w3.org/ns/activitystreams", map);
     }
 
     public static class Builder {
 
         private Activity _temp = new Activity();
 
-        public Builder actor(ASObject.Builder builder) {
+        public Builder(String type) {
+            type(type);
+        }
+
+        public Builder actor(ASObject.AbstractBuilder builder) {
             _temp.actor = builder.build();
             return this;
         }
 
-        public Builder generator(ASObject.Builder builder) {
-            _temp.generator = builder.build();
+        public Builder provider(ASObject.AbstractBuilder builder) {
+            _temp.provider = builder.build();
             return this;
         }
 
-        public Builder target(ASObject.Builder builder) {
+        public Builder target(ASObject.AbstractBuilder builder) {
             _temp.target = builder.build();
             return this;
         }
 
-        public Builder language(String language) {
-            _temp.language = language;
-            return this;
-        }
-
-        public Builder verb(String verb) {
-            _temp.verb = verb;
+        public Builder type(String type) {
+            _temp.type = type;
             return this;
         }
 
@@ -69,7 +73,7 @@ public class Activity {
             return this;
         }
 
-        public Builder object(ASObject.Builder builder) {
+        public Builder object(ASObject.AbstractBuilder builder) {
             _temp.object = builder.build();
             return this;
         }
