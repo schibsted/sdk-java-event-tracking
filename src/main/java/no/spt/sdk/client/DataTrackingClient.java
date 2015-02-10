@@ -36,6 +36,10 @@ public class DataTrackingClient {
 
     }
 
+    /**
+     * A method that enqueues an activity to be sent to the data collector
+     * @param activity the activity to track
+     */
     public void track(Activity activity) {
         try {
             this.activitySender.enqueue(activity);
@@ -44,6 +48,9 @@ public class DataTrackingClient {
         }
     }
 
+    /**
+     * Force the enqueued activities to be sent to the data collector
+     */
     public void send() {
         try {
             this.activitySender.flush();
@@ -52,11 +59,18 @@ public class DataTrackingClient {
         }
     }
 
+    /**
+     * Enqueue an activity and force it to be send to the data collector
+     * @param activity an activity to enqueue
+     */
     public void send(Activity activity) {
         track(activity);
         send();
     }
 
+    /**
+     * Close the client
+     */
     public void close() {
         try {
             this.activitySender.close();
@@ -65,10 +79,18 @@ public class DataTrackingClient {
         }
     }
 
+    /**
+     * Get the number of activities currently waiting in queue to be sent to the data collector
+     * @return the number number of activities currently waiting in queue to be sent to the data collector
+     */
     public int getQueueDepth() {
         return this.activitySender.getQueueDepth();
     }
 
+    /**
+     * Handle errors that occur in the client
+     * @param e an exception to handle
+     */
     private void handleError(DataTrackingException e) {
         errorCollector.collect(e);
     }

@@ -12,14 +12,20 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A sender that you manually have to flush to send activities from the queue to the data collector
+ */
 public class ManualBatchSender implements ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
-
     private DataCollectorConnector client;
-
     private Options options;
 
+    /**
+     *
+     * @param options options used to configure the behaviour of the sender
+     * @param client an http client wrapper that handles http connections with data collector
+     */
     public ManualBatchSender(Options options, DataCollectorConnector client) {
         this.client = client;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
@@ -68,6 +74,12 @@ public class ManualBatchSender implements ISender {
         } while (activityQueue.size() > 0);
     }
 
+    /**
+     * Enqueue an activity to be sent to the data collector.
+     * If the queue is full, the activity will be dropped
+     * @param activity an activity to enqueue
+     * @throws DataTrackingException if the queue has reached it's max size
+     */
     @Override
     public void enqueue(Activity activity) throws DataTrackingException {
         int maxQueueSize = options.getMaxQueueSize();
@@ -79,12 +91,20 @@ public class ManualBatchSender implements ISender {
         }
     }
 
+    /**
+     * This method flushes the queue and closes the sender.
+     * @throws DataTrackingException if http client cannot be closed
+     */
     @Override
     public void close() throws DataTrackingException {
         flush();
         client.close();
     }
 
+    /**
+     * This method returns the current queue depth
+     * @return the current queue depth
+     */
     @Override
     public int getQueueDepth() {
         return activityQueue.size();

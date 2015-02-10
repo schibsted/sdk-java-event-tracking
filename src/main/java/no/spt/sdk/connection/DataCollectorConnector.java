@@ -21,22 +21,39 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * The DataCollectorConnector wraps an HTTP client and is responsible for the HTTP connections with the data collector.
+ */
 public class DataCollectorConnector {
 
     private CloseableHttpClient httpClient;
     private Options options;
     private ASJsonConverter jsonConverter;
 
+    /**
+     * Constructs a DataCollectorConnector using default options
+     */
     public DataCollectorConnector() {
         this(Options.getDefault());
     }
 
+    /**
+     * Constructs a DataCollectorConnector using the provided options
+     * @param options used to configure the connector
+     */
     public DataCollectorConnector(Options options) {
         this.httpClient = HttpClients.createDefault();
         this.options = options;
         this.jsonConverter = new GsonASJsonConverter();
     }
 
+    /**
+     * Method used to send a batch of activities to the data collector
+     * @param batch a batch to send to the data collector
+     * @return the response from the data collector
+     * @throws DataTrackingException if the response HTTP status is not 200
+     * @throws IOException if writing to stream fail
+     */
     public DataTrackingResponse send(List<Activity> batch) throws DataTrackingException, IOException {
         HttpPost post = new HttpPost(options.getDataCollectorUrl());
         post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -66,8 +83,17 @@ public class DataCollectorConnector {
         return response;
     }
 
+    /**
+     * This class handles responses from the data collector
+     */
     private class DataCollectorResponseHandler implements ResponseHandler<DataTrackingResponse> {
 
+        /**
+         * This method handles responses from the data collector
+         * @param response the HTTP response from the data collector
+         * @return a DataTrackingResponse
+         * @throws IOException if the HTTP entity cannot be converted to a String
+         */
         public DataTrackingResponse handleResponse(final HttpResponse response) throws IOException {
             int status = response.getStatusLine()
                                  .getStatusCode();
@@ -76,6 +102,10 @@ public class DataCollectorConnector {
         }
     }
 
+    /**
+     * This method closes the DataCollectorConnector
+     * @throws DataTrackingException if the HTTP client cannot be closed
+     */
     public void close() throws DataTrackingException {
         try {
             httpClient.close();

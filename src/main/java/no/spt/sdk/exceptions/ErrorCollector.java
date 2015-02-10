@@ -2,6 +2,9 @@ package no.spt.sdk.exceptions;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * A class that collects errors
+ */
 public class ErrorCollector {
 
     private LinkedBlockingQueue<DataTrackingException> errorQueue;

@@ -2,6 +2,9 @@ package no.spt.sdk.exceptions;
 
 import no.spt.sdk.client.DataTrackingResponse;
 
+/**
+ * An SDK specific exception
+ */
 public class DataTrackingException extends Exception {
 
     private Integer responseCode;

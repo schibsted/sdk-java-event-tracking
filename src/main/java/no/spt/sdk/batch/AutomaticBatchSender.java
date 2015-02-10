@@ -13,24 +13,26 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A sender that automatically sends activities from the queue to the data collector
+ */
 public class AutomaticBatchSender implements Runnable, ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
-
     private volatile boolean shouldSend;
-
     private DataCollectorConnector client;
-
     private volatile CountDownLatch latch;
-
     private Options options;
-
     private ErrorCollector errorCollector;
-
     private final Thread thread;
-
     private final Integer mutex;
 
+    /**
+     *
+     * @param options options used to configure the behaviour of the sender
+     * @param client an http client wrapper that handles http connections with data collector
+     * @param errorCollector an error collector that collects all exceptions
+     */
     public AutomaticBatchSender(Options options, DataCollectorConnector client, ErrorCollector errorCollector) {
         this.client = client;
         this.errorCollector = errorCollector;
@@ -42,6 +44,10 @@ public class AutomaticBatchSender implements Runnable, ISender {
         this.mutex = new Integer(-1);
     }
 
+    /**
+     * Initializes the sender and starts the thread that is responsible for polling activities from the queue
+     * and sending them to the data collector
+     */
     @Override
     public void init() {
         thread.start();
@@ -111,6 +117,10 @@ public class AutomaticBatchSender implements Runnable, ISender {
 
     }
 
+    /**
+     * Blocks until all activities are sent
+     * @throws DataTrackingException when interrupted while waiting
+     */
     @Override
     public void flush() throws DataTrackingException {
         try {
@@ -120,6 +130,12 @@ public class AutomaticBatchSender implements Runnable, ISender {
         }
     }
 
+    /**
+     * Enqueue an activity to be sent to the data collector.
+     * If the queue is full, the activity will be dropped
+     * @param activity an activity to enqueue
+     * @throws DataTrackingException if the queue has reached it's max size
+     */
     @Override
     public void enqueue(Activity activity) throws DataTrackingException {
         int maxQueueSize = options.getMaxQueueSize();
@@ -132,6 +148,10 @@ public class AutomaticBatchSender implements Runnable, ISender {
         }
     }
 
+    /**
+     * This method closes the sender and clears the queue.
+     * @throws DataTrackingException if http client cannot be closed
+     */
     @Override
     public void close() throws DataTrackingException {
         shouldSend = false;
@@ -139,6 +159,10 @@ public class AutomaticBatchSender implements Runnable, ISender {
         client.close();
     }
 
+    /**
+     * This method returns the current queue depth
+     * @return the current queue depth
+     */
     @Override
     public int getQueueDepth() {
         return activityQueue.size();
