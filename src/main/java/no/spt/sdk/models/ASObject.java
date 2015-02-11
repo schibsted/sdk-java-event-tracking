@@ -2,11 +2,19 @@ package no.spt.sdk.models;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public class ASObject {
+
+    private static final DateFormat ISO_8601_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
     protected final Map<String,Object> map;
 
@@ -46,6 +54,10 @@ public class ASObject {
             return set("@id", id);
         }
 
+        public B type(String type) {
+            return set("@type", type);
+        }
+
         public B title(String title) {
             return set("title", title);
         }
@@ -56,10 +68,6 @@ public class ASObject {
 
         public B provider(ASObject.Builder builder) {
             return set("provider", builder.build());
-        }
-
-        public B type(String type) {
-            return set("@type", type);
         }
 
         public B url(String url) {
@@ -74,6 +82,18 @@ public class ASObject {
             return set("content", content);
         }
 
+        public B published(String published) {
+            return set("published", published);
+        }
+
+        public B published(Date published) {
+            return published(ISO_8601_FORMAT.format(published));
+        }
+
+        public B publishedNow() {
+            Calendar currentTime = Calendar.getInstance();
+            return published(ISO_8601_FORMAT.format(currentTime.getTime()));
+        }
 
         public ASObject build() {
             return new ASObject(this);
