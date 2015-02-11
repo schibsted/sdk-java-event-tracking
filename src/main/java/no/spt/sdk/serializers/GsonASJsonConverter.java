@@ -3,6 +3,7 @@ package no.spt.sdk.serializers;
 
 import com.google.gson.*;
 import no.spt.sdk.models.ASObject;
+import no.spt.sdk.models.Link;
 
 import java.lang.reflect.Type;
 
@@ -12,6 +13,7 @@ public class GsonASJsonConverter implements ASJsonConverter {
 
     public GsonASJsonConverter() {
         this.gson = new GsonBuilder().registerTypeAdapter(ASObject.class, new ASObjectTypeConverter())
+                                     .registerTypeAdapter(Link.class, new LinkTypeConverter())
                                      .create();
     }
 
@@ -28,5 +30,13 @@ public class GsonASJsonConverter implements ASJsonConverter {
 
     }
 
+    private static class LinkTypeConverter implements JsonSerializer<Link> {
+
+        @Override
+        public JsonElement serialize(Link src, Type srcType, JsonSerializationContext context) {
+            return context.serialize(src.getMap());
+        }
+
+    }
 
 }
