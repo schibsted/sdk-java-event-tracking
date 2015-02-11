@@ -17,27 +17,27 @@ import no.spt.sdk.models.Options;
 public class DataTrackingClient {
 
     private ISender activitySender;
-    private DataCollectorConnector pixelPongConnection;
+    private DataCollectorConnector dataCollectorConnection;
     private ErrorCollector errorCollector;
 
     /**
-     *
      * @param options options to configure the behaviour of the client
      */
     public DataTrackingClient(Options options) {
         this.errorCollector = new ErrorCollector();
-        this.pixelPongConnection = new DataCollectorConnector(options);
-        if(options.isSendAutomatic()) {
-            this.activitySender = new AutomaticBatchSender(options, pixelPongConnection, errorCollector);
+        this.dataCollectorConnection = new DataCollectorConnector(options);
+        if (options.isSendAutomatic()) {
+            this.activitySender = new AutomaticBatchSender(options, dataCollectorConnection, errorCollector);
             this.activitySender.init();
         } else {
-            this.activitySender = new ManualBatchSender(options, pixelPongConnection);
+            this.activitySender = new ManualBatchSender(options, dataCollectorConnection);
         }
 
     }
 
     /**
      * A method that enqueues an activity to be sent to the data collector
+     *
      * @param activity the activity to track
      */
     public void track(Activity activity) {
@@ -61,6 +61,7 @@ public class DataTrackingClient {
 
     /**
      * Enqueue an activity and force it to be send to the data collector
+     *
      * @param activity an activity to enqueue
      */
     public void send(Activity activity) {
@@ -81,6 +82,7 @@ public class DataTrackingClient {
 
     /**
      * Get the number of activities currently waiting in queue to be sent to the data collector
+     *
      * @return the number number of activities currently waiting in queue to be sent to the data collector
      */
     public int getQueueDepth() {
@@ -89,6 +91,7 @@ public class DataTrackingClient {
 
     /**
      * Handle errors that occur in the client
+     *
      * @param e an exception to handle
      */
     private void handleError(DataTrackingException e) {
