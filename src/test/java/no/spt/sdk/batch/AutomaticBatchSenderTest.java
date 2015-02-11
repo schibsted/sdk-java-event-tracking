@@ -27,7 +27,7 @@ public class AutomaticBatchSenderTest {
 
     @Before
     public void setUp() throws Exception {
-        options = Options.getDefault();
+        options = TestData.getDefaultOptions();
         batchSender = new AutomaticBatchSender(options, dataCollectorConnector, new ErrorCollector());
         batchSender.init();
     }

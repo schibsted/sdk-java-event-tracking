@@ -22,21 +22,15 @@ import static org.mockserver.model.HttpResponse.response;
 
 public class DataTrackingClientTest {
 
-    private static final String DATA_COLLECTOR_URL = "http://localhost:8090/";
-    private static final int MAX_QUEUE_SIZE = 10000;
-    private static final int MAX_BATCH_SIZE = 20;
-    private static final int TIMEOUT = 5000;
-    private static final int RETRIES = 2;
-    private static final int BACKOFF = 1000;
-    private static final boolean SEND_AUTOMATIC = true;
     private DataTrackingClient client;
     private ClientAndServer mockServer;
     private ASJsonConverter jsonConverter;
+    private Options options;
 
     @Before
     public void setup() {
-        client = new DataTrackingClient(new Options(DATA_COLLECTOR_URL, MAX_QUEUE_SIZE, MAX_BATCH_SIZE, TIMEOUT,
-                RETRIES, BACKOFF, SEND_AUTOMATIC));
+        options = TestData.getDefaultOptions();
+        client = new DataTrackingClient(options);
         jsonConverter = new GsonASJsonConverter();
     }
 
@@ -70,15 +64,14 @@ public class DataTrackingClientTest {
 
     @Test
     public void testQueueingActivitiesAndSendingManually() throws Exception {
-        int noActivites = MAX_BATCH_SIZE + 1;
+        int noActivites = options.getMaxBatchSize() + 1;
         trackActivities(noActivites);
         client.send();
         sleep(500);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8")),
-                VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / MAX_BATCH_SIZE)));
+                VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / options.getMaxBatchSize())));
     }
-
 
     @Test
     public void testSendingMultipleActivities() throws Exception {

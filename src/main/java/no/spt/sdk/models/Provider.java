@@ -12,8 +12,8 @@ public class Provider extends ASObject {
             super(type, id);
         }
 
-        public ASObject.AbstractBuilder userAgent(String userAgent) {
-            return set("userAgent", userAgent);
+        public ASObject.AbstractBuilder client(String client) {
+            return set("spt:client", client);
         }
 
         public Provider build() {

@@ -42,16 +42,8 @@ public class ASObject {
             return (B)this;
         }
 
-        public B ip(String ip) {
-            return set("ip", ip);
-        }
-
-        public B deviceLanguage(String deviceLanguage) {
-            return set("deviceLanguage", deviceLanguage);
-        }
-
-        public B userAgent(String userAgent) {
-            return set("userAgent", userAgent);
+        public B id(String id) {
+            return set("@id", id);
         }
 
         public B title(String title) {
@@ -82,9 +74,6 @@ public class ASObject {
             return set("content", content);
         }
 
-        public B id(String id) {
-            return set("@id", id);
-        }
 
         public ASObject build() {
             return new ASObject(this);

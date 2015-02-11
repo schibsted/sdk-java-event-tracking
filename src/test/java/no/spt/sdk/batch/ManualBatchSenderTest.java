@@ -30,7 +30,7 @@ public class ManualBatchSenderTest {
 
     @Before
     public void setUp() throws Exception {
-        options = Options.getDefault();
+        options = TestData.getDefaultOptions();
         batchSender = new ManualBatchSender(options, dataCollectorConnector);
     }
 
