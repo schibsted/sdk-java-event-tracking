@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class DataCollectorConnector {
         post.addHeader("Content-Type", "application/json; charset=utf-8");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(jsonConverter.serialize(batch)
-                               .getBytes());
+                               .getBytes(Charset.forName("UTF-8")));
         post.setEntity(new ByteArrayEntity(out.toByteArray()));
 
         RequestConfig config = RequestConfig.custom()
@@ -79,7 +80,7 @@ public class DataCollectorConnector {
     /**
      * This class handles responses from the data collector
      */
-    private class DataCollectorResponseHandler implements ResponseHandler<DataTrackingResponse> {
+    private static class DataCollectorResponseHandler implements ResponseHandler<DataTrackingResponse> {
 
         /**
          * This method handles responses from the data collector
