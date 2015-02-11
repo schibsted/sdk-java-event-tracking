@@ -25,7 +25,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
     private Options options;
     private ErrorCollector errorCollector;
     private final Thread thread;
-    private final Integer mutex;
+    private static final Object fileLock = new Object();
 
     /**
      *
@@ -41,7 +41,6 @@ public class AutomaticBatchSender implements Runnable, ISender {
         this.latch = new CountDownLatch(0);
         this.options = options;
         this.thread = new Thread(this);
-        this.mutex = new Integer(-1);
     }
 
     /**
@@ -71,7 +70,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
                 }
 
                 if (activity != null) {
-                    synchronized (mutex) {
+                    synchronized (fileLock) {
                         if (latch.getCount() == 0) {
                             latch = new CountDownLatch(1);
                         }
