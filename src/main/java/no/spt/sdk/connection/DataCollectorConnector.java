@@ -31,13 +31,6 @@ public class DataCollectorConnector {
     private ASJsonConverter jsonConverter;
 
     /**
-     * Constructs a DataCollectorConnector using default options
-     */
-    public DataCollectorConnector() {
-        this(Options.getDefault());
-    }
-
-    /**
      * Constructs a DataCollectorConnector using the provided options
      * @param options used to configure the connector
      */
