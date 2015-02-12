@@ -28,6 +28,34 @@ public class Activity {
         context = Arrays.asList("http://www.w3.org/ns/activitystreams", map);
     }
 
+    public List<Object> getContext() {
+        return context;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getPublished() {
+        return published;
+    }
+
+    public ASObject getActor() {
+        return actor;
+    }
+
+    public ASObject getProvider() {
+        return provider;
+    }
+
+    public ASObject getObject() {
+        return object;
+    }
+
+    public ASObject getTarget() {
+        return target;
+    }
+
     public static class Builder {
 
         private Activity _temp = new Activity();
