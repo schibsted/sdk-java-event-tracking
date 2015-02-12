@@ -12,7 +12,7 @@ public class Provider extends ASObject {
             super(type, id);
         }
 
-        public ASObject.AbstractBuilder client(String client) {
+        public Builder client(String client) {
             return set("spt:client", client);
         }
 
