@@ -7,12 +7,8 @@ public class Options {
 
     private String dataCollectorUrl;
     private int maxQueueSize;
-    private int maxBatchSize;
-
     private int timeout;
-
     private int retries;
-
     private boolean sendAutomatic;
 
     /**
@@ -20,16 +16,14 @@ public class Options {
      *
      * @param dataCollectorUrl the url to the data collector endpoint
      * @param maxQueueSize the maximum size of the activity queue waiting to be sent to the data collector
-     * @param maxBatchSize the maximum size of each batch of activities sent to the data collector
      * @param timeout the amount of milliseconds before a request is marked as timed out
      * @param retries the amount of times to retry the request
      * @param sendAutomatic specifies if the client should send activities automatically
      */
-    public Options(final String dataCollectorUrl, final int maxQueueSize, final int maxBatchSize, final int timeout, final
+    public Options(final String dataCollectorUrl, final int maxQueueSize, final int timeout, final
     int retries, final boolean sendAutomatic) {
         setDataCollectorUrl(dataCollectorUrl);
         setMaxQueueSize(maxQueueSize);
-        setMaxBatchSize(maxBatchSize);
         setTimeout(timeout);
         setRetries(retries);
         setSendAutomatic(sendAutomatic);
@@ -66,22 +60,6 @@ public class Options {
             throw new IllegalArgumentException("Data-collector-sdk#options#maxQueueSize must be greater than 0.");
         }
         this.maxQueueSize = maxQueueSize;
-    }
-
-    public int getMaxBatchSize() {
-        return maxBatchSize;
-    }
-
-
-    /**
-     * Sets the maximum size of each batch of activities sent to the data collector
-     * @param maxBatchSize
-     */
-    public void setMaxBatchSize(int maxBatchSize) {
-        if(maxBatchSize < 1) {
-            throw new IllegalArgumentException("Data-collector-sdk#options#maxBatchSize must be greater than 0.");
-        }
-        this.maxBatchSize = maxBatchSize;
     }
 
     public int getTimeout() {
