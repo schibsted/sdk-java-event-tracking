@@ -77,13 +77,12 @@ public class TestData {
 
     private static final String DATA_COLLECTOR_URL = "http://localhost:8090/";
     private static final int MAX_QUEUE_SIZE = 10000;
-    private static final int MAX_BATCH_SIZE = 20;
     private static final int TIMEOUT = 5000;
     private static final int RETRIES = 2;
     private static final boolean SEND_AUTOMATIC = true;
 
     public static Options getDefaultOptions() {
-        return new Options(DATA_COLLECTOR_URL, MAX_QUEUE_SIZE, MAX_BATCH_SIZE, TIMEOUT,
+        return new Options(DATA_COLLECTOR_URL, MAX_QUEUE_SIZE, TIMEOUT,
                 RETRIES, SEND_AUTOMATIC);
     }
 

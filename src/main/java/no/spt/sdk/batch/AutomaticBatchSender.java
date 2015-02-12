@@ -1,5 +1,6 @@
 package no.spt.sdk.batch;
 
+import no.spt.sdk.Constants;
 import no.spt.sdk.connection.DataCollectorConnector;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
@@ -78,7 +79,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
                     current.add(activity);
                 }
             }
-            while (shouldSend && activityQueue.size() > 0 && current.size() < options.getMaxBatchSize());
+            while (shouldSend && activityQueue.size() > 0 && current.size() < Constants.MAX_BATCH_SIZE);
 
             try {
                 sendBatch(current);

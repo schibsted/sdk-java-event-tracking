@@ -1,5 +1,6 @@
 package no.spt.sdk.batch;
 
+import no.spt.sdk.Constants;
 import no.spt.sdk.TestData;
 import no.spt.sdk.connection.DataCollectorConnector;
 import no.spt.sdk.exceptions.ErrorCollector;
@@ -53,7 +54,7 @@ public class AutomaticBatchSenderTest {
     @Test
     public void testEnqueueMoreThanMaxBatchSize() throws Exception {
         Activity activity = TestData.getTestActivity();
-        for(int i = 0; i <= options.getMaxBatchSize(); i++) {
+        for(int i = 0; i <= Constants.MAX_BATCH_SIZE; i++) {
             batchSender.enqueue(activity);
         }
         sleep(500);

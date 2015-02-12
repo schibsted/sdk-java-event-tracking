@@ -1,6 +1,7 @@
 package no.spt.sdk.batch;
 
 
+import no.spt.sdk.Constants;
 import no.spt.sdk.connection.DataCollectorConnector;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
@@ -51,7 +52,7 @@ public class ManualBatchSender implements ISender {
                 if (activity != null) {
                     current.add(activity);
                 }
-            } while (activityQueue.size() > 0 && current.size() < options.getMaxBatchSize());
+            } while (activityQueue.size() > 0 && current.size() < Constants.MAX_BATCH_SIZE);
             boolean success = true;
             int retryCount = 0;
 
