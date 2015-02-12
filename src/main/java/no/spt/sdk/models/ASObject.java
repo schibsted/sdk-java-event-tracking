@@ -62,14 +62,6 @@ public class ASObject {
             return set("title", title);
         }
 
-        public B provider(String provider) {
-            return set("provider", provider);
-        }
-
-        public B provider(ASObject.Builder builder) {
-            return set("provider", builder.build());
-        }
-
         public B url(String url) {
             return set("url", url);
         }
