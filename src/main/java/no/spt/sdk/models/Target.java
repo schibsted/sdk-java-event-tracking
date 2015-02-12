@@ -6,7 +6,7 @@ public class Target extends ASObject {
         super(builder);
     }
 
-    public static class Builder extends ASObject.AbstractBuilder {
+    public static class Builder extends ASObject.AbstractBuilder<Target, Builder> {
 
         public Builder(String type, String id) {
             super(type, id);

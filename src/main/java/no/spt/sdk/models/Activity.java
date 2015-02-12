@@ -21,7 +21,6 @@ public class Activity {
     private ASObject provider;
     private ASObject object;
     private ASObject target;
-    private ASObject result;
 
     private Activity() {
         Map<String, String> map = new HashMap<String, String>();
@@ -37,19 +36,40 @@ public class Activity {
             type(type);
         }
 
-        public Builder actor(ASObject.AbstractBuilder builder) {
-            _temp.actor = builder.build();
+        public Builder object(ASObject object) {
+            _temp.object = object;
             return this;
         }
 
-        public Builder provider(ASObject.AbstractBuilder builder) {
-            _temp.provider = builder.build();
+        public Builder object(ASObject.Builder builder) {
+            return object(builder.build());
+        }
+
+        public Builder actor(Actor actor) {
+            _temp.actor = actor;
             return this;
         }
 
-        public Builder target(ASObject.AbstractBuilder builder) {
-            _temp.target = builder.build();
+        public Builder actor(Actor.Builder builder) {
+            return actor(builder.build());
+        }
+
+        public Builder provider(Provider provider) {
+            _temp.provider = provider;
             return this;
+        }
+
+        public Builder provider(Provider.Builder builder) {
+            return provider(builder.build());
+        }
+
+        public Builder target(Target target) {
+            _temp.target = target;
+            return this;
+        }
+
+        public Builder target(Target.Builder builder) {
+            return target(builder.build());
         }
 
         public Builder type(String type) {
@@ -70,11 +90,6 @@ public class Activity {
         public Builder publishedNow() {
             Calendar currentTime = Calendar.getInstance();
             _temp.published = ISO_8601_FORMAT.format(currentTime.getTime());
-            return this;
-        }
-
-        public Builder object(ASObject.AbstractBuilder builder) {
-            _temp.object = builder.build();
             return this;
         }
 
