@@ -1,7 +1,6 @@
 package no.spt.sdk;
 
-import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
+import no.spt.sdk.models.*;
 
 import java.util.Date;
 
@@ -33,8 +32,7 @@ public class TestData {
 
     public static String getTestActivityAsJsonString() {
         return "{" +
-                    "\"@context\":[\"http://www.w3.org/ns/activitystreams\",{\"spt\":\"http://www.spt" +
-                    ".no/activityStreams\"}]," +
+                    "\"@context\":[\"http://www.w3.org/ns/activitystreams\",{\"spt\":\"http://schema.schibsted.com/activitystreams\"}]," +
                     "\"@type\":\"" + ACTIVITY_TYPE + "\"," +
                     "\"published\":\"1970-01-01T01:00:00.000+01:00\"," +
                     "\"actor\":{" +
@@ -73,17 +71,69 @@ public class TestData {
                 .build();
     }
 
+    public static Activity createActivity() {
+        return activity("Login")
+                .publishedNow()
+                .actor(createActor())
+                .object(createObject())
+                .provider(createProvider())
+                .build();
+    }
+
+    public static Provider createProvider() {
+        return provider("Organization", "urn:spid:no:4cf36fa274dea2117e030000")
+                .client("4cf36fa274dea2117e030000")
+                .build();
+    }
+
+    public static ASObject createObject() {
+        return object("Organization", "urn:spid:47001:4cf36fa274dea2117e030000")
+                .displayName("Verdens Gang")
+                .set("spt:merchant", "47001")
+                .set("spt:client", "4cf36fa274dea2117e030000")
+                .build();
+    }
+
+    public static Actor createActor() {
+        return actor("Person", "urn:spid:no:286668")
+                .set("spt:userAgent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2)AppleWebKit/537.36 (KHTML, like" +
+                        " Gecko) Chrome/40.0.2214.93 Safari/537.36")
+                .set("spt:ip", "127.0.0.1")
+                .set("spt:gender", "male")
+                .set("spt:age", "40")
+                .set("spt:created", "2015-01-01T12:00:27.87+00:20")
+                .set("spt:distinctId", "XdffuwXmr3wp1X1o4fb1")
+                .build();
+    }
+
+    public static Link createLink() {
+        return link("http://example.org/abc")
+                .mediaType("text/html")
+                .displayName("An example link")
+                .build();
+    }
+
+    public static String createLinkAsJsonString() {
+        return "{" +
+                    "\"@type\":\"Link\"," +
+                    "\"href\":\"http://example.org/abc\"," +
+                    "\"mediaType\":\"text/html\"," +
+                    "\"displayName\":\"An example link\"" +
+                "}";
+    }
+
     /// OPTIONS
 
     private static final String DATA_COLLECTOR_URL = "http://localhost:8090/";
     private static final int MAX_QUEUE_SIZE = 10000;
     private static final int TIMEOUT = 5000;
     private static final int RETRIES = 2;
-    private static final boolean SEND_AUTOMATIC = true;
 
     public static Options getDefaultOptions() {
         return new Options(DATA_COLLECTOR_URL, MAX_QUEUE_SIZE, TIMEOUT,
-                RETRIES, SEND_AUTOMATIC);
+                RETRIES);
     }
+
+
 
 }

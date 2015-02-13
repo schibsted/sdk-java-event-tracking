@@ -20,4 +20,11 @@ public class GsonASJsonConverterTest {
         JSONAssert.assertEquals(TestData.getTestActivityAsJsonString(), jsonConverter.serialize(TestData
                 .getTestActivity()), false);
     }
+
+    @Test
+    public void testLinkSerializing() throws JSONException {
+        JSONAssert.assertEquals(TestData.createLinkAsJsonString(), jsonConverter.serialize(TestData
+                .createLink()), false);
+    }
+
 }

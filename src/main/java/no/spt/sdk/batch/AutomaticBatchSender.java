@@ -1,11 +1,11 @@
 package no.spt.sdk.batch;
 
 import no.spt.sdk.Constants;
-import no.spt.sdk.connection.DataCollectorConnector;
+import no.spt.sdk.Options;
+import no.spt.sdk.connection.IDataCollectorConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.exceptions.ErrorCollector;
+import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -15,16 +15,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A sender that automatically sends activities from the queue to the data collector
+ * A sender that automatically sends activities from the queue to the data collector.
+ * It sends batches of activities to the data collector on a separate thread.
  */
 public class AutomaticBatchSender implements Runnable, ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
     private volatile boolean shouldSend;
-    private DataCollectorConnector client;
+    private IDataCollectorConnection client;
     private volatile CountDownLatch latch;
     private Options options;
-    private ErrorCollector errorCollector;
+    private IErrorCollector errorCollector;
     private final Thread thread;
     private static final Object fileLock = new Object();
 
@@ -34,7 +35,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
      * @param client an http client wrapper that handles http connections with data collector
      * @param errorCollector an error collector that collects all exceptions
      */
-    public AutomaticBatchSender(Options options, DataCollectorConnector client, ErrorCollector errorCollector) {
+    public AutomaticBatchSender(Options options, IDataCollectorConnection client, IErrorCollector errorCollector) {
         this.client = client;
         this.errorCollector = errorCollector;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
@@ -112,7 +113,8 @@ public class AutomaticBatchSender implements Runnable, ISender {
         while (!success && retryCount < options.getRetries());
 
         if (!success) {
-            throw new DataTrackingException("Unable to send batch. Giving up on this batch.");
+            throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on this" +
+                    " batch.", retryCount));
         }
 
     }

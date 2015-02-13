@@ -1,12 +1,12 @@
 package no.spt.sdk.batch;
 
 import no.spt.sdk.Constants;
+import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.DataCollectorConnector;
+import no.spt.sdk.connection.HttpClientDataCollectorConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +25,13 @@ import static org.mockito.Mockito.*;
 public class ManualBatchSenderTest {
 
     @Mock
-    private DataCollectorConnector dataCollectorConnector;
+    private HttpClientDataCollectorConnection dataCollectorConnector;
     private ManualBatchSender batchSender;
     private Options options;
 
     @Before
     public void setUp() throws Exception {
-        options = TestData.getDefaultOptions();
+        options = new Options("http://localhost:8090/", 1000, 1000, 2);
         batchSender = new ManualBatchSender(options, dataCollectorConnector);
     }
 
@@ -45,7 +45,6 @@ public class ManualBatchSenderTest {
         batchSender.flush();
         verify(dataCollectorConnector, times(0)).send(anyList());
     }
-
 
     @Test
     public void testFlushNotEmptyQueue() throws Exception {
@@ -74,6 +73,14 @@ public class ManualBatchSenderTest {
         batchSender.flush();
         assertEquals(0, batchSender.getQueueDepth());
         verify(dataCollectorConnector, times(2)).send(anyList());
+    }
+
+    @Test(expected = DataTrackingException.class)
+    public void testEnqueueMoreThanMaxQueueSize() throws Exception {
+        Activity activity = TestData.getTestActivity();
+        for(int i = 0; i <= options.getMaxQueueSize() + 1; i++) {
+            batchSender.enqueue(activity);
+        }
     }
 
     @Test
@@ -116,4 +123,5 @@ public class ManualBatchSenderTest {
         batchSender.flush();
         assertEquals(0, batchSender.getQueueDepth());
     }
+
 }

@@ -2,10 +2,10 @@ package no.spt.sdk.batch;
 
 
 import no.spt.sdk.Constants;
-import no.spt.sdk.connection.DataCollectorConnector;
+import no.spt.sdk.Options;
+import no.spt.sdk.connection.IDataCollectorConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -19,15 +19,14 @@ import java.util.concurrent.TimeUnit;
 public class ManualBatchSender implements ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
-    private DataCollectorConnector client;
+    private IDataCollectorConnection client;
     private Options options;
 
     /**
-     *
      * @param options options used to configure the behaviour of the sender
-     * @param client an http client wrapper that handles http connections with data collector
+     * @param client  an http client wrapper that handles http connections with data collector
      */
-    public ManualBatchSender(Options options, DataCollectorConnector client) {
+    public ManualBatchSender(Options options, IDataCollectorConnection client) {
         this.client = client;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
         this.options = options;
@@ -70,7 +69,8 @@ public class ManualBatchSender implements ISender {
             } while (!success && retryCount < options.getRetries());
 
             if (!success) {
-                throw new DataTrackingException("Unable to send batch. Giving up on this batch.");
+                throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on this" +
+                        " batch.", retryCount));
             }
         } while (activityQueue.size() > 0);
     }
@@ -78,6 +78,7 @@ public class ManualBatchSender implements ISender {
     /**
      * Enqueue an activity to be sent to the data collector.
      * If the queue is full, the activity will be dropped
+     *
      * @param activity an activity to enqueue
      * @throws DataTrackingException if the queue has reached it's max size
      */
@@ -94,6 +95,7 @@ public class ManualBatchSender implements ISender {
 
     /**
      * This method flushes the queue and closes the sender.
+     *
      * @throws DataTrackingException if http client cannot be closed
      */
     @Override
@@ -104,6 +106,7 @@ public class ManualBatchSender implements ISender {
 
     /**
      * This method returns the current queue depth
+     *
      * @return the current queue depth
      */
     @Override

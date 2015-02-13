@@ -24,7 +24,7 @@ public class Activity {
 
     private Activity() {
         Map<String, String> map = new HashMap<String, String>();
-        map.put("spt", "http://www.spt.no/activityStreams");
+        map.put("spt", "http://schema.schibsted.com/activitystreams");
         context = Arrays.asList("http://www.w3.org/ns/activitystreams", map);
     }
 

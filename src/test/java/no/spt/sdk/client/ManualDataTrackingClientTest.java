@@ -2,9 +2,9 @@ package no.spt.sdk.client;
 
 
 import no.spt.sdk.Constants;
+import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.junit.After;
@@ -21,7 +21,7 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class DataTrackingClientTest {
+public class ManualDataTrackingClientTest {
 
     private DataTrackingClient client;
     private ClientAndServer mockServer;
@@ -30,8 +30,11 @@ public class DataTrackingClientTest {
 
     @Before
     public void setup() {
-        options = TestData.getDefaultOptions();
-        client = new DataTrackingClient(options);
+        options = new Options("http://localhost:8090/", 10000, 1000, 2);
+        client = new DataTrackingClient.Builder()
+                .withOptions(options)
+                .withManualActivitySender()
+                .build();
         jsonConverter = new GsonASJsonConverter();
     }
 
@@ -78,7 +81,6 @@ public class DataTrackingClientTest {
     public void testSendingMultipleActivities() throws Exception {
         trackActivities(1000);
         client.send();
-        client.close();
         sleep(500);
         assertEquals(0, client.getQueueDepth());
     }

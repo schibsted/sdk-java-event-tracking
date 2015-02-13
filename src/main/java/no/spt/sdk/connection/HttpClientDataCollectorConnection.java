@@ -1,9 +1,9 @@
 package no.spt.sdk.connection;
 
+import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Options;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.apache.http.HttpEntity;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * The DataCollectorConnector wraps an HTTP client and is responsible for the HTTP connections with the data collector.
  */
-public class DataCollectorConnector {
+public class HttpClientDataCollectorConnection implements IDataCollectorConnection {
 
     private CloseableHttpClient httpClient;
     private Options options;
@@ -33,10 +33,22 @@ public class DataCollectorConnector {
 
     /**
      * Constructs a DataCollectorConnector using the provided options
-     * @param options used to configure the connector
+     * @param options The options used to configure the connector
      */
-    public DataCollectorConnector(Options options) {
+    public HttpClientDataCollectorConnection(Options options) {
         this.httpClient = HttpClients.createDefault();
+        this.options = options;
+        this.jsonConverter = new GsonASJsonConverter();
+    }
+
+    /**
+     * Constructor used primarily for testing
+     *
+     * @param options The options used to configure the connector
+     * @param httpClient The httpClient to use for communication with the data collector
+     */
+    protected HttpClientDataCollectorConnection(Options options, CloseableHttpClient httpClient) {
+        this.httpClient = httpClient;
         this.options = options;
         this.jsonConverter = new GsonASJsonConverter();
     }
@@ -48,6 +60,7 @@ public class DataCollectorConnector {
      * @throws DataTrackingException if the response HTTP status is not 200
      * @throws IOException if writing to stream fail
      */
+    @Override
     public DataTrackingResponse send(List<Activity> batch) throws DataTrackingException, IOException {
         HttpPost post = new HttpPost(options.getDataCollectorUrl());
         post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -100,6 +113,7 @@ public class DataCollectorConnector {
      * This method closes the DataCollectorConnector
      * @throws DataTrackingException if the HTTP client cannot be closed
      */
+    @Override
     public void close() throws DataTrackingException {
         try {
             httpClient.close();

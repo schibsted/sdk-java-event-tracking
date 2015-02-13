@@ -1,4 +1,4 @@
-package no.spt.sdk.models;
+package no.spt.sdk;
 
 /**
  * Options contains settings used to configure the behaviour of the data collector SDK
@@ -9,7 +9,6 @@ public class Options {
     private int maxQueueSize;
     private int timeout;
     private int retries;
-    private boolean sendAutomatic;
 
     /**
      * Constructs an Option with the provided settings
@@ -18,15 +17,13 @@ public class Options {
      * @param maxQueueSize the maximum size of the activity queue waiting to be sent to the data collector
      * @param timeout the amount of milliseconds before a request is marked as timed out
      * @param retries the amount of times to retry the request
-     * @param sendAutomatic specifies if the client should send activities automatically
      */
     public Options(final String dataCollectorUrl, final int maxQueueSize, final int timeout, final
-    int retries, final boolean sendAutomatic) {
+    int retries) {
         setDataCollectorUrl(dataCollectorUrl);
         setMaxQueueSize(maxQueueSize);
         setTimeout(timeout);
         setRetries(retries);
-        setSendAutomatic(sendAutomatic);
     }
 
     public String getDataCollectorUrl() {
@@ -94,16 +91,4 @@ public class Options {
         this.retries = retries;
     }
 
-    public boolean isSendAutomatic() {
-        return sendAutomatic;
-    }
-
-    /**
-     * Sets if the client should send activities automatically
-     *
-     * @param sendAutomatic
-     */
-    public void setSendAutomatic(boolean sendAutomatic) {
-        this.sendAutomatic = sendAutomatic;
-    }
 }

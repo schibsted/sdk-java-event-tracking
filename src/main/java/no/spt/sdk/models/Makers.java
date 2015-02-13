@@ -23,4 +23,8 @@ public final class Makers {
     public static Activity.Builder activity(String type) {
         return new Activity.Builder(type);
     }
+
+    public static Link.Builder link(String href) {
+        return new Link.Builder(href);
+    }
 }
