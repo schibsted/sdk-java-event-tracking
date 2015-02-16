@@ -18,5 +18,7 @@ public class ActivityTest {
     public void testObject() throws Exception {
         ASObject.Builder objectBuilder = object("objectType", "objectId");
         Activity activity = activity("type").object(objectBuilder).build();
+        assertEquals("objectType", activity.getObject().getMap().get("@type"));
+        assertEquals("objectId", activity.getObject().getMap().get("@id"));
     }
 }

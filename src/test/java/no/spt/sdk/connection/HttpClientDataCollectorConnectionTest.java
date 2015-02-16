@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -39,9 +40,10 @@ public class HttpClientDataCollectorConnectionTest {
 
     @Test
     public void testSendWithOkResponse() throws Exception {
-        when(httpClient.execute(any(HttpPost.class), any(ResponseHandler.class))).thenReturn(new DataTrackingResponse
-                (HttpStatus.SC_OK, null, "OK"));
-        connection.send(Arrays.asList(TestData.getTestActivity()));
+        DataTrackingResponse mockResp = new DataTrackingResponse(HttpStatus.SC_OK, null, "OK");
+        when(httpClient.execute(any(HttpPost.class), any(ResponseHandler.class))).thenReturn(mockResp);
+        DataTrackingResponse resp = connection.send(Arrays.asList(TestData.getTestActivity()));
+        assertEquals(mockResp, resp);
     }
 
     @Test(expected = DataTrackingException.class)
