@@ -12,10 +12,6 @@ public class Provider extends ASObject {
             super(type, id);
         }
 
-        public Builder client(String client) {
-            return set("spt:client", client);
-        }
-
         public Provider build() {
             return new Provider(this);
         }

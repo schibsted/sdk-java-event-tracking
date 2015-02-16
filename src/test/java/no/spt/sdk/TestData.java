@@ -82,7 +82,6 @@ public class TestData {
 
     public static Provider createProvider() {
         return provider("Organization", "urn:spid:no:4cf36fa274dea2117e030000")
-                .client("4cf36fa274dea2117e030000")
                 .build();
     }
 
