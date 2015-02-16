@@ -1,11 +1,28 @@
 package no.spt.sdk;
 
+/**
+ * Defaults contains default values that can be used in the SDK
+ */
 public class Defaults {
 
+    /**
+     * The URL to the data collector
+     */
     public static final String DATA_COLLECTOR_URL = "http://localhost:8002/api/v1/track";
+
+    /**
+     * The maximum size of the activities queue
+     */
     public static final int MAX_QUEUE_SIZE = 10000;
+
+    /**
+     * The timeout of a request to the data collector
+     */
     public static final int TIMEOUT = 2000;
+
+    /**
+     * The number of times to retry a request to the data collector
+     */
     public static final int RETRIES = 2;
-    public static final boolean SEND_AUTOMATIC = true;
 
 }
