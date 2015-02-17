@@ -41,7 +41,33 @@ public class ASObject {
             id(id);
         }
 
-        public B set(String key, Object value) {
+        public B set(String key, ASObject value) {
+            if (value == null) {
+                return (B)this;
+            } else {
+                map.put(key, value);
+            }
+            return (B)this;
+        }
+
+        public B set(String key, ASObject.AbstractBuilder value) {
+            return set(key, value.build());
+        }
+
+        public B set(String key, Link value) {
+            if (value == null) {
+                return (B)this;
+            } else {
+                map.put(key, value);
+            }
+            return (B)this;
+        }
+
+        public B set(String key, Link.Builder value) {
+            return set(key, value.build());
+        }
+
+        public B set(String key, String value) {
             if (value == null) {
                 return (B)this;
             } else {

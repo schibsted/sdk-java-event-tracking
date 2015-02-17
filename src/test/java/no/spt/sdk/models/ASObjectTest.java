@@ -21,8 +21,14 @@ public class ASObjectTest {
     }
 
     @Test
-    public void testSettingNullValue() {
-        ASObject object = builder().set("null_value", null).build();
+    public void testSettingNullObject() {
+        ASObject object = builder().set("null_value", (ASObject) null).build();
+        assertNotExistsInMap(object, "null_value");
+    }
+
+    @Test
+    public void testSettingNullLink() {
+        ASObject object = builder().set("null_value", (Link)null).build();
         assertNotExistsInMap(object, "null_value");
     }
 
