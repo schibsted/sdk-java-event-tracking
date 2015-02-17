@@ -151,11 +151,12 @@ public class AutomaticBatchSender implements Runnable, ISender {
     }
 
     /**
-     * This method closes the sender and clears the queue.
+     * This method closes the sender after flushing and clearing the queue.
      * @throws DataTrackingException if http client cannot be closed
      */
     @Override
     public void close() throws DataTrackingException {
+        flush();
         shouldSend = false;
         activityQueue.clear();
         client.close();
