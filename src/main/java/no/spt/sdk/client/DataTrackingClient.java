@@ -81,6 +81,17 @@ public class DataTrackingClient {
         }
 
         /**
+         * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector.
+         *
+         * @param activitySender The {@link no.spt.sdk.batch.ISender} to use
+         * @return This instance (for method chaining)
+         */
+        public Builder withActivitySender(ISender activitySender){
+            this.activitySender = activitySender;
+            return this;
+        }
+
+        /**
          * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector to
          * {@link no.spt.sdk.batch.ManualBatchSender}.
          *
