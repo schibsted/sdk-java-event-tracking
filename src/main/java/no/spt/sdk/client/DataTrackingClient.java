@@ -21,6 +21,7 @@ import static no.spt.sdk.Defaults.*;
 /**
  * The DataTrackingClient can be used to track activities. The client is an HTTP wrapper over a data collector API.
  * It allows you to consume the API without making any HTTP requests yourself.
+ *
  */
 public class DataTrackingClient {
 
@@ -120,8 +121,7 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that the {@link no.spt.sdk.batch.ISender}
-         * will use to send activities to the data collector.
+         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that will be used for HTTP communication.
          *
          * @param httpConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
          */
@@ -130,8 +130,7 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that the {@link no.spt.sdk.batch.ISender}
-         * will use to send activities to the data collector.
+         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that will be used for HTTP communication.
          *
          * @param dataCollectorConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
          * @return This instance (for method chaining)
@@ -143,7 +142,7 @@ public class DataTrackingClient {
 
         /**
          * Gets the {@link no.spt.sdk.connection.IHttpConnection} this builder is currently configured to use
-         * when creating the {@link no.spt.sdk.batch.ISender}.
+         * for HTTP communication
          * If null, {@link no.spt.sdk.connection.HttpClientConnection} will be used instead.
          *
          * @return The {@link no.spt.sdk.connection.IHttpConnection} to use
