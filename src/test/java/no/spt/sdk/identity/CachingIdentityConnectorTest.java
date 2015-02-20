@@ -23,16 +23,16 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IdentityConnectorTest {
+public class CachingIdentityConnectorTest {
 
     @Mock
     private IHttpConnection httpConnection;
-    private IdentityConnector identityConnector;
+    private CachingIdentityConnector identityConnector;
 
     @Before
     public void setUp() throws Exception {
         Options options = TestData.getDefaultOptions();
-        identityConnector = new IdentityConnector(options, httpConnection);
+        identityConnector = new CachingIdentityConnector(options, httpConnection);
     }
 
     @After

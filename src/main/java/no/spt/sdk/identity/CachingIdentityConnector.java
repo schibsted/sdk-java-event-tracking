@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class IdentityConnector {
+public class CachingIdentityConnector implements IIdentityConnector {
 
     private Options options;
     private IHttpConnection httpConnection;
@@ -27,7 +27,7 @@ public class IdentityConnector {
     private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
 
 
-    public IdentityConnector(Options options, IHttpConnection httpConnection) {
+    public CachingIdentityConnector(Options options, IHttpConnection httpConnection) {
         this.options = options;
         this.httpConnection = httpConnection;
         this.jsonConverter = new GsonASJsonConverter();
@@ -46,6 +46,7 @@ public class IdentityConnector {
                 });
     }
 
+    @Override
     public String getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
         try {
             return cache.get(identifiers);

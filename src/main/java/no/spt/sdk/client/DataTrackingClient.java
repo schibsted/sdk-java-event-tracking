@@ -10,7 +10,8 @@ import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.exceptions.LoggingErrorCollector;
-import no.spt.sdk.identity.IdentityConnector;
+import no.spt.sdk.identity.IIdentityConnector;
+import no.spt.sdk.identity.CachingIdentityConnector;
 import no.spt.sdk.models.Activity;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ public class DataTrackingClient {
     private final Options options;
     private final ISender activitySender;
     private final IErrorCollector errorCollector;
-    private final IdentityConnector identityConnector;
+    private final IIdentityConnector identityConnector;
 
     /**
      * Builder for instantiating DataTrackingClients.
@@ -44,7 +45,7 @@ public class DataTrackingClient {
         private IHttpConnection httpConnection;
         private IErrorCollector errorCollector;
         private ActivitySenderType activitySenderType;
-        private IdentityConnector identityConnector;
+        private IIdentityConnector identityConnector;
 
         /**
          * Sets the {@link no.spt.sdk.Options} to use for the client
@@ -183,16 +184,35 @@ public class DataTrackingClient {
             return this.errorCollector;
         }
 
-        public void setIdentityConnector(IdentityConnector identityConnector) {
+        /**
+         * Set the {@link no.spt.sdk.identity.IIdentityConnector} to use for getting anonymous IDs from the Anonymous
+         * Identity Service
+         *
+         * @param identityConnector The {@link no.spt.sdk.identity.IIdentityConnector} to use
+         */
+        public void setIdentityConnector(IIdentityConnector identityConnector) {
             this.identityConnector = identityConnector;
         }
 
-        public Builder withIdentityConnector(IdentityConnector identityConnector) {
+        /**
+         * Set the {@link no.spt.sdk.identity.IIdentityConnector} to use for getting anonymous IDs from the Anonymous
+         * Identity Service
+         *
+         * @param identityConnector The {@link no.spt.sdk.identity.IIdentityConnector} to use
+         * @return This instance (for method chaining)
+         */
+        public Builder withIdentityConnector(IIdentityConnector identityConnector) {
             setIdentityConnector(identityConnector);
             return this;
         }
 
-        public IdentityConnector getIdentityConnector(){
+        /**
+         * Gets the {@link no.spt.sdk.identity.IIdentityConnector} this builder is currently configured to use for
+         * getting anonymous IDs from the Anonymous Identity Service
+         *
+         * @return The {@link no.spt.sdk.identity.IIdentityConnector} to use
+         */
+        public IIdentityConnector getIdentityConnector(){
             return identityConnector;
         }
 
@@ -213,7 +233,7 @@ public class DataTrackingClient {
                 errorCollector = new LoggingErrorCollector();
             }
             if(identityConnector == null) {
-                this.identityConnector = new IdentityConnector(options, httpConnection);
+                this.identityConnector = new CachingIdentityConnector(options, httpConnection);
             }
             if(ActivitySenderType.MANUAL_ACTIVITY_SENDER.equals(activitySenderType)) {
                 activitySender = new ManualBatchSender(options, httpConnection);
