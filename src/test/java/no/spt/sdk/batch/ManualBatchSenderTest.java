@@ -3,10 +3,13 @@ package no.spt.sdk.batch;
 import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
+import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.HttpClientDataCollectorConnection;
+import no.spt.sdk.connection.HttpClientConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.serializers.ASJsonConverter;
+import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,23 +19,25 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManualBatchSenderTest {
 
     @Mock
-    private HttpClientDataCollectorConnection dataCollectorConnector;
+    private HttpClientConnection dataCollectorConnector;
     private ManualBatchSender batchSender;
     private Options options;
+    private static ASJsonConverter jsonConverter = new GsonASJsonConverter();
 
     @Before
     public void setUp() throws Exception {
-        options = new Options("http://localhost:8090/", 1000, 1000, 2);
+        options = new Options("http://localhost:8090/", "http://localhost:8091/", 1000, 1000, 2);
         batchSender = new ManualBatchSender(options, dataCollectorConnector);
+        when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(200, null, "OK"));
     }
 
     @After
@@ -43,15 +48,16 @@ public class ManualBatchSenderTest {
     @Test
     public void testFlushEmptyQueue() throws Exception {
         batchSender.flush();
-        verify(dataCollectorConnector, times(0)).send(anyList());
+        verify(dataCollectorConnector, times(0)).send(any(DataTrackingPostRequest.class));
     }
 
     @Test
     public void testFlushNotEmptyQueue() throws Exception {
         Activity activity = TestData.getTestActivity();
+        DataTrackingPostRequest request = TestData.getTestDataTrackingPostRequest(options);
         batchSender.enqueue(activity);
         batchSender.flush();
-        verify(dataCollectorConnector, times(1)).send(Arrays.asList(activity));
+        verify(dataCollectorConnector, times(1)).send(any(DataTrackingPostRequest.class));
     }
 
     @Test
@@ -72,7 +78,7 @@ public class ManualBatchSenderTest {
         assertEquals(Constants.MAX_BATCH_SIZE + 1, batchSender.getQueueDepth());
         batchSender.flush();
         assertEquals(0, batchSender.getQueueDepth());
-        verify(dataCollectorConnector, times(2)).send(anyList());
+        verify(dataCollectorConnector, times(2)).send(any(DataTrackingPostRequest.class));
     }
 
     @Test(expected = DataTrackingException.class)
@@ -96,7 +102,7 @@ public class ManualBatchSenderTest {
      public void testConnectorThrowsOneException() throws Exception {
         Activity activity = TestData.getTestActivity();
         options.setRetries(2);
-        when(dataCollectorConnector.send(Arrays.asList(activity))).thenThrow(new IOException())
+        when(dataCollectorConnector.send(asRequest(Arrays.asList(activity)))).thenThrow(new IOException())
                                                                   .thenReturn(new DataTrackingResponse(200, null,
                                                                           null));
         batchSender.enqueue(activity);
@@ -108,7 +114,8 @@ public class ManualBatchSenderTest {
     @Test(expected = DataTrackingException.class)
     public void testConnectorThrowsExceptions() throws Exception {
         Activity activity = TestData.getTestActivity();
-        when(dataCollectorConnector.send(Arrays.asList(activity))).thenThrow(new IOException());
+        when(dataCollectorConnector.send(any(DataTrackingPostRequest.class)))
+                .thenThrow(new IOException());
         batchSender.enqueue(activity);
 
         batchSender.flush();
@@ -122,6 +129,10 @@ public class ManualBatchSenderTest {
         assertEquals(1, batchSender.getQueueDepth());
         batchSender.flush();
         assertEquals(0, batchSender.getQueueDepth());
+    }
+
+    private DataTrackingPostRequest asRequest(List<Activity> activities){
+        return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize(activities));
     }
 
 }

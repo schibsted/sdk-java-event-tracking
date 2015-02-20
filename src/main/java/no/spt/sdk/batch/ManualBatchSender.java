@@ -3,9 +3,14 @@ package no.spt.sdk.batch;
 
 import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
-import no.spt.sdk.connection.IDataCollectorConnection;
+import no.spt.sdk.client.DataTrackingPostRequest;
+import no.spt.sdk.client.DataTrackingResponse;
+import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.serializers.ASJsonConverter;
+import no.spt.sdk.serializers.GsonASJsonConverter;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -19,17 +24,19 @@ import java.util.concurrent.TimeUnit;
 public class ManualBatchSender implements ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
-    private IDataCollectorConnection client;
+    private IHttpConnection client;
     private Options options;
+    private ASJsonConverter jsonConverter;
 
     /**
      * @param options options used to configure the behaviour of the sender
      * @param client  an http client wrapper that handles http connections with data collector
      */
-    public ManualBatchSender(Options options, IDataCollectorConnection client) {
+    public ManualBatchSender(Options options, IHttpConnection client) {
         this.client = client;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
         this.options = options;
+        this.jsonConverter = new GsonASJsonConverter();
     }
 
     @Override
@@ -58,8 +65,16 @@ public class ManualBatchSender implements ISender {
             do {
                 try {
                     if (current.size() > 0) {
-                        client.send(current);
+                        DataTrackingResponse response = client.send(new DataTrackingPostRequest(options.getDataCollectorUrl(),
+                                null, jsonConverter.serialize(current)));
                         current = new LinkedList<Activity>();
+                        if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
+                            throw new DataTrackingException("Response from Data Collector was not OK", response);
+                        } else if(response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
+                            throw new DataTrackingException("Some of the activities could not be validated by Data Collector", response);
+                        } else if(response.getResponseCode() != HttpStatus.SC_OK) {
+                            throw new DataTrackingException("Unexpected response from Data Collector", response);
+                        }
                     }
                     success = true;
                 } catch (IOException e) {
@@ -69,8 +84,8 @@ public class ManualBatchSender implements ISender {
             } while (!success && retryCount < options.getRetries());
 
             if (!success) {
-                throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on this" +
-                        " batch.", retryCount));
+                throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on " +
+                        "this" + " batch.", retryCount));
             }
         } while (activityQueue.size() > 0);
     }

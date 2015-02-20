@@ -21,6 +21,10 @@ public class GsonASJsonConverter implements ASJsonConverter {
         return gson.toJson(object);
     }
 
+    public String deSerialize(Object object) {
+        return gson.toJsonTree(object).getAsJsonObject();
+    }
+
     private static class ASObjectTypeConverter implements JsonSerializer<ASObject> {
 
         @Override

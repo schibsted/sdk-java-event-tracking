@@ -5,12 +5,15 @@ import no.spt.sdk.Options;
 import no.spt.sdk.batch.AutomaticBatchSender;
 import no.spt.sdk.batch.ISender;
 import no.spt.sdk.batch.ManualBatchSender;
-import no.spt.sdk.connection.HttpClientDataCollectorConnection;
-import no.spt.sdk.connection.IDataCollectorConnection;
+import no.spt.sdk.connection.HttpClientConnection;
+import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.exceptions.LoggingErrorCollector;
+import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
+
+import java.util.Map;
 
 import static no.spt.sdk.Defaults.*;
 
@@ -23,12 +26,13 @@ public class DataTrackingClient {
     private final Options options;
     private final ISender activitySender;
     private final IErrorCollector errorCollector;
+    private final IdentityConnector identityConnector;
 
     /**
      * Builder for instantiating DataTrackingClients.
      *
      * The default implementation uses a {@link no.spt.sdk.batch.AutomaticBatchSender} with a
-     * {@link HttpClientDataCollectorConnection} to automatically send activities to the data collector on a separate
+     * {@link no.spt.sdk.connection.HttpClientConnection} to automatically send activities to the data collector on a separate
      * thread.
      * It uses a {@link no.spt.sdk.exceptions.LoggingErrorCollector} to collect errors that occur while tracking
      * activities.
@@ -37,9 +41,10 @@ public class DataTrackingClient {
 
         private Options options;
         private ISender activitySender;
-        private IDataCollectorConnection dataCollectorConnection;
+        private IHttpConnection httpConnection;
         private IErrorCollector errorCollector;
         private ActivitySenderType activitySenderType;
+        private IdentityConnector identityConnector;
 
         /**
          * Sets the {@link no.spt.sdk.Options} to use for the client
@@ -114,36 +119,36 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.connection.IDataCollectorConnection} that the {@link no.spt.sdk.batch.ISender}
+         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that the {@link no.spt.sdk.batch.ISender}
          * will use to send activities to the data collector.
          *
-         * @param dataCollectorConnection The {@link no.spt.sdk.connection.IDataCollectorConnection} to use
+         * @param httpConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
          */
-        public void setDataCollectorConnection(IDataCollectorConnection dataCollectorConnection){
-            this.dataCollectorConnection = dataCollectorConnection;
+        public void setHttpConnection(IHttpConnection httpConnection){
+            this.httpConnection = httpConnection;
         }
 
         /**
-         * Sets the {@link no.spt.sdk.connection.IDataCollectorConnection} that the {@link no.spt.sdk.batch.ISender}
+         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that the {@link no.spt.sdk.batch.ISender}
          * will use to send activities to the data collector.
          *
-         * @param dataCollectorConnection The {@link no.spt.sdk.connection.IDataCollectorConnection} to use
+         * @param dataCollectorConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
          * @return This instance (for method chaining)
          */
-        public Builder withDataCollectorConnection(IDataCollectorConnection dataCollectorConnection) {
-            setDataCollectorConnection(dataCollectorConnection);
+        public Builder withDataCollectorConnection(IHttpConnection dataCollectorConnection) {
+            setHttpConnection(dataCollectorConnection);
             return this;
         }
 
         /**
-         * Gets the {@link no.spt.sdk.connection.IDataCollectorConnection} this builder is currently configured to use
+         * Gets the {@link no.spt.sdk.connection.IHttpConnection} this builder is currently configured to use
          * when creating the {@link no.spt.sdk.batch.ISender}.
-         * If null, {@link no.spt.sdk.connection.HttpClientDataCollectorConnection} will be used instead.
+         * If null, {@link no.spt.sdk.connection.HttpClientConnection} will be used instead.
          *
-         * @return The {@link no.spt.sdk.connection.IDataCollectorConnection} to use
+         * @return The {@link no.spt.sdk.connection.IHttpConnection} to use
          */
-        public IDataCollectorConnection getDataCollectorConnection() {
-            return this.dataCollectorConnection;
+        public IHttpConnection getHttpConnection() {
+            return this.httpConnection;
         }
 
         /**
@@ -178,6 +183,19 @@ public class DataTrackingClient {
             return this.errorCollector;
         }
 
+        public void setIdentityConnector(IdentityConnector identityConnector) {
+            this.identityConnector = identityConnector;
+        }
+
+        public Builder withIdentityConnector(IdentityConnector identityConnector) {
+            setIdentityConnector(identityConnector);
+            return this;
+        }
+
+        public IdentityConnector getIdentityConnector(){
+            return identityConnector;
+        }
+
         /**
          * Builds a new DataTrackingClient using the interfaces which have been specified on this builder instance.
          * If none have been specified the default interfaces will be used.
@@ -186,18 +204,21 @@ public class DataTrackingClient {
          */
         public DataTrackingClient build() {
             if (options == null) {
-                options = new Options(DATA_COLLECTOR_URL, MAX_QUEUE_SIZE, TIMEOUT, RETRIES);
+                options = new Options(DATA_COLLECTOR_URL, ANONYMOUS_ID_SERVICE_URL, MAX_QUEUE_SIZE, TIMEOUT, RETRIES);
             }
-            if (dataCollectorConnection == null) {
-                dataCollectorConnection = new HttpClientDataCollectorConnection(options);
+            if (httpConnection == null) {
+                httpConnection = new HttpClientConnection(options);
             }
             if (errorCollector == null) {
                 errorCollector = new LoggingErrorCollector();
             }
+            if(identityConnector == null) {
+                this.identityConnector = new IdentityConnector(options, httpConnection);
+            }
             if(ActivitySenderType.MANUAL_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new ManualBatchSender(options, dataCollectorConnection);
+                activitySender = new ManualBatchSender(options, httpConnection);
             } else if (activitySender == null || ActivitySenderType.AUTOMATIC_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new AutomaticBatchSender(options, dataCollectorConnection, errorCollector);
+                activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector);
             }
             this.activitySender.init();
 
@@ -219,6 +240,7 @@ public class DataTrackingClient {
         this.errorCollector = builder.errorCollector;
         this.activitySender = builder.activitySender;
         this.options = builder.options;
+        this.identityConnector = builder.identityConnector;
     }
 
     /**
@@ -273,6 +295,10 @@ public class DataTrackingClient {
      */
     public int getQueueDepth() {
         return this.activitySender.getQueueDepth();
+    }
+
+    public String getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
+        return identityConnector.getAnonymousId(identifiers);
     }
 
     /**

@@ -6,6 +6,7 @@ package no.spt.sdk;
 public class Options {
 
     private String dataCollectorUrl;
+    private String anonymousIdUrl;
     private int maxQueueSize;
     private int timeout;
     private int retries;
@@ -14,13 +15,13 @@ public class Options {
      * Constructs an Option with the provided settings
      *
      * @param dataCollectorUrl the url to the data collector endpoint
-     * @param maxQueueSize the maximum size of the activity queue waiting to be sent to the data collector
-     * @param timeout the amount of milliseconds before a request is marked as timed out
-     * @param retries the amount of times to retry the request
+     * @param maxQueueSize     the maximum size of the activity queue waiting to be sent to the data collector
+     * @param timeout          the amount of milliseconds before a request is marked as timed out
+     * @param retries          the amount of times to retry the request
      */
-    public Options(final String dataCollectorUrl, final int maxQueueSize, final int timeout, final
-    int retries) {
+    public Options(final String dataCollectorUrl, final String anonymousIdUrl, final int maxQueueSize, final int timeout, final int retries) {
         setDataCollectorUrl(dataCollectorUrl);
+        setAnonymousIdUrl(anonymousIdUrl);
         setMaxQueueSize(maxQueueSize);
         setTimeout(timeout);
         setRetries(retries);
@@ -40,6 +41,17 @@ public class Options {
             throw new IllegalArgumentException("Data-collector-sdk#options#dataCollectorUrl must be a valid url.");
         }
         this.dataCollectorUrl = dataCollectorUrl;
+    }
+
+    public String getAnonymousIdUrl() {
+        return anonymousIdUrl;
+    }
+
+    public void setAnonymousIdUrl(String anonymousIdUrl) {
+        if(anonymousIdUrl == null || anonymousIdUrl.equals("")) {
+            throw new IllegalArgumentException("Data-collector-sdk#options#anonymousIdUrl must be a valid url.");
+        }
+        this.anonymousIdUrl = anonymousIdUrl;
     }
 
     public int getMaxQueueSize() {

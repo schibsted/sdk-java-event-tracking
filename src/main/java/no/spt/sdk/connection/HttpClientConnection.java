@@ -1,14 +1,11 @@
 package no.spt.sdk.connection;
 
 import no.spt.sdk.Options;
+import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.models.Activity;
-import no.spt.sdk.serializers.ASJsonConverter;
-import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -20,25 +17,22 @@ import org.apache.http.util.EntityUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Map;
 
 /**
  * The DataCollectorConnector wraps an HTTP client and is responsible for the HTTP connections with the data collector.
  */
-public class HttpClientDataCollectorConnection implements IDataCollectorConnection {
+public class HttpClientConnection implements IHttpConnection {
 
     private CloseableHttpClient httpClient;
     private Options options;
-    private ASJsonConverter jsonConverter;
 
     /**
      * Constructs a DataCollectorConnector using the provided options
      * @param options The options used to configure the connector
      */
-    public HttpClientDataCollectorConnection(Options options) {
-        this.httpClient = HttpClients.createDefault();
-        this.options = options;
-        this.jsonConverter = new GsonASJsonConverter();
+    public HttpClientConnection(Options options) {
+        this(options, HttpClients.createDefault());
     }
 
     /**
@@ -47,26 +41,31 @@ public class HttpClientDataCollectorConnection implements IDataCollectorConnecti
      * @param options The options used to configure the connector
      * @param httpClient The httpClient to use for communication with the data collector
      */
-    protected HttpClientDataCollectorConnection(Options options, CloseableHttpClient httpClient) {
+    protected HttpClientConnection(Options options, CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
         this.options = options;
-        this.jsonConverter = new GsonASJsonConverter();
     }
 
     /**
      * Method used to send a batch of activities to the data collector
-     * @param batch a batch to send to the data collector
+
      * @return the response from the data collector
      * @throws DataTrackingException if the response HTTP status is not 200
      * @throws IOException if writing to stream fail
      */
     @Override
-    public DataTrackingResponse send(List<Activity> batch) throws DataTrackingException, IOException {
-        HttpPost post = new HttpPost(options.getDataCollectorUrl());
+    public DataTrackingResponse send(DataTrackingPostRequest request) throws DataTrackingException, IOException {
+        HttpPost post = new HttpPost(request.getUrl());
         post.addHeader("Content-Type", "application/json; charset=utf-8");
+        if(request.getHeaders() != null) {
+            for (Map.Entry<String, String> entry : request.getHeaders()
+                    .entrySet()) {
+                post.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(jsonConverter.serialize(batch)
-                               .getBytes(Charset.forName("UTF-8")));
+        out.write(request.getRawBody()
+                .getBytes(Charset.forName("UTF-8")));
         post.setEntity(new ByteArrayEntity(out.toByteArray()));
 
         RequestConfig config = RequestConfig.custom()
@@ -77,23 +76,14 @@ public class HttpClientDataCollectorConnection implements IDataCollectorConnecti
 
         post.setConfig(config);
 
-        ResponseHandler<DataTrackingResponse> responseHandler = new DataCollectorResponseHandler();
-        DataTrackingResponse response = httpClient.execute(post, responseHandler);
-        if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-            throw new DataTrackingException("Response from Data Collector was not OK", response);
-        } else if(response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
-            // TODO Handle that some activities didn't validate
-            throw new DataTrackingException("Some of the activities could not be validated by Data Collector", response);
-        } else if(response.getResponseCode() != HttpStatus.SC_OK) {
-            throw new DataTrackingException("Unexpected response from Data Collector", response);
-        }
-        return response;
+        ResponseHandler<DataTrackingResponse> responseHandler = new DataTrackingResponseHandler();
+        return httpClient.execute(post, responseHandler);
     }
 
     /**
      * This class handles responses from the data collector
      */
-    private static class DataCollectorResponseHandler implements ResponseHandler<DataTrackingResponse> {
+    private static class DataTrackingResponseHandler implements ResponseHandler<DataTrackingResponse> {
 
         /**
          * This method handles responses from the data collector

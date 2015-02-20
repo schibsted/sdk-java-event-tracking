@@ -11,6 +11,11 @@ public class Defaults {
     public static final String DATA_COLLECTOR_URL = "http://localhost:8002/api/v1/track";
 
     /**
+     * The URL to the anonymous id service
+     */
+    public static final String ANONYMOUS_ID_SERVICE_URL = "http://localhost:8003/api/v1/identify";
+
+    /**
      * The maximum size of the activities queue
      */
     public static final int MAX_QUEUE_SIZE = 10000;

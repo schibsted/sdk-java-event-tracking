@@ -2,10 +2,15 @@ package no.spt.sdk.batch;
 
 import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
-import no.spt.sdk.connection.IDataCollectorConnection;
+import no.spt.sdk.client.DataTrackingPostRequest;
+import no.spt.sdk.client.DataTrackingResponse;
+import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.serializers.ASJsonConverter;
+import no.spt.sdk.serializers.GsonASJsonConverter;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -22,12 +27,13 @@ public class AutomaticBatchSender implements Runnable, ISender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
     private volatile boolean shouldSend;
-    private IDataCollectorConnection client;
+    private IHttpConnection client;
     private volatile CountDownLatch latch;
     private Options options;
     private IErrorCollector errorCollector;
     private final Thread thread;
     private static final Object fileLock = new Object();
+    private ASJsonConverter jsonConverter;
 
     /**
      *
@@ -35,7 +41,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
      * @param client an http client wrapper that handles http connections with data collector
      * @param errorCollector an error collector that collects all exceptions
      */
-    public AutomaticBatchSender(Options options, IDataCollectorConnection client, IErrorCollector errorCollector) {
+    public AutomaticBatchSender(Options options, IHttpConnection client, IErrorCollector errorCollector) {
         this.client = client;
         this.errorCollector = errorCollector;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
@@ -43,6 +49,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
         this.latch = new CountDownLatch(0);
         this.options = options;
         this.thread = new Thread(this);
+        this.jsonConverter = new GsonASJsonConverter();
     }
 
     /**
@@ -101,8 +108,16 @@ public class AutomaticBatchSender implements Runnable, ISender {
         do {
             try {
                 if (current.size() > 0) {
-                    client.send(current);
+                    DataTrackingResponse response = client.send(new DataTrackingPostRequest(options
+                            .getDataCollectorUrl(), null, jsonConverter.serialize(current)));
                     current = new LinkedList<Activity>();
+                    if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
+                        throw new DataTrackingException("Response from Data Collector was not OK", response);
+                    } else if(response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
+                        throw new DataTrackingException("Some of the activities could not be validated by Data Collector", response);
+                    } else if(response.getResponseCode() != HttpStatus.SC_OK) {
+                        throw new DataTrackingException("Unexpected response from Data Collector", response);
+                    }
                 }
                 success = true;
             } catch (IOException e) {

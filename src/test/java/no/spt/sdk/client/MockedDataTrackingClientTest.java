@@ -28,7 +28,7 @@ public class MockedDataTrackingClientTest {
 
     @Before
     public void setUp() throws Exception {
-        options = new Options("http://localhost:8090/", 10000, 1000, 2);
+        options = new Options("http://localhost:8090/", "http://localhost:8091/", 10000, 1000, 2);
         client = new DataTrackingClient.Builder()
                 .withOptions(options)
                 .withActivitySender(sender)
