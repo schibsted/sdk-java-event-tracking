@@ -1,5 +1,9 @@
 package no.spt.sdk.models;
 
+/**
+ * Represents an Activity Streams 2.0 Target
+ *
+ */
 public class Target extends ASObject {
 
     public Target(Builder builder) {

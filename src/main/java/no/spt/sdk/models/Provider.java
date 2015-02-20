@@ -1,5 +1,9 @@
 package no.spt.sdk.models;
 
+/**
+ * Represents an Activity Streams 2.0 Provider
+ *
+ */
 public class Provider extends ASObject {
 
     public Provider(Builder builder) {

@@ -1,5 +1,8 @@
 package no.spt.sdk.models;
 
+/**
+ * This class provides static helper methods for creating Activity Streams 2.0 objects
+ */
 public final class Makers {
 
     private Makers() {}

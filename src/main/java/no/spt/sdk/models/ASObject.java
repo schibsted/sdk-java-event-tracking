@@ -11,6 +11,11 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
+/**
+ * Represents an Activity Streams 2.0 Object
+ *
+ * @see <a href="http://www.w3.org/TR/activitystreams-core/#object">http://www.w3.org/TR/activitystreams-core/#object</a>
+ */
 public class ASObject {
 
     private static final DateFormat ISO_8601_FORMAT =

@@ -6,6 +6,11 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
+/**
+ * Represents an Activity Streams 2.0 Link
+ *
+ * @see <a href="http://www.w3.org/TR/activitystreams-core/#link">http://www.w3.org/TR/activitystreams-core/#link</a>
+ */
 public class Link {
 
     private final Map<String,Object> map;
