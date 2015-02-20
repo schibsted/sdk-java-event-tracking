@@ -17,12 +17,13 @@ public class GsonASJsonConverter implements ASJsonConverter {
                                      .create();
     }
 
+    @Override
     public String serialize(Object object) {
         return gson.toJson(object);
     }
 
-    public String deSerialize(Object object) {
-        return gson.toJsonTree(object).getAsJsonObject();
+    public JsonObject deSerialize(String json) {
+        return gson.fromJson(json, JsonObject.class);
     }
 
     private static class ASObjectTypeConverter implements JsonSerializer<ASObject> {
