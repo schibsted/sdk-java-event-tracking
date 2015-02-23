@@ -35,7 +35,7 @@ public class Example {
 
     Activity activity = activity("Read")
              .publishedNow()
-             .actor(actor("Person", "urn:example:user:abc123")
+             .actor(actor("Person", "urn:spid.no:person:abc123")
                      .displayName("User with ID abc123"))
              .provider(provider("Organization", "urn:example:organization:vg123")
                      .displayName("Example organization"))
