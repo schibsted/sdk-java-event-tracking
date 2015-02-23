@@ -10,8 +10,8 @@ import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.exceptions.LoggingErrorCollector;
-import no.spt.sdk.identity.IIdentityConnector;
 import no.spt.sdk.identity.CachingIdentityConnector;
+import no.spt.sdk.identity.IIdentityConnector;
 import no.spt.sdk.models.Activity;
 
 import java.util.Map;
@@ -287,7 +287,7 @@ public class DataTrackingClient {
     }
 
     /**
-     * Enqueue an activity and force it to be send to the data collector
+     * Enqueue an activity and force it to be sent to the data collector
      *
      * @param activity an activity to enqueue
      */
