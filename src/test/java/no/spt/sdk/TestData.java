@@ -5,11 +5,16 @@ import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static no.spt.sdk.models.Makers.*;
 
 public class TestData {
+
+    private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
     private static final String ACTIVITY_TYPE = "Read";
 
@@ -41,7 +46,7 @@ public class TestData {
                 "\"@context\":[\"http://www.w3.org/ns/activitystreams\",{\"spt\":\"http://schema.schibsted" +
                 ".com/activitystreams\"}]," +
                 "\"@type\":\"" + ACTIVITY_TYPE + "\"," +
-                "\"published\":\"1970-01-01T01:00:00.000+01:00\"," +
+                "\"published\":\"" + ISO_8601_FORMAT.format(new Date(0L)) +"\"," +
                 "\"actor\":{" +
                 "\"@type\":\"" + ACTOR_TYPE + "\"," +
                 "\"@id\":\"" + ACTOR_ID + "\"," +

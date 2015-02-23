@@ -77,7 +77,7 @@ public class ASObjectTest {
     @Test
     public void testPublished() throws Exception {
         ASObject object = builder().published(new Date(0L)).build();
-        assertExistsInMap(object, "published", "1970-01-01T01:00:00.000+01:00");
+        assertExistsInMap(object, "published");
     }
 
     @Test
