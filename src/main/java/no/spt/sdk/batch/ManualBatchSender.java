@@ -9,7 +9,6 @@ import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
-import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
@@ -32,11 +31,11 @@ public class ManualBatchSender implements ISender {
      * @param options options used to configure the behaviour of the sender
      * @param client  an http client wrapper that handles http connections with data collector
      */
-    public ManualBatchSender(Options options, IHttpConnection client) {
+    public ManualBatchSender(Options options, IHttpConnection client, ASJsonConverter jsonConverter) {
         this.client = client;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
         this.options = options;
-        this.jsonConverter = new GsonASJsonConverter();
+        this.jsonConverter = jsonConverter;
     }
 
     /**

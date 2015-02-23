@@ -6,7 +6,7 @@ import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
-import no.spt.sdk.serializers.GsonASJsonConverter;
+import no.spt.sdk.serializers.JacksonASJsonConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,11 +31,13 @@ public class AutomaticDataTrackingClientTest {
     @Before
     public void setup() {
         options = TestData.getDefaultOptions();
+        jsonConverter = new JacksonASJsonConverter();
         client = new DataTrackingClient.Builder()
                 .withOptions(options)
                 .withAutomaticActivitySender()
+                .withJsonConverter(jsonConverter)
                 .build();
-        jsonConverter = new GsonASJsonConverter();
+
     }
 
     @Before
@@ -60,7 +62,7 @@ public class AutomaticDataTrackingClientTest {
     public void testSendingOneActivityManually() throws Exception {
         Activity activity = TestData.getTestActivity();
         client.send(activity);
-        sleep(100);
+        sleep(200);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
                                    .withBody(jsonConverter.serialize(Arrays.asList(activity))), VerificationTimes.exactly(1));
@@ -71,7 +73,7 @@ public class AutomaticDataTrackingClientTest {
         int noActivites = Constants.MAX_BATCH_SIZE + 1;
         trackActivities(noActivites);
         client.send();
-        sleep(100);
+        sleep(200);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8")),
                 VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / Constants.MAX_BATCH_SIZE)));
@@ -82,7 +84,7 @@ public class AutomaticDataTrackingClientTest {
         trackActivities(1000);
         client.send();
         client.close();
-        sleep(100);
+        sleep(200);
         assertEquals(0, client.getQueueDepth());
     }
 

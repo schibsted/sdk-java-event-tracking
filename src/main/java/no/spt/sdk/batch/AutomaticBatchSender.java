@@ -9,7 +9,6 @@ import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
-import no.spt.sdk.serializers.GsonASJsonConverter;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
@@ -41,7 +40,8 @@ public class AutomaticBatchSender implements Runnable, ISender {
      * @param client an http client wrapper that handles http connections with data collector
      * @param errorCollector an error collector that collects all exceptions
      */
-    public AutomaticBatchSender(Options options, IHttpConnection client, IErrorCollector errorCollector) {
+    public AutomaticBatchSender(Options options, IHttpConnection client, IErrorCollector errorCollector,
+                                ASJsonConverter jsonConverter) {
         this.client = client;
         this.errorCollector = errorCollector;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
@@ -49,7 +49,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
         this.latch = new CountDownLatch(0);
         this.options = options;
         this.thread = new Thread(this);
-        this.jsonConverter = new GsonASJsonConverter();
+        this.jsonConverter = jsonConverter;
     }
 
     /**

@@ -3,13 +3,12 @@ package no.spt.sdk.identity;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.JsonObject;
 import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.serializers.GsonASJsonConverter;
+import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
@@ -21,16 +20,16 @@ public class CachingIdentityConnector implements IIdentityConnector {
 
     private Options options;
     private IHttpConnection httpConnection;
-    private GsonASJsonConverter jsonConverter;
+    private ASJsonConverter jsonConverter;
     private static LoadingCache<Map<String, String>, String> cache;
     private static final int CACHE_SIZE = 10000;
     private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
 
 
-    public CachingIdentityConnector(Options options, IHttpConnection httpConnection) {
+    public CachingIdentityConnector(Options options, IHttpConnection httpConnection, ASJsonConverter jsonConverter) {
         this.options = options;
         this.httpConnection = httpConnection;
-        this.jsonConverter = new GsonASJsonConverter();
+        this.jsonConverter = jsonConverter;
         initializeCache();
     }
 
@@ -68,8 +67,8 @@ public class CachingIdentityConnector implements IIdentityConnector {
             throw new DataTrackingException("Unexpected response from Anonymous Identity Service", response);
         }
         try {
-            JsonObject jsonObject = jsonConverter.deSerialize(response.getRawBody());
-            return jsonObject.get("data").getAsJsonObject().get("sessionId").getAsString();
+            Map<String, Object> jsonObject = jsonConverter.deSerialize(response.getRawBody());
+            return ((Map<String, Object>)jsonObject.get("data")).get("sessionId").toString();
         } catch (Exception e) {
             throw new DataTrackingException(e);
         }

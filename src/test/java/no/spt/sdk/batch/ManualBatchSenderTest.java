@@ -36,7 +36,7 @@ public class ManualBatchSenderTest {
     @Before
     public void setUp() throws Exception {
         options = new Options("http://localhost:8090/", "http://localhost:8091/", 1000, 1000, 2);
-        batchSender = new ManualBatchSender(options, dataCollectorConnector);
+        batchSender = new ManualBatchSender(options, dataCollectorConnector, jsonConverter);
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(200, null, "OK"));
     }
 
@@ -157,7 +157,7 @@ public class ManualBatchSenderTest {
         batchSender.flush();
     }
 
-    private DataTrackingPostRequest asRequest(List<Activity> activities){
+    private DataTrackingPostRequest asRequest(List<Activity> activities) throws IOException {
         return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize(activities));
     }
 

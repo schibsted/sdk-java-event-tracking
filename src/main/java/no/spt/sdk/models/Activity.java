@@ -1,8 +1,6 @@
 package no.spt.sdk.models;
 
 
-import com.google.gson.annotations.SerializedName;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,9 +15,7 @@ public class Activity {
 
     private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
-    @SerializedName("@context")
     private List<Object> context;
-    @SerializedName("@type")
     private String type;
     private String published;
     private ASObject actor;

@@ -6,6 +6,7 @@ import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.IHttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.serializers.JacksonASJsonConverter;
 import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class CachingIdentityConnectorTest {
     @Before
     public void setUp() throws Exception {
         Options options = TestData.getDefaultOptions();
-        identityConnector = new CachingIdentityConnector(options, httpConnection);
+        identityConnector = new CachingIdentityConnector(options, httpConnection, new JacksonASJsonConverter());
     }
 
     @After

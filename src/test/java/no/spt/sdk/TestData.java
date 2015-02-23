@@ -5,6 +5,7 @@ import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,7 +138,7 @@ public class TestData {
     }
 
 
-    public static DataTrackingPostRequest getTestDataTrackingPostRequest(Options options) {
+    public static DataTrackingPostRequest getTestDataTrackingPostRequest(Options options) throws IOException {
         return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize
                 (getTestActivity()));
     }

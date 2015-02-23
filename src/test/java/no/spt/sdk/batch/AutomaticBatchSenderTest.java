@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -39,7 +38,7 @@ public class AutomaticBatchSenderTest {
     @Before
     public void setUp() throws Exception {
         options = TestData.getDefaultOptions();
-        batchSender = new AutomaticBatchSender(options, dataCollectorConnector, errorCollector);
+        batchSender = new AutomaticBatchSender(options, dataCollectorConnector, errorCollector, jsonConverter);
         batchSender.init();
     }
 
@@ -54,11 +53,11 @@ public class AutomaticBatchSenderTest {
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
                 (200, null, "OK"));
         batchSender.enqueue(activity);
-        sleep(100);
+        sleep(200);
         assertEquals(0, batchSender.getQueueDepth());
 
         batchSender.enqueue(activity);
-        sleep(100);
+        sleep(200);
         assertEquals(0, batchSender.getQueueDepth());
     }
 
@@ -70,7 +69,7 @@ public class AutomaticBatchSenderTest {
         for (int i = 0; i <= Constants.MAX_BATCH_SIZE; i++) {
             batchSender.enqueue(activity);
         }
-        sleep(100);
+        sleep(200);
         assertEquals(0, batchSender.getQueueDepth());
 
         verify(dataCollectorConnector, times(2)).send(any(DataTrackingPostRequest.class));
@@ -93,7 +92,7 @@ public class AutomaticBatchSenderTest {
                 (200, null, "OK"));
         batchSender.enqueue(activity);
         batchSender.flush();
-        sleep(100);
+        sleep(200);
         assertEquals(0, batchSender.getQueueDepth());
     }
 
@@ -114,7 +113,7 @@ public class AutomaticBatchSenderTest {
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
                 (400, null, "Not OK"));
         batchSender.enqueue(activity);
-        sleep(100);
+        sleep(200);
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
     }
 
@@ -124,7 +123,7 @@ public class AutomaticBatchSenderTest {
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
                 (207, null, "Not OK"));
         batchSender.enqueue(activity);
-        sleep(100);
+        sleep(200);
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
     }
 
@@ -134,7 +133,7 @@ public class AutomaticBatchSenderTest {
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
                 (409, null, "Unexpected error"));
         batchSender.enqueue(activity);
-        sleep(100);
+        sleep(200);
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
     }
 
@@ -160,7 +159,4 @@ public class AutomaticBatchSenderTest {
         }
     }
 
-    private DataTrackingPostRequest asRequest(List<Activity> activities) {
-        return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize(activities));
-    }
 }

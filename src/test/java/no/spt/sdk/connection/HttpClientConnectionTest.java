@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class HttpClientConnectionTest {
         connection.close();
     }
 
-    private DataTrackingPostRequest asRequest(List<Activity> activities){
+    private DataTrackingPostRequest asRequest(List<Activity> activities) throws IOException {
         return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize(activities));
     }
 }

@@ -8,13 +8,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 
-public class GsonASJsonConverterTest {
+public class JacksonASJsonConverterTest {
 
     ASJsonConverter jsonConverter;
 
     @Before
     public void setup() {
-        jsonConverter = new GsonASJsonConverter();
+        jsonConverter = new JacksonASJsonConverter();
     }
 
     @Test
@@ -28,5 +28,4 @@ public class GsonASJsonConverterTest {
         JSONAssert.assertEquals(TestData.createLinkAsJsonString(), jsonConverter.serialize(TestData
                 .createLink()), false);
     }
-
 }

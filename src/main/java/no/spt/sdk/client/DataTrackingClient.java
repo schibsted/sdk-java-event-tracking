@@ -13,6 +13,8 @@ import no.spt.sdk.exceptions.LoggingErrorCollector;
 import no.spt.sdk.identity.CachingIdentityConnector;
 import no.spt.sdk.identity.IIdentityConnector;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.serializers.ASJsonConverter;
+import no.spt.sdk.serializers.JacksonASJsonConverter;
 
 import java.util.Map;
 
@@ -47,15 +49,7 @@ public class DataTrackingClient {
         private IErrorCollector errorCollector;
         private ActivitySenderType activitySenderType;
         private IIdentityConnector identityConnector;
-
-        /**
-         * Sets the {@link no.spt.sdk.Options} to use for the client
-         *
-         * @param options the {@link no.spt.sdk.Options} to use
-         */
-        public void setOptions(Options options){
-            this.options = options;
-        }
+        private ASJsonConverter jsonConverter;
 
         /**
          * Sets the {@link no.spt.sdk.Options} to use for the client
@@ -64,7 +58,7 @@ public class DataTrackingClient {
          * @return This instance (for method chaining)
          */
         public Builder withOptions(Options options) {
-            setOptions(options);
+            this.options = options;
             return this;
         }
 
@@ -76,15 +70,6 @@ public class DataTrackingClient {
          */
         public Options getOptions() {
             return this.options;
-        }
-
-        /**
-         * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector.
-         *
-         * @param activitySender The {@link no.spt.sdk.batch.ISender} to use
-         */
-        public void setActivitySender(ISender activitySender){
-            this.activitySender = activitySender;
         }
 
         /**
@@ -124,19 +109,10 @@ public class DataTrackingClient {
          * Sets the {@link no.spt.sdk.connection.IHttpConnection} that will be used for HTTP communication.
          *
          * @param httpConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
-         */
-        public void setHttpConnection(IHttpConnection httpConnection){
-            this.httpConnection = httpConnection;
-        }
-
-        /**
-         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that will be used for HTTP communication.
-         *
-         * @param dataCollectorConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
          * @return This instance (for method chaining)
          */
-        public Builder withDataCollectorConnection(IHttpConnection dataCollectorConnection) {
-            setHttpConnection(dataCollectorConnection);
+        public Builder withHttpConnection(IHttpConnection httpConnection) {
+            this.httpConnection = httpConnection;
             return this;
         }
 
@@ -152,16 +128,6 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.exceptions.IErrorCollector} to use for collecting errors that occur when sending
-         * activities to the data collector.
-         *
-         * @param errorCollector The {@link no.spt.sdk.exceptions.IErrorCollector} to use.
-         */
-        public void setErrorCollector(IErrorCollector errorCollector){
-            this.errorCollector = errorCollector;
-        }
-
-        /**
          * Sets the {@link no.spt.sdk.exceptions.IErrorCollector} to use for collecting errors that occur while sending
          * activities to the data collector.
          *
@@ -169,7 +135,7 @@ public class DataTrackingClient {
          * @return This instance (for method chaining)
          */
         public Builder withErrorCollector(IErrorCollector errorCollector) {
-            setErrorCollector(errorCollector);
+            this.errorCollector = errorCollector;
             return this;
         }
 
@@ -188,20 +154,10 @@ public class DataTrackingClient {
          * Identity Service
          *
          * @param identityConnector The {@link no.spt.sdk.identity.IIdentityConnector} to use
-         */
-        public void setIdentityConnector(IIdentityConnector identityConnector) {
-            this.identityConnector = identityConnector;
-        }
-
-        /**
-         * Set the {@link no.spt.sdk.identity.IIdentityConnector} to use for getting anonymous IDs from the Anonymous
-         * Identity Service
-         *
-         * @param identityConnector The {@link no.spt.sdk.identity.IIdentityConnector} to use
          * @return This instance (for method chaining)
          */
         public Builder withIdentityConnector(IIdentityConnector identityConnector) {
-            setIdentityConnector(identityConnector);
+            this.identityConnector = identityConnector;
             return this;
         }
 
@@ -213,6 +169,27 @@ public class DataTrackingClient {
          */
         public IIdentityConnector getIdentityConnector(){
             return identityConnector;
+        }
+
+        /**
+         * Set the {@link no.spt.sdk.serializers.ASJsonConverter} to use for serializing/deserializing json
+         *
+         * @param jsonConverter The {@link no.spt.sdk.serializers.ASJsonConverter} to use
+         * @return This instance (for method chaining)
+         */
+        public Builder withJsonConverter(ASJsonConverter jsonConverter) {
+            this.jsonConverter = jsonConverter;
+            return this;
+        }
+
+        /**
+         * Gets the {@link no.spt.sdk.serializers.ASJsonConverter} this builder is currently configured to use for
+         * serializing/deserializing json
+         *
+         * @return The {@link no.spt.sdk.serializers.ASJsonConverter} to use
+         */
+        public ASJsonConverter getJsonConverter() {
+            return jsonConverter;
         }
 
         /**
@@ -231,13 +208,16 @@ public class DataTrackingClient {
             if (errorCollector == null) {
                 errorCollector = new LoggingErrorCollector();
             }
+            if(jsonConverter == null) {
+                this.jsonConverter = new JacksonASJsonConverter();
+            }
             if(identityConnector == null) {
-                this.identityConnector = new CachingIdentityConnector(options, httpConnection);
+                this.identityConnector = new CachingIdentityConnector(options, httpConnection, jsonConverter);
             }
             if(ActivitySenderType.MANUAL_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new ManualBatchSender(options, httpConnection);
+                activitySender = new ManualBatchSender(options, httpConnection, jsonConverter);
             } else if (activitySender == null || ActivitySenderType.AUTOMATIC_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector);
+                activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector, jsonConverter);
             }
             this.activitySender.init();
 

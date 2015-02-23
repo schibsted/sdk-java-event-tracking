@@ -31,11 +31,13 @@ public class ManualDataTrackingClientTest {
     @Before
     public void setup() {
         options = new Options("http://localhost:8090/", "http://localhost:8091/", 10000, 1000, 2);
+        jsonConverter = new GsonASJsonConverter();
         client = new DataTrackingClient.Builder()
                 .withOptions(options)
                 .withManualActivitySender()
+                .withJsonConverter(jsonConverter)
                 .build();
-        jsonConverter = new GsonASJsonConverter();
+
     }
 
     @Before
