@@ -155,11 +155,13 @@ public class AutomaticBatchSender implements Runnable, ISender {
      */
     @Override
     public void enqueue(Activity activity) throws DataTrackingException {
-        int maxQueueSize = options.getMaxQueueSize();
-        int currentQueueSize = activityQueue.size();
-
-        if (currentQueueSize <= maxQueueSize) {
-            this.activityQueue.add(activity);
+        if (activityQueue.size() <= options.getMaxQueueSize()) {
+            synchronized (fileLock) {
+                if (latch.getCount() == 0) {
+                    latch = new CountDownLatch(1);
+                }
+                this.activityQueue.add(activity);
+            }
         } else {
             throw new DataTrackingException("Queue has reached maxSize, dropping activity.");
         }
