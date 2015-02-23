@@ -135,8 +135,10 @@ public class AutomaticBatchSender implements Runnable, ISender {
     }
 
     /**
-     * Blocks until all activities are sent
-     * @throws DataTrackingException when interrupted while waiting
+     * Sends all activities in the queue to the data collector.
+     * Blocks until all activities are sent, maximum 2 minutes.
+     *
+     * @throws DataTrackingException If interrupted while waiting
      */
     @Override
     public void flush() throws DataTrackingException {

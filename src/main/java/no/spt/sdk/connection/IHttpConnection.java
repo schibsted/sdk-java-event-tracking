@@ -6,8 +6,24 @@ import no.spt.sdk.exceptions.DataTrackingException;
 
 import java.io.IOException;
 
+/**
+ * The IHttpConnection is responsible for HTTP communication.
+ */
 public interface IHttpConnection {
-    DataTrackingResponse send(DataTrackingPostRequest request) throws DataTrackingException, IOException;
 
+    /**
+     * Sends a {@link no.spt.sdk.client.DataTrackingPostRequest}
+     *
+     * @param request The request to send
+     * @return A {@link no.spt.sdk.client.DataTrackingResponse}
+     * @throws IOException If sending fails
+     */
+    DataTrackingResponse send(DataTrackingPostRequest request) throws IOException;
+
+    /**
+     * Closes the connection
+     *
+     * @throws DataTrackingException If connection cannot be closed
+     */
     void close() throws DataTrackingException;
 }

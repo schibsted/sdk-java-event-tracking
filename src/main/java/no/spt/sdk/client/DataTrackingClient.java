@@ -316,6 +316,13 @@ public class DataTrackingClient {
         return this.activitySender.getQueueDepth();
     }
 
+    /**
+     * Takes a {@link java.util.Map} of identifiers and returns a unique ID based on those identifiers
+     *
+     * @param identifiers A Map of identifiers
+     * @return A unique ID based on the provided identifiers
+     * @throws DataTrackingException If an ID could not be created
+     */
     public String getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
         return identityConnector.getAnonymousId(identifiers);
     }

@@ -3,15 +3,16 @@ package no.spt.sdk.client;
 import java.util.Map;
 
 /**
- * A response from the data collector
+ * An HTTP response representation
  */
 public class DataTrackingResponse {
 
-    private Map<String, String> headers;
-    private int responseCode;
-    private String rawBody;
+    private final Map<String, String> headers;
+    private final int responseCode;
+    private final String rawBody;
 
     /**
+     * Constructs a new DataTrackingResponse
      *
      * @param responseCode the HTTP status code of the response
      * @param headers the HTTP headers of the response
@@ -40,8 +41,8 @@ public class DataTrackingResponse {
     }
 
     /**
-     * Return the HTTP body of the response
-     * @return the HTTP body of the response
+     * Return the body of the request response
+     * @return the body of the response
      */
     public String getRawBody() {
         return rawBody;

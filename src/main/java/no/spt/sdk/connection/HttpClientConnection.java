@@ -20,7 +20,8 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * The DataCollectorConnector wraps an HTTP client and is responsible for the HTTP connections with the data collector.
+ * The HttpClientConnection wraps a {@link org.apache.http.impl.client.CloseableHttpClient} and is responsible for
+ * HTTP connections.
  */
 public class HttpClientConnection implements IHttpConnection {
 
@@ -29,6 +30,7 @@ public class HttpClientConnection implements IHttpConnection {
 
     /**
      * Constructs a DataCollectorConnector using the provided options
+     *
      * @param options The options used to configure the connector
      */
     public HttpClientConnection(Options options) {
@@ -38,7 +40,7 @@ public class HttpClientConnection implements IHttpConnection {
     /**
      * Constructor used primarily for testing
      *
-     * @param options The options used to configure the connector
+     * @param options    The options used to configure the connector
      * @param httpClient The httpClient to use for communication with the data collector
      */
     protected HttpClientConnection(Options options, CloseableHttpClient httpClient) {
@@ -47,17 +49,16 @@ public class HttpClientConnection implements IHttpConnection {
     }
 
     /**
-     * Method used to send a batch of activities to the data collector
-
-     * @return the response from the data collector
-     * @throws DataTrackingException if the response HTTP status is not 200
-     * @throws IOException if writing to stream fail
+     * Sends a {@link no.spt.sdk.client.DataTrackingPostRequest}
+     *
+     * @return a {@link no.spt.sdk.client.DataTrackingResponse}
+     * @throws IOException If sending fails
      */
     @Override
-    public DataTrackingResponse send(DataTrackingPostRequest request) throws DataTrackingException, IOException {
+    public DataTrackingResponse send(DataTrackingPostRequest request) throws IOException {
         HttpPost post = new HttpPost(request.getUrl());
         post.addHeader("Content-Type", "application/json; charset=utf-8");
-        if(request.getHeaders() != null) {
+        if (request.getHeaders() != null) {
             for (Map.Entry<String, String> entry : request.getHeaders()
                     .entrySet()) {
                 post.addHeader(entry.getKey(), entry.getValue());
@@ -69,10 +70,10 @@ public class HttpClientConnection implements IHttpConnection {
         post.setEntity(new ByteArrayEntity(out.toByteArray()));
 
         RequestConfig config = RequestConfig.custom()
-                                            .setSocketTimeout(options.getTimeout())
-                                            .setConnectTimeout(options.getTimeout())
-                                            .setConnectionRequestTimeout(options.getTimeout())
-                                            .build();
+                .setSocketTimeout(options.getTimeout())
+                .setConnectTimeout(options.getTimeout())
+                .setConnectionRequestTimeout(options.getTimeout())
+                .build();
 
         post.setConfig(config);
 
@@ -81,27 +82,9 @@ public class HttpClientConnection implements IHttpConnection {
     }
 
     /**
-     * This class handles responses from the data collector
-     */
-    private static class DataTrackingResponseHandler implements ResponseHandler<DataTrackingResponse> {
-
-        /**
-         * This method handles responses from the data collector
-         * @param response the HTTP response from the data collector
-         * @return a DataTrackingResponse
-         * @throws IOException if the HTTP entity cannot be converted to a String
-         */
-        public DataTrackingResponse handleResponse(final HttpResponse response) throws IOException {
-            int status = response.getStatusLine()
-                                 .getStatusCode();
-            HttpEntity entity = response.getEntity();
-            return new DataTrackingResponse(status, null, EntityUtils.toString(entity));
-        }
-    }
-
-    /**
-     * This method closes the DataCollectorConnector
-     * @throws DataTrackingException if the HTTP client cannot be closed
+     * Closes the CloseableHttpClient
+     *
+     * @throws DataTrackingException if the CloseableHttpClient cannot be closed
      */
     @Override
     public void close() throws DataTrackingException {
@@ -109,6 +92,26 @@ public class HttpClientConnection implements IHttpConnection {
             httpClient.close();
         } catch (IOException e) {
             throw new DataTrackingException(e);
+        }
+    }
+
+    /**
+     * Response handler for the HTTP client
+     */
+    private static class DataTrackingResponseHandler implements ResponseHandler<DataTrackingResponse> {
+
+        /**
+         * Response handler for the HTTP client
+         *
+         * @param response the HTTP response
+         * @return a DataTrackingResponse
+         * @throws IOException if the HTTP entity cannot be converted to a String
+         */
+        public DataTrackingResponse handleResponse(final HttpResponse response) throws IOException {
+            int status = response.getStatusLine()
+                    .getStatusCode();
+            HttpEntity entity = response.getEntity();
+            return new DataTrackingResponse(status, null, EntityUtils.toString(entity));
         }
     }
 

@@ -10,6 +10,7 @@ public interface ISender {
 
     /**
      * A method that sends all activities in the queue to the data collector
+     *
      * @throws DataTrackingException
      */
     public void flush() throws DataTrackingException;
@@ -17,20 +18,23 @@ public interface ISender {
     /**
      * Enqueue an activity to be sent to the data collector.
      * If the queue is full, the activity will be dropped
-     * @param activity an activity to enqueue
-     * @throws DataTrackingException if the queue has reached it's max size
+     *
+     * @param activity An activity to enqueue
+     * @throws DataTrackingException If the queue has reached it's max size
      */
     public void enqueue(Activity activity) throws DataTrackingException;
 
     /**
-     * This method closes the sender
-     * @throws DataTrackingException if http client cannot be closed
+     * Closes the sender
+     *
+     * @throws DataTrackingException If http client cannot be closed
      */
     public void close() throws DataTrackingException;
 
     /**
-     * This method returns the current queue depth
-     * @return the current queue depth
+     * Returns the current queue depth
+     *
+     * @return The current queue depth
      */
     public int getQueueDepth();
 

@@ -39,6 +39,12 @@ public class ManualBatchSender implements ISender {
         this.jsonConverter = new GsonASJsonConverter();
     }
 
+    /**
+     * Sends all activities in the queue to the data collector.
+     * Blocks until all activities are sent.
+     *
+     * @throws DataTrackingException If something goes wrong while sending activities
+     */
     @Override
     public void flush() throws DataTrackingException {
         do {
