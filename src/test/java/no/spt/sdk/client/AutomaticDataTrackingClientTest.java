@@ -60,7 +60,7 @@ public class AutomaticDataTrackingClientTest {
     public void testSendingOneActivityManually() throws Exception {
         Activity activity = TestData.getTestActivity();
         client.send(activity);
-        sleep(500);
+        sleep(100);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
                                    .withBody(jsonConverter.serialize(Arrays.asList(activity))), VerificationTimes.exactly(1));
@@ -71,7 +71,7 @@ public class AutomaticDataTrackingClientTest {
         int noActivites = Constants.MAX_BATCH_SIZE + 1;
         trackActivities(noActivites);
         client.send();
-        sleep(500);
+        sleep(100);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8")),
                 VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / Constants.MAX_BATCH_SIZE)));
@@ -82,7 +82,7 @@ public class AutomaticDataTrackingClientTest {
         trackActivities(1000);
         client.send();
         client.close();
-        sleep(500);
+        sleep(100);
         assertEquals(0, client.getQueueDepth());
     }
 

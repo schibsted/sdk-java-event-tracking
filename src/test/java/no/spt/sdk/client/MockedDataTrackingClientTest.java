@@ -5,6 +5,7 @@ import no.spt.sdk.TestData;
 import no.spt.sdk.batch.ISender;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.IErrorCollector;
+import no.spt.sdk.identity.IIdentityConnector;
 import no.spt.sdk.models.Activity;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +14,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,6 +27,8 @@ public class MockedDataTrackingClientTest {
     private IErrorCollector errorCollector;
     @Mock
     private ISender sender;
+    @Mock
+    private IIdentityConnector identityConnector;
     private DataTrackingClient client;
     private Options options;
 
@@ -33,6 +39,7 @@ public class MockedDataTrackingClientTest {
                 .withOptions(options)
                 .withActivitySender(sender)
                 .withErrorCollector(errorCollector)
+                .withIdentityConnector(identityConnector)
                 .build();
     }
 
@@ -63,6 +70,12 @@ public class MockedDataTrackingClientTest {
         doThrow(new DataTrackingException("An error occurred")).when(sender).close();
         client.close();
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
+    }
+
+    @Test
+    public void testGetAnonymousId() throws DataTrackingException {
+        when(identityConnector.getAnonymousId(any(Map.class))).thenReturn("id123");
+        assertEquals("id123", client.getAnonymousId(TestData.getAnonymousIdIdentifiers()));
     }
 
 }

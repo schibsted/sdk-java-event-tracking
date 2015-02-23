@@ -8,7 +8,9 @@ import no.spt.sdk.serializers.GsonASJsonConverter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import static no.spt.sdk.models.Makers.*;
 
@@ -138,5 +140,11 @@ public class TestData {
     public static DataTrackingPostRequest getTestDataTrackingPostRequest(Options options) {
         return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize
                 (getTestActivity()));
+    }
+
+    public static Map<String, String> getAnonymousIdIdentifiers(){
+        Map<String, String> identifier = new HashMap<String, String>();
+        identifier.put("SomeKey", "SomeValue");
+        return identifier;
     }
 }

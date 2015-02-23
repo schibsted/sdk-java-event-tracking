@@ -131,6 +131,32 @@ public class ManualBatchSenderTest {
         assertEquals(0, batchSender.getQueueDepth());
     }
 
+
+    @Test(expected = DataTrackingException.class)
+    public void testHttpConnectionReturnsBadRequest() throws Exception {
+        Activity activity = TestData.getTestActivity();
+        when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(400, null, "Not OK"));
+        batchSender.enqueue(activity);
+        batchSender.flush();
+    }
+
+    @Test(expected = DataTrackingException.class)
+    public void testHttpConnectionReturnsMultiStatus() throws Exception {
+        Activity activity = TestData.getTestActivity();
+        when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(207, null, "Not OK"));
+        batchSender.enqueue(activity);
+        batchSender.flush();
+    }
+
+    @Test(expected = DataTrackingException.class)
+    public void testHttpConnectionReturnsUnexpectedResponse() throws Exception {
+        Activity activity = TestData.getTestActivity();
+        when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
+                (409, null, "Unexpected error"));
+        batchSender.enqueue(activity);
+        batchSender.flush();
+    }
+
     private DataTrackingPostRequest asRequest(List<Activity> activities){
         return new DataTrackingPostRequest(options.getDataCollectorUrl(), null, jsonConverter.serialize(activities));
     }
