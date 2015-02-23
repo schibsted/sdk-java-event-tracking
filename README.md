@@ -1,4 +1,5 @@
 # data-collector-sdk-java
+[![Build Status](https://travis-ci.org/schibsted/sdk-java-event-tracking.svg)](https://travis-ci.org/schibsted/sdk-java-event-tracking)
 
 A Java client for the Data Collector API
 
