@@ -125,7 +125,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
                 success = false;
             }
         }
-        while (!success && retryCount < options.getRetries());
+        while (!success && retryCount <= options.getRetries());
 
         if (!success) {
             throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on this" +
