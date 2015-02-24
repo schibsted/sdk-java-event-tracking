@@ -16,6 +16,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A connection to the Anonymous Identity Service used to get anonymous IDs that caches fetched IDs.
+ *
+ */
 public class CachingIdentityConnector implements IIdentityConnector {
 
     private Options options;
