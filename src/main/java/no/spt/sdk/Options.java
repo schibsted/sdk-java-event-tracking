@@ -15,11 +15,12 @@ public class Options {
      * Constructs an Option with the provided settings
      *
      * @param dataCollectorUrl the url to the data collector endpoint
+     * @param anonymousIdUrl   the url to the anonymous identity service endpoint
      * @param maxQueueSize     the maximum size of the activity queue waiting to be sent to the data collector
      * @param timeout          the amount of milliseconds before a request is marked as timed out
      * @param retries          the amount of times to retry the request
      */
-    public Options(final String dataCollectorUrl, final String anonymousIdUrl, final int maxQueueSize, final int timeout, final int retries) {
+    public Options(String dataCollectorUrl, String anonymousIdUrl, int maxQueueSize, int timeout, int retries) {
         setDataCollectorUrl(dataCollectorUrl);
         setAnonymousIdUrl(anonymousIdUrl);
         setMaxQueueSize(maxQueueSize);
@@ -47,6 +48,11 @@ public class Options {
         return anonymousIdUrl;
     }
 
+    /**
+     * Sets the anonymous identity service endpoint
+     *
+     * @param anonymousIdUrl
+     */
     public void setAnonymousIdUrl(String anonymousIdUrl) {
         if(anonymousIdUrl == null || anonymousIdUrl.equals("")) {
             throw new IllegalArgumentException("Data-collector-sdk#options#anonymousIdUrl must be a valid url.");
