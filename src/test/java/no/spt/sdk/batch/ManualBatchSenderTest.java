@@ -101,7 +101,6 @@ public class ManualBatchSenderTest {
     @Test
      public void testConnectorThrowsOneException() throws Exception {
         Activity activity = TestData.getTestActivity();
-        options.setRetries(2);
         when(dataCollectorConnector.send(asRequest(Arrays.asList(activity)))).thenThrow(new IOException())
                                                                   .thenReturn(new DataTrackingResponse(200, null,
                                                                           null));
