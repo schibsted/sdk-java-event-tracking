@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.Map;
 
+import static no.spt.sdk.models.Makers.object;
 import static org.junit.Assert.*;
 
 public class ASObjectTest {
@@ -109,7 +110,7 @@ public class ASObjectTest {
     }
 
     private static ASObject.Builder builder() {
-        return new ASObject.Builder(OBJECT_TYPE, OBJECT_ID);
+        return object(OBJECT_TYPE, OBJECT_ID);
     }
 
 }

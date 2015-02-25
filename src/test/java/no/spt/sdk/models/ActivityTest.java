@@ -21,4 +21,5 @@ public class ActivityTest {
         assertEquals("objectType", activity.getObject().getMap().get("@type"));
         assertEquals("objectId", activity.getObject().getMap().get("@id"));
     }
+
 }
