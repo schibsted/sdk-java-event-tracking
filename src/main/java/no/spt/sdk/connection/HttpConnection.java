@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * The IHttpConnection is responsible for HTTP communication.
  */
-public interface IHttpConnection {
+public interface HttpConnection {
 
     /**
      * Sends a {@link no.spt.sdk.client.DataTrackingPostRequest}

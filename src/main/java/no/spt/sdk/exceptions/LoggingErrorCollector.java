@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 /**
  * A class that collects errors and uses {@link java.util.logging.Logger} to log collected errors
  */
-public class LoggingErrorCollector implements IErrorCollector {
+public class LoggingErrorCollector implements ErrorCollector {
 
     private static final int MAX_ERROR_QUEUE_SIZE = 10000;
 

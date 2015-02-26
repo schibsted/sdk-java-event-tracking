@@ -3,15 +3,15 @@ package no.spt.sdk.client;
 
 import no.spt.sdk.Options;
 import no.spt.sdk.batch.AutomaticBatchSender;
-import no.spt.sdk.batch.ISender;
 import no.spt.sdk.batch.ManualBatchSender;
+import no.spt.sdk.batch.Sender;
 import no.spt.sdk.connection.HttpClientConnection;
-import no.spt.sdk.connection.IHttpConnection;
+import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.exceptions.IErrorCollector;
+import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.LoggingErrorCollector;
 import no.spt.sdk.identity.CachingIdentityConnector;
-import no.spt.sdk.identity.IIdentityConnector;
+import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.JacksonASJsonConverter;
@@ -28,9 +28,9 @@ import static no.spt.sdk.Defaults.*;
 public class DataTrackingClient {
 
     private final Options options;
-    private final ISender activitySender;
-    private final IErrorCollector errorCollector;
-    private final IIdentityConnector identityConnector;
+    private final Sender activitySender;
+    private final ErrorCollector errorCollector;
+    private final IdentityConnector identityConnector;
 
     /**
      * Builder for instantiating DataTrackingClients.
@@ -44,11 +44,11 @@ public class DataTrackingClient {
     public static class Builder {
 
         private Options options;
-        private ISender activitySender;
-        private IHttpConnection httpConnection;
-        private IErrorCollector errorCollector;
+        private Sender activitySender;
+        private HttpConnection httpConnection;
+        private ErrorCollector errorCollector;
         private ActivitySenderType activitySenderType;
-        private IIdentityConnector identityConnector;
+        private IdentityConnector identityConnector;
         private ASJsonConverter jsonConverter;
 
         /**
@@ -73,18 +73,18 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector.
+         * Sets the {@link no.spt.sdk.batch.Sender} that will use to send activities to the data collector.
          *
-         * @param activitySender The {@link no.spt.sdk.batch.ISender} to use
+         * @param activitySender The {@link no.spt.sdk.batch.Sender} to use
          * @return This instance (for method chaining)
          */
-        public Builder withActivitySender(ISender activitySender){
+        public Builder withActivitySender(Sender activitySender){
             this.activitySender = activitySender;
             return this;
         }
 
         /**
-         * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector to
+         * Sets the {@link no.spt.sdk.batch.Sender} that will use to send activities to the data collector to
          * {@link no.spt.sdk.batch.ManualBatchSender}.
          *
          * @return This instance (for method chaining)
@@ -95,7 +95,7 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.batch.ISender} that will use to send activities to the data collector to
+         * Sets the {@link no.spt.sdk.batch.Sender} that will use to send activities to the data collector to
          * {@link no.spt.sdk.batch.AutomaticBatchSender}.
          *
          * @return This instance (for method chaining)
@@ -106,68 +106,68 @@ public class DataTrackingClient {
         }
 
         /**
-         * Sets the {@link no.spt.sdk.connection.IHttpConnection} that will be used for HTTP communication.
+         * Sets the {@link no.spt.sdk.connection.HttpConnection} that will be used for HTTP communication.
          *
-         * @param httpConnection The {@link no.spt.sdk.connection.IHttpConnection} to use
+         * @param httpConnection The {@link no.spt.sdk.connection.HttpConnection} to use
          * @return This instance (for method chaining)
          */
-        public Builder withHttpConnection(IHttpConnection httpConnection) {
+        public Builder withHttpConnection(HttpConnection httpConnection) {
             this.httpConnection = httpConnection;
             return this;
         }
 
         /**
-         * Gets the {@link no.spt.sdk.connection.IHttpConnection} this builder is currently configured to use
+         * Gets the {@link no.spt.sdk.connection.HttpConnection} this builder is currently configured to use
          * for HTTP communication
          * If null, {@link no.spt.sdk.connection.HttpClientConnection} will be used instead.
          *
-         * @return The {@link no.spt.sdk.connection.IHttpConnection} to use
+         * @return The {@link no.spt.sdk.connection.HttpConnection} to use
          */
-        public IHttpConnection getHttpConnection() {
+        public HttpConnection getHttpConnection() {
             return this.httpConnection;
         }
 
         /**
-         * Sets the {@link no.spt.sdk.exceptions.IErrorCollector} to use for collecting errors that occur while sending
+         * Sets the {@link no.spt.sdk.exceptions.ErrorCollector} to use for collecting errors that occur while sending
          * activities to the data collector.
          *
-         * @param errorCollector The {@link no.spt.sdk.exceptions.IErrorCollector} to use.
+         * @param errorCollector The {@link no.spt.sdk.exceptions.ErrorCollector} to use.
          * @return This instance (for method chaining)
          */
-        public Builder withErrorCollector(IErrorCollector errorCollector) {
+        public Builder withErrorCollector(ErrorCollector errorCollector) {
             this.errorCollector = errorCollector;
             return this;
         }
 
         /**
-         * Gets the {@link no.spt.sdk.exceptions.IErrorCollector} this builder is currently configured to use for
+         * Gets the {@link no.spt.sdk.exceptions.ErrorCollector} this builder is currently configured to use for
          * collecting errors that occur while sending activities to the data collector.
          *
-         * @return The {@link no.spt.sdk.exceptions.IErrorCollector} to use.
+         * @return The {@link no.spt.sdk.exceptions.ErrorCollector} to use.
          */
-        public IErrorCollector getErrorCollector() {
+        public ErrorCollector getErrorCollector() {
             return this.errorCollector;
         }
 
         /**
-         * Set the {@link no.spt.sdk.identity.IIdentityConnector} to use for getting anonymous IDs from the Anonymous
+         * Set the {@link no.spt.sdk.identity.IdentityConnector} to use for getting anonymous IDs from the Anonymous
          * Identity Service
          *
-         * @param identityConnector The {@link no.spt.sdk.identity.IIdentityConnector} to use
+         * @param identityConnector The {@link no.spt.sdk.identity.IdentityConnector} to use
          * @return This instance (for method chaining)
          */
-        public Builder withIdentityConnector(IIdentityConnector identityConnector) {
+        public Builder withIdentityConnector(IdentityConnector identityConnector) {
             this.identityConnector = identityConnector;
             return this;
         }
 
         /**
-         * Gets the {@link no.spt.sdk.identity.IIdentityConnector} this builder is currently configured to use for
+         * Gets the {@link no.spt.sdk.identity.IdentityConnector} this builder is currently configured to use for
          * getting anonymous IDs from the Anonymous Identity Service
          *
-         * @return The {@link no.spt.sdk.identity.IIdentityConnector} to use
+         * @return The {@link no.spt.sdk.identity.IdentityConnector} to use
          */
-        public IIdentityConnector getIdentityConnector(){
+        public IdentityConnector getIdentityConnector(){
             return identityConnector;
         }
 

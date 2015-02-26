@@ -5,7 +5,7 @@ import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.IHttpConnection;
+import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * A sender that you manually have to flush to send activities from the queue to the data collector
  */
-public class ManualBatchSender implements ISender {
+public class ManualBatchSender implements Sender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
-    private IHttpConnection client;
+    private HttpConnection client;
     private Options options;
     private ASJsonConverter jsonConverter;
 
@@ -31,7 +31,7 @@ public class ManualBatchSender implements ISender {
      * @param options options used to configure the behaviour of the sender
      * @param client  an http client wrapper that handles http connections with data collector
      */
-    public ManualBatchSender(Options options, IHttpConnection client, ASJsonConverter jsonConverter) {
+    public ManualBatchSender(Options options, HttpConnection client, ASJsonConverter jsonConverter) {
         this.client = client;
         this.activityQueue = new LinkedBlockingQueue<Activity>();
         this.options = options;

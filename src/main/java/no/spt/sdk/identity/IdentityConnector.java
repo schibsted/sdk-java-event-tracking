@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * A connection to the Anonymous Identity Service used to get anonymous IDs
  */
-public interface IIdentityConnector {
+public interface IdentityConnector {
 
     /**
      * Takes a {@link java.util.Map} of identifiers and returns a unique ID based on those identifiers

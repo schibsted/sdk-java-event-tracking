@@ -6,7 +6,7 @@ import no.spt.sdk.models.Activity;
 /**
  * A sender used to send activities to the data collector
  */
-public interface ISender {
+public interface Sender {
 
     /**
      * A method that sends all activities in the queue to the data collector

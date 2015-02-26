@@ -2,10 +2,10 @@ package no.spt.sdk.client;
 
 import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
-import no.spt.sdk.batch.ISender;
+import no.spt.sdk.batch.Sender;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.exceptions.IErrorCollector;
-import no.spt.sdk.identity.IIdentityConnector;
+import no.spt.sdk.exceptions.ErrorCollector;
+import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
 import org.junit.After;
 import org.junit.Before;
@@ -24,11 +24,11 @@ import static org.mockito.Mockito.*;
 public class MockedDataTrackingClientTest {
 
     @Mock
-    private IErrorCollector errorCollector;
+    private ErrorCollector errorCollector;
     @Mock
-    private ISender sender;
+    private Sender sender;
     @Mock
-    private IIdentityConnector identityConnector;
+    private IdentityConnector identityConnector;
     private DataTrackingClient client;
     private Options options;
 

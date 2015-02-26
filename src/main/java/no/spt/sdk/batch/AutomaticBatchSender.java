@@ -4,9 +4,9 @@ import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.IHttpConnection;
+import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.exceptions.IErrorCollector;
+import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -22,14 +22,14 @@ import java.util.concurrent.TimeUnit;
  * A sender that automatically sends activities from the queue to the data collector.
  * It sends batches of activities to the data collector on a separate thread.
  */
-public class AutomaticBatchSender implements Runnable, ISender {
+public class AutomaticBatchSender implements Runnable, Sender {
 
     private LinkedBlockingQueue<Activity> activityQueue;
     private volatile boolean shouldSend;
-    private IHttpConnection client;
+    private HttpConnection client;
     private volatile CountDownLatch latch;
     private Options options;
-    private IErrorCollector errorCollector;
+    private ErrorCollector errorCollector;
     private final Thread thread;
     private static final Object fileLock = new Object();
     private ASJsonConverter jsonConverter;
@@ -40,7 +40,7 @@ public class AutomaticBatchSender implements Runnable, ISender {
      * @param client an http client wrapper that handles http connections with data collector
      * @param errorCollector an error collector that collects all exceptions
      */
-    public AutomaticBatchSender(Options options, IHttpConnection client, IErrorCollector errorCollector,
+    public AutomaticBatchSender(Options options, HttpConnection client, ErrorCollector errorCollector,
                                 ASJsonConverter jsonConverter) {
         this.client = client;
         this.errorCollector = errorCollector;

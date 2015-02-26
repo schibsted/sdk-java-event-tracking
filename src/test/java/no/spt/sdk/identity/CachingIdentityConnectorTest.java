@@ -4,7 +4,7 @@ import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.IHttpConnection;
+import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.serializers.JacksonASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class CachingIdentityConnectorTest {
 
     @Mock
-    private IHttpConnection httpConnection;
+    private HttpConnection httpConnection;
     private CachingIdentityConnector identityConnector;
 
     @Before

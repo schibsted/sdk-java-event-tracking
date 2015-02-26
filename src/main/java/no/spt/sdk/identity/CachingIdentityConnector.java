@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache;
 import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
-import no.spt.sdk.connection.IHttpConnection;
+import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -20,17 +20,17 @@ import java.util.concurrent.TimeUnit;
  * A connection to the Anonymous Identity Service used to get anonymous IDs that caches fetched IDs.
  *
  */
-public class CachingIdentityConnector implements IIdentityConnector {
+public class CachingIdentityConnector implements IdentityConnector {
 
     private Options options;
-    private IHttpConnection httpConnection;
+    private HttpConnection httpConnection;
     private ASJsonConverter jsonConverter;
     private static LoadingCache<Map<String, String>, String> cache;
     private static final int CACHE_SIZE = 10000;
     private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
 
 
-    public CachingIdentityConnector(Options options, IHttpConnection httpConnection, ASJsonConverter jsonConverter) {
+    public CachingIdentityConnector(Options options, HttpConnection httpConnection, ASJsonConverter jsonConverter) {
         this.options = options;
         this.httpConnection = httpConnection;
         this.jsonConverter = jsonConverter;

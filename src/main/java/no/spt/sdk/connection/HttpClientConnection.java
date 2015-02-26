@@ -23,7 +23,7 @@ import java.util.Map;
  * The HttpClientConnection wraps a {@link org.apache.http.impl.client.CloseableHttpClient} and is responsible for
  * HTTP connections.
  */
-public class HttpClientConnection implements IHttpConnection {
+public class HttpClientConnection implements HttpConnection {
 
     private CloseableHttpClient httpClient;
     private Options options;
