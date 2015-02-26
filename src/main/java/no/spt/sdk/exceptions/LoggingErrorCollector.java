@@ -9,6 +9,8 @@ import java.util.logging.Logger;
  */
 public class LoggingErrorCollector implements IErrorCollector {
 
+    private static final int MAX_ERROR_QUEUE_SIZE = 10000;
+
     private static final Logger logger =
             Logger.getLogger(LoggingErrorCollector.class.getName());
 
@@ -26,7 +28,7 @@ public class LoggingErrorCollector implements IErrorCollector {
 
     @Override
     public void collect(DataTrackingException e) {
-        if(errorQueue.size() < Integer.MAX_VALUE) {
+        if(errorQueue.size() < MAX_ERROR_QUEUE_SIZE) {
             errorQueue.add(e);
         }
         logger.log(logLevel, e.getMessage());
