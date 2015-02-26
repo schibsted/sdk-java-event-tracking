@@ -122,6 +122,14 @@ Activity activity = activity("Read")
              .object(object("Article", "urn:example.no:article:art123"))
              .build();
 ```
+### Object
+The Object is the primary object of the Activity. For available Object types and properties, see the
+[SPT ActivityStreams format](https://github.com/schibsted/activitystream-events).
+
+Provider, Actor and Target are all subclasses of Object and can therefore have the same attributes. There are some
+predefined methods for common attributes (e.g. `.displayName("An example article")`) and you are also able to add
+other attributes as long as they are defined in the [SPT ActivityStreams format](https://github.com/schibsted/activitystream-events)
+(e.g. `.set("spt:tags", "training,PT")`).
 
 ### Provider
 The Provider is the entity that is sending the Activity. The type is typically `Organization` and the ID is on the form
@@ -131,10 +139,6 @@ The Provider is the entity that is sending the Activity. The type is typically `
 The Actor is the entity that is carrying out the Activity. For anonymous tracking this is typically a user with the type
 `Person` and an ID on the form `urn:spid.no:person:abc123` where the last part can be fetched from the anonymous identity
 service.
-
-### Object
-The Object is the primary object of the Activity. For available Object types and properties, see the
-[SPT ActivityStreams format](https://github.com/schibsted/activitystream-events).
 
 ### Target
 The Target is the indirect object, or target, of the Activity. Target is a subclass of Object so all available Objects
