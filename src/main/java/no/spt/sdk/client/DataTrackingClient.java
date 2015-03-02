@@ -19,8 +19,6 @@ import no.spt.sdk.serializers.JacksonASJsonConverter;
 
 import java.util.Map;
 
-import static no.spt.sdk.Defaults.*;
-
 /**
  * The DataTrackingClient can be used to track activities. The client is an HTTP wrapper over a data collector API.
  * It allows you to consume the API without making any HTTP requests yourself.
@@ -201,11 +199,7 @@ public class DataTrackingClient {
          */
         public DataTrackingClient build() {
             if (options == null) {
-                options = new Options.OptionsBuilder().setDataCollectorUrl(DATA_COLLECTOR_URL)
-                        .setAnonymousIdUrl(ANONYMOUS_ID_SERVICE_URL)
-                        .setMaxQueueSize(MAX_QUEUE_SIZE)
-                        .setTimeout(TIMEOUT)
-                        .setRetries(RETRIES)
+                options = new Options.OptionsBuilder()
                         .build();
             }
             if (httpConnection == null) {
