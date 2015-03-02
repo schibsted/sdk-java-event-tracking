@@ -164,5 +164,5 @@ should be enough to uniquely identify the user or the returned ID will only be a
 ```java
 Map<String, String> identifier = new HashMap<String, String>();
 identifier.put("SomeKey", "SomeUniqueValue");
-String anonymousId = client.getAnonymousId(identifiers);
+AnonymousIdentity anonymousId = client.getAnonymousId(identifiers);
 ```
