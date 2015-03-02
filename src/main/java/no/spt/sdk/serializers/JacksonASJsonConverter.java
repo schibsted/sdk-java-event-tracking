@@ -67,5 +67,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         private List<Object> context;
         @JsonProperty("@type")
         private String type;
+        @JsonProperty("@id")
+        private String id;
     }
 }

@@ -60,6 +60,9 @@ public class GsonASJsonConverter implements ASJsonConverter {
             if("type".equals(name)) {
                 return "@type";
             }
+            if("id".equals(name)) {
+                return "@id";
+            }
             return name;
         }
     }
