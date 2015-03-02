@@ -8,6 +8,7 @@ import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.models.AnonymousIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
 
@@ -25,7 +26,7 @@ public class CachingIdentityConnector implements IdentityConnector {
     private Options options;
     private HttpConnection httpConnection;
     private ASJsonConverter jsonConverter;
-    private static LoadingCache<Map<String, String>, String> cache;
+    private static LoadingCache<Map<String, String>, AnonymousIdentity> cache;
     private static final int CACHE_SIZE = 10000;
     private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
 
@@ -41,16 +42,16 @@ public class CachingIdentityConnector implements IdentityConnector {
         cache = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
                 .expireAfterWrite(CACHE_EXPIRATION_IN_MINUTES, TimeUnit.MINUTES)
-                .build(new CacheLoader<Map<String, String>, String>() {
+                .build(new CacheLoader<Map<String, String>, AnonymousIdentity>() {
                     @Override
-                    public String load(Map<String, String> cacheKey) throws Exception {
+                    public AnonymousIdentity load(Map<String, String> cacheKey) throws Exception {
                         return getIdFromService(cacheKey);
                     }
                 });
     }
 
     @Override
-    public String getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
+    public AnonymousIdentity getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
         try {
             return cache.get(identifiers);
         } catch (ExecutionException e) {
@@ -58,7 +59,7 @@ public class CachingIdentityConnector implements IdentityConnector {
         }
     }
 
-    private String getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
+    private AnonymousIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
         DataTrackingResponse response;
         try {
             response = httpConnection.send(new DataTrackingPostRequest(options.getAnonymousIdUrl(), null, jsonConverter.serialize(identifiers)));
@@ -70,11 +71,15 @@ public class CachingIdentityConnector implements IdentityConnector {
         } else if(response.getResponseCode() != HttpStatus.SC_OK) {
             throw new DataTrackingException("Unexpected response from Anonymous Identity Service", response);
         }
+        AnonymousIdentity anonymousIdentity;
         try {
-            Map<String, Object> jsonObject = jsonConverter.deSerialize(response.getRawBody());
-            return ((Map<String, Object>)jsonObject.get("data")).get("sessionId").toString();
+            anonymousIdentity = jsonConverter.deSerializeAnonymousIdentity(response.getRawBody());
         } catch (Exception e) {
             throw new DataTrackingException(e);
         }
+        if(anonymousIdentity.getData().isEmpty()) {
+            throw new DataTrackingException("Unexpected data from Anonymous Identity Service", response);
+        }
+        return anonymousIdentity;
     }
 }

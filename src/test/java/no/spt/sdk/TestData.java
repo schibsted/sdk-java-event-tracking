@@ -42,6 +42,10 @@ public class TestData {
     private static final int MAX_QUEUE_SIZE = 10000;
     private static final int TIMEOUT = 5000;
     private static final int RETRIES = 2;
+
+    public static final String ANONYMOUS_SESSION_ID = "abcde123";
+    public static final String ANONYMOUS_ENVIRONMENT_ID = "xyz123";
+
     private static ASJsonConverter jsonConverter = new GsonASJsonConverter();
 
     public static String getTestActivityAsJsonString() {
@@ -147,5 +151,27 @@ public class TestData {
         Map<String, String> identifier = new HashMap<String, String>();
         identifier.put("SomeKey", "SomeValue");
         return identifier;
+    }
+
+    public static String getAnonymousIdResponseAsJsonString() {
+        return "{\n" +
+                "    \"code\": 200,\n" +
+                "    \"status\": \"OK\",\n" +
+                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"data\": {\n" +
+                "        \"someKey\": \"someValue\",\n" +
+                "        \"environmentId\": \"" + ANONYMOUS_ENVIRONMENT_ID + "\",\n" +
+                "        \"environmentIdUniqScore\": 50,\n" +
+                "        \"environmentIdTemporary\": true,\n" +
+                "        \"missingInput\": [\n" +
+                "            \"accept\",\n" +
+                "            \"accept-charset\",\n" +
+                "            \"accept-language\"\n" +
+                "        ],\n" +
+                "        \"sessionId\": \"" + ANONYMOUS_SESSION_ID + "\",\n" +
+                "        \"clientIp\": \"127.0.0.1\"\n" +
+                "    },\n" +
+                "    \"errors\": []\n" +
+                "}";
     }
 }

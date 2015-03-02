@@ -62,7 +62,7 @@ public class CachingIdentityConnectorTest {
                 "    \"errors\": []\n" +
                 "}"));
         assertEquals("18ecfe96-ba40-4ebd-84e9-97186711f890", identityConnector.getAnonymousId(TestData
-                .getAnonymousIdIdentifiers()));
+                .getAnonymousIdIdentifiers()).getSessionId());
     }
 
     @Test(expected = DataTrackingException.class)

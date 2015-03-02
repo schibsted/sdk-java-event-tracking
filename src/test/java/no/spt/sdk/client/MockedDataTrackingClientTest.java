@@ -7,6 +7,7 @@ import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.models.AnonymousIdentity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -74,8 +76,14 @@ public class MockedDataTrackingClientTest {
 
     @Test
     public void testGetAnonymousId() throws DataTrackingException {
-        when(identityConnector.getAnonymousId(any(Map.class))).thenReturn("id123");
-        assertEquals("id123", client.getAnonymousId(TestData.getAnonymousIdIdentifiers()));
+        when(identityConnector.getAnonymousId(any(Map.class))).thenReturn(new AnonymousIdentity(getDummyMap()));
+        assertEquals("id123", client.getAnonymousId(TestData.getAnonymousIdIdentifiers()).getSessionId());
+    }
+
+    private Map<String, Object> getDummyMap() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("sessionId", "id123");
+        return map;
     }
 
 }

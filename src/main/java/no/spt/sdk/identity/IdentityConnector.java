@@ -1,6 +1,7 @@
 package no.spt.sdk.identity;
 
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.models.AnonymousIdentity;
 
 import java.util.Map;
 
@@ -10,12 +11,13 @@ import java.util.Map;
 public interface IdentityConnector {
 
     /**
-     * Takes a {@link java.util.Map} of identifiers and returns a unique ID based on those identifiers
+     * Takes a {@link java.util.Map} of identifiers and returns an AnonymousIdentity object based on those identifiers
+     * that contains sessionId and environmentId
      *
      * @param identifiers A Map of identifiers
-     * @return A unique ID based on the provided identifiers
+     * @return An AnonymousIdentity object that contains sessionId and environmentId
      * @throws DataTrackingException If an ID could not be created
      */
-    String getAnonymousId(Map<String, String> identifiers) throws DataTrackingException;
+    AnonymousIdentity getAnonymousId(Map<String, String> identifiers) throws DataTrackingException;
 
 }
