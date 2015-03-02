@@ -1,6 +1,8 @@
 package no.spt.sdk;
 
 import no.spt.sdk.client.DataTrackingPostRequest;
+import no.spt.sdk.client.DataTrackingResponse;
+import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
@@ -178,5 +180,12 @@ public class TestData {
                 "    },\n" +
                 "    \"errors\": []\n" +
                 "}";
+    }
+
+    public static DataTrackingException getDataTrackingException() {
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("contentType", "application/json");
+        DataTrackingResponse response = new DataTrackingResponse(200, header, "Message body");
+        return new DataTrackingException("error", response);
     }
 }

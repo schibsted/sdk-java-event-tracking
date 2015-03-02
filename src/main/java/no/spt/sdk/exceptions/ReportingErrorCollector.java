@@ -68,15 +68,16 @@ public class ReportingErrorCollector implements ErrorCollector {
             do {
                 try {
                     if (errors.size() > 0) {
-                        DataTrackingResponse response = httpConnection.send(new DataTrackingPostRequest(options.getErrorReportingUrl(),
-                                null, jsonConverter.serialize(errors)));
+                        DataTrackingResponse response = httpConnection.send(
+                                new DataTrackingPostRequest(options.getErrorReportingUrl(), null,
+                                        jsonConverter.serialize(errors)));
                     }
                     success = true;
                 } catch (IOException e) {
                     retryCount++;
                     success = false;
                 }
-            } while (!success && retryCount < options.getRetries());
+            } while (!success && retryCount < options.getRetries()); // TODO If errors cannot be sent they are dropped
         }
     }
 
