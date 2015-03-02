@@ -35,7 +35,12 @@ public class ManualBatchSenderTest {
 
     @Before
     public void setUp() throws Exception {
-        options = new Options("http://localhost:8090/", "http://localhost:8091/", 1000, 1000, 2);
+        options = new Options.OptionsBuilder().setDataCollectorUrl("http://localhost:8090/")
+                .setAnonymousIdUrl("http://localhost:8091/")
+                .setMaxQueueSize(1000)
+                .setTimeout(1000)
+                .setRetries(2)
+                .build();
         batchSender = new ManualBatchSender(options, dataCollectorConnector, jsonConverter);
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(200, null, "OK"));
     }

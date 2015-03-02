@@ -9,7 +9,7 @@ import no.spt.sdk.connection.HttpClientConnection;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
-import no.spt.sdk.exceptions.LoggingErrorCollector;
+import no.spt.sdk.exceptions.ReportingErrorCollector;
 import no.spt.sdk.identity.CachingIdentityConnector;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
@@ -201,16 +201,21 @@ public class DataTrackingClient {
          */
         public DataTrackingClient build() {
             if (options == null) {
-                options = new Options(DATA_COLLECTOR_URL, ANONYMOUS_ID_SERVICE_URL, MAX_QUEUE_SIZE, TIMEOUT, RETRIES);
+                options = new Options.OptionsBuilder().setDataCollectorUrl(DATA_COLLECTOR_URL)
+                        .setAnonymousIdUrl(ANONYMOUS_ID_SERVICE_URL)
+                        .setMaxQueueSize(MAX_QUEUE_SIZE)
+                        .setTimeout(TIMEOUT)
+                        .setRetries(RETRIES)
+                        .build();
             }
             if (httpConnection == null) {
                 httpConnection = new HttpClientConnection(options);
             }
-            if (errorCollector == null) {
-                errorCollector = new LoggingErrorCollector();
-            }
             if(jsonConverter == null) {
                 this.jsonConverter = new JacksonASJsonConverter();
+            }
+            if (errorCollector == null) {
+                errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter);
             }
             if(identityConnector == null) {
                 this.identityConnector = new CachingIdentityConnector(options, httpConnection, jsonConverter);

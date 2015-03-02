@@ -68,7 +68,7 @@ public class ReportingErrorCollector implements ErrorCollector {
             do {
                 try {
                     if (errors.size() > 0) {
-                        DataTrackingResponse response = httpConnection.send(new DataTrackingPostRequest("http://localhost:8085/api",
+                        DataTrackingResponse response = httpConnection.send(new DataTrackingPostRequest(options.getErrorReportingUrl(),
                                 null, jsonConverter.serialize(errors)));
                     }
                     success = true;

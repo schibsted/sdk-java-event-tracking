@@ -30,7 +30,12 @@ public class ManualDataTrackingClientTest {
 
     @Before
     public void setup() {
-        options = new Options("http://localhost:8090/", "http://localhost:8091/", 10000, 1000, 2);
+        options = new Options.OptionsBuilder().setDataCollectorUrl("http://localhost:8090/")
+                .setAnonymousIdUrl("http://localhost:8091/")
+                .setMaxQueueSize(10000)
+                .setTimeout(1000)
+                .setRetries(2)
+                .build();
         jsonConverter = new GsonASJsonConverter();
         client = new DataTrackingClient.Builder()
                 .withOptions(options)
