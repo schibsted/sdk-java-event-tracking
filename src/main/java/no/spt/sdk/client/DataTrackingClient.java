@@ -199,7 +199,7 @@ public class DataTrackingClient {
          */
         public DataTrackingClient build() {
             if (options == null) {
-                options = new Options.OptionsBuilder()
+                options = new Options.Builder()
                         .build();
             }
             if (httpConnection == null) {

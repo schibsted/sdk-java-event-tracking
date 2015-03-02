@@ -74,7 +74,7 @@ public class Options {
     /**
      * Builder used to constructs a new Option. It has some sensible defaults which can be overridden.
      */
-    public static class OptionsBuilder {
+    public static class Builder {
 
         private String dataCollectorUrl = Defaults.DATA_COLLECTOR_URL;
         private String anonymousIdUrl = Defaults.ANONYMOUS_ID_SERVICE_URL;
@@ -87,7 +87,7 @@ public class Options {
          * @param dataCollectorUrl The url to the data collector endpoint
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setDataCollectorUrl(String dataCollectorUrl) {
+        public Builder setDataCollectorUrl(String dataCollectorUrl) {
             this.dataCollectorUrl = dataCollectorUrl;
             return this;
         }
@@ -96,7 +96,7 @@ public class Options {
          * @param anonymousIdUrl The url to the anonymous identity service endpoint
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setAnonymousIdUrl(String anonymousIdUrl) {
+        public Builder setAnonymousIdUrl(String anonymousIdUrl) {
             this.anonymousIdUrl = anonymousIdUrl;
             return this;
         }
@@ -105,7 +105,7 @@ public class Options {
          * @param errorReportingUrl The url to the error reporting endpoint
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setErrorReportingUrl(String errorReportingUrl) {
+        public Builder setErrorReportingUrl(String errorReportingUrl) {
             this.errorReportingUrl = errorReportingUrl;
             return this;
         }
@@ -114,7 +114,7 @@ public class Options {
          * @param maxQueueSize The maximum size of the activity queue waiting to be sent to the data collector
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setMaxQueueSize(int maxQueueSize) {
+        public Builder setMaxQueueSize(int maxQueueSize) {
             this.maxQueueSize = maxQueueSize;
             return this;
         }
@@ -123,7 +123,7 @@ public class Options {
          * @param timeout The amount of milliseconds before a request is marked as timed out
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setTimeout(int timeout) {
+        public Builder setTimeout(int timeout) {
             this.timeout = timeout;
             return this;
         }
@@ -132,7 +132,7 @@ public class Options {
          * @param retries The amount of times to retry the request
          * @return This builder instance for chaining
          */
-        public OptionsBuilder setRetries(int retries) {
+        public Builder setRetries(int retries) {
             this.retries = retries;
             return this;
         }

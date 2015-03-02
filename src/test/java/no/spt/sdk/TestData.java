@@ -138,7 +138,7 @@ public class TestData {
     }
 
     public static Options getDefaultOptions() {
-        return new Options.OptionsBuilder().setDataCollectorUrl(DATA_COLLECTOR_URL)
+        return new Options.Builder().setDataCollectorUrl(DATA_COLLECTOR_URL)
                 .setAnonymousIdUrl(ANONYMOUS_ID_SERVICE_URL)
                 .setMaxQueueSize(MAX_QUEUE_SIZE)
                 .setTimeout(TIMEOUT)
