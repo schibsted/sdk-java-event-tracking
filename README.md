@@ -59,11 +59,13 @@ int sendTimeout = 1000;
 // The amount of times to retry the request
 int sendRetries = 2;
 
-Options options = new Options(dataTrackerUrl,
-                      anonymousIdServiceUrl,
-                      maxActivityQueueSize,
-                      sendTimeout,
-                      sendRetries);
+Options options = new Options.Builder()
+             .setDataCollectorUrl(dataTrackerUrl)
+             .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setMaxQueueSize(maxActivityQueueSize)
+             .setTimeout(sendTimeout)
+             .setRetries(sendRetries)
+             .build();
 ```
 
 ## Using the client
@@ -79,16 +81,18 @@ public class Example {
     int sendTimeout = 1000;
     int sendRetries = 2;
 
-    Options options = new Options(dataTrackerUrl,
-                          anonymousIdServiceUrl,
-                          maxActivityQueueSize,
-                          sendTimeout,
-                          sendRetries);
+    Options options = new Options.Builder()
+             .setDataCollectorUrl(dataTrackerUrl)
+             .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setMaxQueueSize(maxActivityQueueSize)
+             .setTimeout(sendTimeout)
+             .setRetries(sendRetries)
+             .build();
 
     DataTrackingClient client = new DataTrackingClient.Builder()
-                    .withOptions(options)
-                    .withAutomaticActivitySender()
-                    .build();
+             .withOptions(options)
+             .withAutomaticActivitySender()
+             .build();
 
     Activity activity = activity("Read")
              .publishedNow()
@@ -150,3 +154,15 @@ import static no.spt.sdk.models.Makers.*;
 ```
 By static importing Makers you can use static helper methods for creating objects
 (e.g. `actor("Person", "ID-123").build()` to create an actor)
+
+## Anonymous ID
+To be able to track anonymous users, each user has to be given a unique anonymous ID. This is done based on some
+identifiers that are sent to the Anonymous Identity Service which returns an ID. The Tracking Client has a method for
+fetching an ID from the Anonymous Identity Service based on a `Map<String, String>` of identifiers. These identifiers
+should be enough to uniquely identify the user or the returned ID will only be a temporarily ID used for this session.
+
+```java
+Map<String, String> identifier = new HashMap<String, String>();
+identifier.put("SomeKey", "SomeUniqueValue");
+String anonymousId = client.getAnonymousId(identifiers);
+```
