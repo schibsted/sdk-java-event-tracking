@@ -58,7 +58,7 @@ public class ReportingErrorCollectorTest {
         for(int i = 0; i <= 100; i++) {
             errorCollector.collect(e);
         }
-        sleep(200);
+        sleep(500);
         verify(httpConnection, times(5)).send(any(DataTrackingPostRequest.class));
     }
 
