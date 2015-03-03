@@ -3,17 +3,14 @@ package no.spt.sdk.exceptions;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.exceptions.error.DataTrackingError;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
  * An SDK specific exception
  */
 public class DataTrackingException extends Exception {
-
-    private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
     private Integer responseCode;
     private String responseBody;
@@ -102,8 +99,7 @@ public class DataTrackingException extends Exception {
     }
 
     private void setTimestampNow() {
-        Calendar currentTime = Calendar.getInstance();
-        timestamp = ISO_8601_FORMAT.format(currentTime.getTime());
+        timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US).format(new Date());
     }
 
 }
