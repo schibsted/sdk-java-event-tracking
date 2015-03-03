@@ -4,6 +4,7 @@ import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
+import no.spt.sdk.exceptions.error.DataTrackingError;
 import no.spt.sdk.serializers.ASJsonConverter;
 
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class ReportingErrorCollector implements ErrorCollector {
                     if (errors.size() > 0) {
                         DataTrackingResponse response = httpConnection.send(
                                 new DataTrackingPostRequest(options.getErrorReportingUrl(), null,
-                                        jsonConverter.serialize(errors)));
+                                        jsonConverter.serialize(convertToErrorReports(errors))));
                     }
                     success = true;
                 } catch (IOException e) {
@@ -78,6 +79,50 @@ public class ReportingErrorCollector implements ErrorCollector {
                     success = false;
                 }
             } while (!success && retryCount < options.getRetries()); // TODO If errors cannot be sent they are dropped
+        }
+
+        private List<ErrorReport> convertToErrorReports(List<DataTrackingException> errors) {
+            List<ErrorReport> errorReports = new LinkedList<ErrorReport>();
+            for(DataTrackingException error : errors) {
+                errorReports.add(new ErrorReport(error, options));
+            }
+            return errorReports;
+        }
+
+        private static class ErrorReport {
+
+            private final String sdkType = "JAVA";
+            private final String sdkVersion;
+            private final Options options;
+            private final DataTrackingError errorCode;
+            private final String errorMessage;
+
+            public ErrorReport(DataTrackingException exception, Options options) {
+                this.errorCode = exception.getErrorCode();
+                this.errorMessage = exception.getMessage();
+                this.options = options;
+                this.sdkVersion = getClass().getPackage().getImplementationVersion();
+            }
+
+            public String getSdkType() {
+                return sdkType;
+            }
+
+            public String getSdkVersion() {
+                return sdkVersion;
+            }
+
+            public Options getOptions() {
+                return options;
+            }
+
+            public DataTrackingError getErrorCode() {
+                return errorCode;
+            }
+
+            public String getErrorMessage() {
+                return errorMessage;
+            }
         }
     }
 
