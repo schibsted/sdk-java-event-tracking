@@ -91,7 +91,7 @@ public class ReportingErrorCollector implements ErrorCollector {
 
         private static class ErrorReport {
 
-            private final String sdkType = "JAVA";
+            private static final String sdkType = "JAVA";
             private final String sdkVersion;
             private final Options options;
             private final DataTrackingError errorCode;
