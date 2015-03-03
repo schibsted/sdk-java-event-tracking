@@ -43,6 +43,9 @@ See the API documentation for more details.
 
 ### Options
 ```java
+// The unique client ID provided by SPT
+String clientId = "4cf36fa274dea2117e030000";
+
 // The url to the data collector endpoint
 String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
 
@@ -59,7 +62,7 @@ int sendTimeout = 1000;
 // The amount of times to retry the request
 int sendRetries = 2;
 
-Options options = new Options.Builder()
+Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
              .setAnonymousIdUrl(anonymousIdServiceUrl)
              .setMaxQueueSize(maxActivityQueueSize)
@@ -75,13 +78,14 @@ Options options = new Options.Builder()
 public class Example {
 
   public static void main(String... args) {
+    String clientId = "4cf36fa274dea2117e030000";
     String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
     String anonymousIdServiceUrl = "http://example.anonymous-id.com/api/v1/identify";
     int maxActivityQueueSize = 50000;
     int sendTimeout = 1000;
     int sendRetries = 2;
 
-    Options options = new Options.Builder()
+    Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
              .setAnonymousIdUrl(anonymousIdServiceUrl)
              .setMaxQueueSize(maxActivityQueueSize)
