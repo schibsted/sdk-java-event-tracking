@@ -7,6 +7,7 @@ import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
+import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -24,20 +25,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class AutomaticBatchSender implements Runnable, Sender {
 
+    private static final Object fileLock = new Object();
+    private final Thread thread;
     private LinkedBlockingQueue<Activity> activityQueue;
     private volatile boolean shouldSend;
     private HttpConnection client;
     private volatile CountDownLatch latch;
     private Options options;
     private ErrorCollector errorCollector;
-    private final Thread thread;
-    private static final Object fileLock = new Object();
     private ASJsonConverter jsonConverter;
 
     /**
-     *
-     * @param options options used to configure the behaviour of the sender
-     * @param client an http client wrapper that handles http connections with data collector
+     * @param options        options used to configure the behaviour of the sender
+     * @param client         an http client wrapper that handles http connections with data collector
      * @param errorCollector an error collector that collects all exceptions
      */
     public AutomaticBatchSender(Options options, HttpConnection client, ErrorCollector errorCollector,
@@ -75,7 +75,8 @@ public class AutomaticBatchSender implements Runnable, Sender {
                 try {
                     activity = activityQueue.poll(500, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    errorCollector.collect(new DataTrackingException("Interrupted while trying to flush activity queue.", e));
+                    errorCollector.collect(new DataTrackingException("Interrupted while trying to flush activity " +
+                            "queue.", e, ActivitySendingError.INTERRUPTED_ERROR));
                 }
 
                 if (activity != null) {
@@ -86,8 +87,7 @@ public class AutomaticBatchSender implements Runnable, Sender {
                     }
                     current.add(activity);
                 }
-            }
-            while (shouldSend && activityQueue.size() > 0 && current.size() < Constants.MAX_BATCH_SIZE);
+            } while (shouldSend && activityQueue.size() > 0 && current.size() < Constants.MAX_BATCH_SIZE);
 
             try {
                 sendBatch(current);
@@ -111,12 +111,15 @@ public class AutomaticBatchSender implements Runnable, Sender {
                     DataTrackingResponse response = client.send(new DataTrackingPostRequest(options
                             .getDataCollectorUrl(), null, jsonConverter.serialize(current)));
                     current = new LinkedList<Activity>();
-                    if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-                        throw new DataTrackingException("Response from Data Collector was not OK", response);
-                    } else if(response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
-                        throw new DataTrackingException("Some of the activities could not be validated by Data Collector", response);
-                    } else if(response.getResponseCode() != HttpStatus.SC_OK) {
-                        throw new DataTrackingException("Unexpected response from Data Collector", response);
+                    if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
+                        throw new DataTrackingException("Response from Data Collector was not OK", response,
+                                ActivitySendingError.BAD_REQUEST);
+                    } else if (response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
+                        throw new DataTrackingException("Some of the activities could not be validated by Data " +
+                                "Collector", response, ActivitySendingError.VALIDATION_ERROR);
+                    } else if (response.getResponseCode() != HttpStatus.SC_OK) {
+                        throw new DataTrackingException("Unexpected response from Data Collector", response,
+                                ActivitySendingError.UNEXPECTED_RESPONSE);
                     }
                 }
                 success = true;
@@ -124,12 +127,11 @@ public class AutomaticBatchSender implements Runnable, Sender {
                 retryCount++;
                 success = false;
             }
-        }
-        while (!success && retryCount <= options.getRetries());
+        } while (!success && retryCount <= options.getRetries());
 
         if (!success) {
             throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on this" +
-                    " batch.", retryCount));
+                    " batch.", retryCount), ActivitySendingError.HTTP_CONNECTION_ERROR);
         }
 
     }
@@ -145,13 +147,14 @@ public class AutomaticBatchSender implements Runnable, Sender {
         try {
             latch.await(2, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            throw new DataTrackingException(e);
+            throw new DataTrackingException(e, ActivitySendingError.INTERRUPTED_ERROR);
         }
     }
 
     /**
      * Enqueue an activity to be sent to the data collector.
      * If the queue is full, the activity will be dropped
+     *
      * @param activity an activity to enqueue
      * @throws DataTrackingException if the queue has reached it's max size
      */
@@ -165,12 +168,14 @@ public class AutomaticBatchSender implements Runnable, Sender {
                 this.activityQueue.add(activity);
             }
         } else {
-            throw new DataTrackingException("Queue has reached maxSize, dropping activity.");
+            throw new DataTrackingException("Queue has reached maxSize, dropping activity.", ActivitySendingError
+                    .QUEUE_MAX_SIZE_REACHED);
         }
     }
 
     /**
      * This method closes the sender after flushing and clearing the queue.
+     *
      * @throws DataTrackingException if http client cannot be closed
      */
     @Override
@@ -183,6 +188,7 @@ public class AutomaticBatchSender implements Runnable, Sender {
 
     /**
      * This method returns the current queue depth
+     *
      * @return the current queue depth
      */
     @Override

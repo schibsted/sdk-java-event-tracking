@@ -3,6 +3,7 @@ package no.spt.sdk;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.GsonASJsonConverter;
@@ -19,10 +20,10 @@ import static no.spt.sdk.models.Makers.*;
 
 public class TestData {
 
+    public static final String ANONYMOUS_SESSION_ID = "abcde123";
+    public static final String ANONYMOUS_ENVIRONMENT_ID = "xyz123";
     private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
-
     private static final String ACTIVITY_TYPE = "Read";
-
     /// ACTIVITY
     private static final String ACTOR_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2)" +
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36";
@@ -44,10 +45,6 @@ public class TestData {
     private static final int MAX_QUEUE_SIZE = 10000;
     private static final int TIMEOUT = 5000;
     private static final int RETRIES = 2;
-
-    public static final String ANONYMOUS_SESSION_ID = "abcde123";
-    public static final String ANONYMOUS_ENVIRONMENT_ID = "xyz123";
-
     private static ASJsonConverter jsonConverter = new GsonASJsonConverter();
 
     public static String getTestActivityAsJsonString() {
@@ -55,7 +52,7 @@ public class TestData {
                 "\"@context\":[\"http://www.w3.org/ns/activitystreams\",{\"spt\":\"http://schema.schibsted" +
                 ".com/activitystreams\"}]," +
                 "\"@type\":\"" + ACTIVITY_TYPE + "\"," +
-                "\"published\":\"" + ISO_8601_FORMAT.format(new Date(0L)) +"\"," +
+                "\"published\":\"" + ISO_8601_FORMAT.format(new Date(0L)) + "\"," +
                 "\"actor\":{" +
                 "\"@type\":\"" + ACTOR_TYPE + "\"," +
                 "\"@id\":\"" + ACTOR_ID + "\"," +
@@ -154,7 +151,7 @@ public class TestData {
                 (getTestActivity()));
     }
 
-    public static Map<String, String> getAnonymousIdIdentifiers(){
+    public static Map<String, String> getAnonymousIdIdentifiers() {
         Map<String, String> identifier = new HashMap<String, String>();
         identifier.put("SomeKey", "SomeValue");
         return identifier;
@@ -186,6 +183,6 @@ public class TestData {
         Map<String, String> header = new HashMap<String, String>();
         header.put("contentType", "application/json");
         DataTrackingResponse response = new DataTrackingResponse(200, header, "Message body");
-        return new DataTrackingException("error", response);
+        return new DataTrackingException("error", response, ActivitySendingError.GENERAL_ACTIVITY_SENDING_ERROR);
     }
 }

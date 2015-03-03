@@ -8,6 +8,7 @@ import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.exceptions.error.AnonymousIdentityError;
 import no.spt.sdk.models.AnonymousIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -19,16 +20,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A connection to the Anonymous Identity Service used to get anonymous IDs that caches fetched IDs.
- *
  */
 public class CachingIdentityConnector implements IdentityConnector {
 
+    private static final int CACHE_SIZE = 10000;
+    private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
+    private static LoadingCache<Map<String, String>, AnonymousIdentity> cache;
     private Options options;
     private HttpConnection httpConnection;
     private ASJsonConverter jsonConverter;
-    private static LoadingCache<Map<String, String>, AnonymousIdentity> cache;
-    private static final int CACHE_SIZE = 10000;
-    private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
 
 
     public CachingIdentityConnector(Options options, HttpConnection httpConnection, ASJsonConverter jsonConverter) {
@@ -55,30 +55,35 @@ public class CachingIdentityConnector implements IdentityConnector {
         try {
             return cache.get(identifiers);
         } catch (ExecutionException e) {
-            throw new DataTrackingException(e);
+            throw new DataTrackingException(e, AnonymousIdentityError.CACHE_ERROR);
         }
     }
 
     private AnonymousIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
         DataTrackingResponse response;
         try {
-            response = httpConnection.send(new DataTrackingPostRequest(options.getAnonymousIdUrl(), null, jsonConverter.serialize(identifiers)));
+            response = httpConnection.send(new DataTrackingPostRequest(options.getAnonymousIdUrl(), null,
+                    jsonConverter.serialize(identifiers)));
         } catch (IOException e) {
-            throw new DataTrackingException(e);
+            throw new DataTrackingException(e, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
-        if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-            throw new DataTrackingException("Response from Anonymous Identity Service was not OK", response);
-        } else if(response.getResponseCode() != HttpStatus.SC_OK) {
-            throw new DataTrackingException("Unexpected response from Anonymous Identity Service", response);
+        if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
+            throw new DataTrackingException("Response from Anonymous Identity Service was not OK", response,
+                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+        } else if (response.getResponseCode() != HttpStatus.SC_OK) {
+            throw new DataTrackingException("Unexpected response from Anonymous Identity Service", response,
+                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
         AnonymousIdentity anonymousIdentity;
         try {
             anonymousIdentity = jsonConverter.deSerializeAnonymousIdentity(response.getRawBody());
         } catch (Exception e) {
-            throw new DataTrackingException(e);
+            throw new DataTrackingException(e, AnonymousIdentityError.JSON_CONVERTING_ERROR);
         }
-        if(anonymousIdentity.getData().isEmpty()) {
-            throw new DataTrackingException("Unexpected data from Anonymous Identity Service", response);
+        if (anonymousIdentity.getData()
+                .isEmpty()) {
+            throw new DataTrackingException("Unexpected data from Anonymous Identity Service", response,
+                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
         return anonymousIdentity;
     }

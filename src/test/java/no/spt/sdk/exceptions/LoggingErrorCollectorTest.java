@@ -1,5 +1,6 @@
 package no.spt.sdk.exceptions;
 
+import no.spt.sdk.TestData;
 import no.spt.sdk.client.DataTrackingResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class LoggingErrorCollectorTest {
         Map<String, String> header = new HashMap<String, String>();
         header.put("contentType", "application/json");
         DataTrackingResponse response = new DataTrackingResponse(200, header, "Message body");
-        DataTrackingException e = new DataTrackingException("error", response);
+        DataTrackingException e = TestData.getDataTrackingException();
         errorCollector.collect(e);
     }
 }

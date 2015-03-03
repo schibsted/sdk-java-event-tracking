@@ -4,6 +4,7 @@ import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.exceptions.error.ActivitySendingError;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -91,7 +92,7 @@ public class HttpClientConnection implements HttpConnection {
         try {
             httpClient.close();
         } catch (IOException e) {
-            throw new DataTrackingException(e);
+            throw new DataTrackingException(e, ActivitySendingError.CLOSING_CLIENT_ERROR);
         }
     }
 

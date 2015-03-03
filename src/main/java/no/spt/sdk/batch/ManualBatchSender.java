@@ -7,6 +7,7 @@ import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
+import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
@@ -57,7 +58,7 @@ public class ManualBatchSender implements Sender {
                 try {
                     activity = activityQueue.poll(500, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    throw new DataTrackingException(e);
+                    throw new DataTrackingException(e, ActivitySendingError.INTERRUPTED_ERROR);
                 }
 
                 if (activity != null) {
@@ -70,15 +71,18 @@ public class ManualBatchSender implements Sender {
             do {
                 try {
                     if (current.size() > 0) {
-                        DataTrackingResponse response = client.send(new DataTrackingPostRequest(options.getDataCollectorUrl(),
-                                null, jsonConverter.serialize(current)));
+                        DataTrackingResponse response = client.send(new DataTrackingPostRequest(options
+                                .getDataCollectorUrl(), null, jsonConverter.serialize(current)));
                         current = new LinkedList<Activity>();
-                        if(response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-                            throw new DataTrackingException("Response from Data Collector was not OK", response);
-                        } else if(response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
-                            throw new DataTrackingException("Some of the activities could not be validated by Data Collector", response);
-                        } else if(response.getResponseCode() != HttpStatus.SC_OK) {
-                            throw new DataTrackingException("Unexpected response from Data Collector", response);
+                        if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
+                            throw new DataTrackingException("Response from Data Collector was not OK", response,
+                                    ActivitySendingError.BAD_REQUEST);
+                        } else if (response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
+                            throw new DataTrackingException("Some of the activities could not be validated by Data " +
+                                    "Collector", response, ActivitySendingError.VALIDATION_ERROR);
+                        } else if (response.getResponseCode() != HttpStatus.SC_OK) {
+                            throw new DataTrackingException("Unexpected response from Data Collector", response,
+                                    ActivitySendingError.UNEXPECTED_RESPONSE);
                         }
                     }
                     success = true;
@@ -90,7 +94,7 @@ public class ManualBatchSender implements Sender {
 
             if (!success) {
                 throw new DataTrackingException(String.format("Unable to send batch after %s tries. Giving up on " +
-                        "this" + " batch.", retryCount));
+                        "this" + " batch.", retryCount), ActivitySendingError.HTTP_CONNECTION_ERROR);
             }
         } while (activityQueue.size() > 0);
     }
@@ -109,7 +113,8 @@ public class ManualBatchSender implements Sender {
         if (currentQueueSize <= maxQueueSize) {
             this.activityQueue.add(activity);
         } else {
-            throw new DataTrackingException("Queue has reached maxSize, dropping activity.");
+            throw new DataTrackingException("Queue has reached maxSize, dropping activity.", ActivitySendingError
+                    .QUEUE_MAX_SIZE_REACHED);
         }
     }
 

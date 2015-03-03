@@ -57,7 +57,7 @@ public class MockedDataTrackingClientTest {
 
     @Test
     public void testSendingOneActivitySenderEnqueueThrowsException() throws Exception {
-        doThrow(new DataTrackingException("An error occurred")).when(sender).enqueue(any(Activity.class));
+        doThrow(TestData.getDataTrackingException()).when(sender).enqueue(any(Activity.class));
         Activity activity = TestData.getTestActivity();
         client.send(activity);
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
@@ -65,7 +65,7 @@ public class MockedDataTrackingClientTest {
 
     @Test
     public void testTrackingAndSendingOneActivitySenderFlushThrowsException() throws Exception {
-        doThrow(new DataTrackingException("An error occurred")).when(sender).flush();
+        doThrow(TestData.getDataTrackingException()).when(sender).flush();
         Activity activity = TestData.getTestActivity();
         client.track(activity);
         client.send();
@@ -74,7 +74,7 @@ public class MockedDataTrackingClientTest {
 
     @Test
     public void testClosingClientSenderCloseThrowsException() throws Exception {
-        doThrow(new DataTrackingException("An error occurred")).when(sender).close();
+        doThrow(TestData.getDataTrackingException()).when(sender).close();
         client.close();
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
     }
