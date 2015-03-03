@@ -96,12 +96,14 @@ public class ReportingErrorCollector implements ErrorCollector {
             private final Options options;
             private final DataTrackingError errorCode;
             private final String errorMessage;
+            private final String timestamp;
 
             public ErrorReport(DataTrackingException exception, Options options) {
                 this.errorCode = exception.getErrorCode();
                 this.errorMessage = exception.getMessage();
                 this.options = options;
                 this.sdkVersion = getClass().getPackage().getImplementationVersion();
+                this.timestamp = exception.getTimestamp();
             }
 
             public String getSdkType() {
@@ -122,6 +124,10 @@ public class ReportingErrorCollector implements ErrorCollector {
 
             public String getErrorMessage() {
                 return errorMessage;
+            }
+
+            public String getTimestamp() {
+                return timestamp;
             }
         }
     }
