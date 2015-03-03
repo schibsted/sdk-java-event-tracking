@@ -36,7 +36,7 @@ public class MockedDataTrackingClientTest {
 
     @Before
     public void setUp() throws Exception {
-        options = new Options.Builder().setDataCollectorUrl("http://localhost:8090/")
+        options = new Options.Builder("abc123").setDataCollectorUrl("http://localhost:8090/")
                 .setAnonymousIdUrl("http://localhost:8091/")
                 .setMaxQueueSize(10000)
                 .setTimeout(1000)

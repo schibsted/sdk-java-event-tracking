@@ -29,7 +29,7 @@ public class ReportingErrorCollectorTest {
 
     @Before
     public void setUp() throws Exception {
-        options = new Options.Builder().build();
+        options = new Options.Builder("abc123").build();
         jsonConverter = new JacksonASJsonConverter();
         errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter);
     }

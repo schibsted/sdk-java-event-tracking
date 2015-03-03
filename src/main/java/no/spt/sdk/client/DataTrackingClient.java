@@ -199,8 +199,7 @@ public class DataTrackingClient {
          */
         public DataTrackingClient build() {
             if (options == null) {
-                options = new Options.Builder()
-                        .build();
+                throw new IllegalArgumentException("Data-collector-sdk#DataTrackingClient#options cannot be null.");
             }
             if (httpConnection == null) {
                 httpConnection = new HttpClientConnection(options);

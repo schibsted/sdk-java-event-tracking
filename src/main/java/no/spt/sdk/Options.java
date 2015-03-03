@@ -5,6 +5,7 @@ package no.spt.sdk;
  */
 public class Options {
 
+    private final String clientId;
     private final String dataCollectorUrl;
     private final String anonymousIdUrl;
     private final String errorReportingUrl;
@@ -12,14 +13,23 @@ public class Options {
     private final int timeout;
     private final int retries;
 
-    private Options(String dataCollectorUrl, String anonymousIdUrl, String errorReportingUrl, int maxQueueSize,
-                    int timeout, int retries) {
+    private Options(String clientId, String dataCollectorUrl, String anonymousIdUrl, String errorReportingUrl,
+                    int maxQueueSize, int timeout, int retries) {
+        this.clientId = clientId;
         this.dataCollectorUrl = dataCollectorUrl;
         this.anonymousIdUrl = anonymousIdUrl;
         this.errorReportingUrl = errorReportingUrl;
         this.maxQueueSize = maxQueueSize;
         this.timeout = timeout;
         this.retries = retries;
+    }
+
+    /**
+     * Gets the client ID
+     * @return The client ID
+     */
+    public String getClientId() {
+        return clientId;
     }
 
     /**
@@ -76,12 +86,17 @@ public class Options {
      */
     public static class Builder {
 
+        private final String clientId;
         private String dataCollectorUrl = Defaults.DATA_COLLECTOR_URL;
         private String anonymousIdUrl = Defaults.ANONYMOUS_ID_SERVICE_URL;
         private String errorReportingUrl = Defaults.ERROR_REPORTING_URL;
         private int maxQueueSize = Defaults.MAX_QUEUE_SIZE;
         private int timeout = Defaults.TIMEOUT;
         private int retries = Defaults.RETRIES;
+
+        public Builder(String clientId) {
+            this.clientId = clientId;
+        }
 
         /**
          * @param dataCollectorUrl The url to the data collector endpoint
@@ -137,6 +152,12 @@ public class Options {
             return this;
         }
 
+        private void validateClientId(String clientId) {
+            if(clientId == null || clientId.equals("")) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#clientId must be a valid client ID.");
+            }
+        }
+
         private void validateRetries(int retries) {
             if(retries < 0) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#retries must be greater or equal to 0.");
@@ -174,13 +195,14 @@ public class Options {
         }
 
         public Options build() {
+            validateClientId(clientId);
             validateDataCollectorUrl(dataCollectorUrl);
             validateAnonymousIdUrl(anonymousIdUrl);
             validateErrorReportingUrl(errorReportingUrl);
             validateMaxQueueSize(maxQueueSize);
             validateTimeout(timeout);
             validateRetries(retries);
-            return new Options(dataCollectorUrl, anonymousIdUrl, errorReportingUrl, maxQueueSize, timeout, retries);
+            return new Options(clientId, dataCollectorUrl, anonymousIdUrl, errorReportingUrl, maxQueueSize, timeout, retries);
         }
     }
 
