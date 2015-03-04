@@ -41,6 +41,9 @@ and send batches of activities to the data collector if the queue contains multi
 
 See the API documentation for more details.
 
+### Error reporting
+By default the client is setup to report errors to a central error collector for easy monitoring.
+
 ### Options
 ```java
 // The unique client ID provided by SPT
@@ -51,6 +54,9 @@ String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
 
 // The url to the anonymous identity service endpoint
 String anonymousIdServiceUrl = "http://example.anonymous-id.com/api/v1/identify";
+
+// The url to the error report collector endpoint
+String errorReportingUrl = "http://example.error-reporting.com/api/v1/error";
 
 // The maximum size of the activity queue waiting to be sent to the data collector. If the queue reaches
 // this size, any additional activities will be dropped to prevent memory problems.
@@ -65,6 +71,7 @@ int sendRetries = 2;
 Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
              .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setErrorReportingUrl(errorReportingUrl)
              .setMaxQueueSize(maxActivityQueueSize)
              .setTimeout(sendTimeout)
              .setRetries(sendRetries)
@@ -81,13 +88,15 @@ public class Example {
     String clientId = "4cf36fa274dea2117e030000";
     String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
     String anonymousIdServiceUrl = "http://example.anonymous-id.com/api/v1/identify";
-    int maxActivityQueueSize = 50000;
+    String errorReportingUrl = "http://example.error-reporting.com/api/v1/error";
+    int maxActivityQueueSize = 10000;
     int sendTimeout = 1000;
     int sendRetries = 2;
 
     Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
              .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setErrorReportingUrl(errorReportingUrl)
              .setMaxQueueSize(maxActivityQueueSize)
              .setTimeout(sendTimeout)
              .setRetries(sendRetries)
@@ -98,19 +107,28 @@ public class Example {
              .withAutomaticActivitySender()
              .build();
 
+    AnonymousIdentity anonymousId = null;
+    Map<String, String> identifiers = new HashMap<String, String>();
+    identifiers.put("SomeKey", "SomeUniqueValue");
+    try {
+        anonymousId = client.getAnonymousId(identifiers);
+    } catch (DataTrackingException e) {
+        e.printStackTrace();
+    }
+
     Activity activity = activity("Read")
-             .publishedNow()
-             .actor(actor("Person", "urn:spid.no:person:abc123")
-                     .displayName("User with ID abc123"))
-             .provider(provider("Organization", "urn:spid.no:vg123")
-                     .displayName("Example organization"))
-             .object(object("Article", "urn:example.no:article:art123")
-                     .url("http://www.example.com/article/art123")
-                     .displayName("An example article"))
-             .build();
+            .publishedNow()
+            .actor(actor("Person", "urn:spid.no:person:" + anonymousId.getSessionId())
+                    .displayName("User with ID " + anonymousId.getSessionId()))
+            .provider(provider("Organization", "urn:spid.no:vg123")
+                    .displayName("Example organization"))
+            .object(object("Article", "urn:example.no:article:art123")
+                    .url("http://www.example.com/article/art123")
+                    .displayName("An example article"))
+            .build();
 
-     client.track(activity);
-
+    client.track(activity);
+    client.close();
   }
 
 }
@@ -157,16 +175,21 @@ The Target is the indirect object, or target, of the Activity. Target is a subcl
 import static no.spt.sdk.models.Makers.*;
 ```
 By static importing Makers you can use static helper methods for creating objects
-(e.g. `actor("Person", "ID-123").build()` to create an actor)
+(e.g. `actor("Person", "urn:spid.no:person:abc123").build()` to create an actor)
 
 ## Anonymous ID
 To be able to track anonymous users, each user has to be given a unique anonymous ID. This is done based on some
 identifiers that are sent to the Anonymous Identity Service which returns an ID. The Tracking Client has a method for
 fetching an ID from the Anonymous Identity Service based on a `Map<String, String>` of identifiers. These identifiers
-should be enough to uniquely identify the user or the returned ID will only be a temporarily ID used for this session.
+should be enough to uniquely identify the user or the returned ID will only be a temporary ID used for this session.
 
 ```java
-Map<String, String> identifier = new HashMap<String, String>();
-identifier.put("SomeKey", "SomeUniqueValue");
+Map<String, String> identifiers = new HashMap<String, String>();
+identifiers.put("SomeKey", "SomeUniqueValue");
 AnonymousIdentity anonymousId = client.getAnonymousId(identifiers);
 ```
+
+The AnonymousIdentity object contains a sessionId which is the ID that should be used for the actor of the activity.
+It also contains an environmentId which is unique for this user and can be used to obtain a new sessionId from the
+Anonymous Identity Service by sending it as a property.
+

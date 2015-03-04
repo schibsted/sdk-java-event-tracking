@@ -18,7 +18,7 @@ public class Defaults {
     /**
      * The URL to the error reports collector
      */
-    public static final String ERROR_REPORTING_URL = "http://localhost:8085/api"; // TODO Correct URL
+    public static final String ERROR_REPORTING_URL = "http://localhost:8004/api/v1/error"; // TODO Correct URL
 
     /**
      * The maximum size of the activities queue

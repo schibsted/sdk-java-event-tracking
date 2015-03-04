@@ -37,8 +37,8 @@ public class DataTrackingClient {
      * The default implementation uses a {@link no.spt.sdk.batch.AutomaticBatchSender} with a
      * {@link no.spt.sdk.connection.HttpClientConnection} to automatically send activities to the data collector on a separate
      * thread.
-     * It uses a {@link no.spt.sdk.exceptions.LoggingErrorCollector} to collect errors that occur while tracking
-     * activities.
+     * It uses a {@link no.spt.sdk.exceptions.ReportingErrorCollector} to collect errors that occur while tracking
+     * activities and sending error reports to a central error collector.
      */
     public static class Builder {
 
