@@ -133,6 +133,9 @@ public class Activity {
         }
 
         public Activity build() {
+            if(_temp.published == null || "".equals(_temp.published)) {
+                publishedNow();
+            }
             return _temp;
         }
     }
