@@ -78,7 +78,8 @@ public class ReportingErrorCollector implements ErrorCollector {
                     retryCount++;
                     success = false;
                 }
-            } while (!success && retryCount < options.getRetries()); // TODO If errors cannot be sent they are dropped
+            } while (!success && retryCount < options.getRetries());
+            // If errors cannot be sent they are dropped
         }
 
         private List<ErrorReport> convertToErrorReports(List<DataTrackingException> errors) {

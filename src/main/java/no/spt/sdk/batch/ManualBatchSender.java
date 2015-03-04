@@ -141,7 +141,7 @@ public class ManualBatchSender implements Sender {
 
     @Override
     public void init() {
-        // TODO
+        // Nothing has to be initiated
     }
 
 }
