@@ -92,7 +92,7 @@ public class ReportingErrorCollector implements ErrorCollector {
 
         private static class ErrorReport {
 
-            private static final String sdkType = "JAVA";
+            private final String sdkType;
             private final String sdkVersion;
             private final Options options;
             private final DataTrackingError errorCode;
@@ -105,6 +105,7 @@ public class ReportingErrorCollector implements ErrorCollector {
                 this.options = options;
                 this.sdkVersion = getClass().getPackage().getImplementationVersion();
                 this.timestamp = exception.getTimestamp();
+                this.sdkType = "JAVA";
             }
 
             public String getSdkType() {
