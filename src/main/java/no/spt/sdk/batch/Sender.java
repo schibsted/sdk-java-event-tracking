@@ -1,5 +1,6 @@
 package no.spt.sdk.batch;
 
+import no.spt.sdk.exceptions.CommunicationDataTrackingException;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.models.Activity;
 
@@ -12,8 +13,9 @@ public interface Sender {
      * A method that sends all activities in the queue to the data collector
      *
      * @throws DataTrackingException
+     * @throws CommunicationDataTrackingException
      */
-    public void flush() throws DataTrackingException;
+    public void flush() throws DataTrackingException, CommunicationDataTrackingException;
 
     /**
      * Enqueue an activity to be sent to the data collector.

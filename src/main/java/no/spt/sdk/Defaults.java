@@ -34,4 +34,14 @@ public class Defaults {
      * The number of times to retry a request to the data collector
      */
     public static final int RETRIES = 2;
+
+    /**
+     * The maximum size of a batch of activities
+     */
+    public static final int MAX_ACTIVITY_BATCH_SIZE = 20;
+
+    /**
+     * The maximum size of a batch of errors
+     */
+    public static final int MAX_ERROR_BATCH_SIZE = 5;
 }

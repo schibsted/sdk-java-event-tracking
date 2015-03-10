@@ -1,6 +1,5 @@
 package no.spt.sdk.batch;
 
-import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.client.DataTrackingPostRequest;
@@ -66,7 +65,7 @@ public class AutomaticBatchSenderTest {
         Activity activity = TestData.getTestActivity();
         when(dataCollectorConnector.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse
                 (200, null, "OK"));
-        for (int i = 0; i <= Constants.MAX_BATCH_SIZE; i++) {
+        for (int i = 0; i <= options.getMaxActivityBatchSize(); i++) {
             batchSender.enqueue(activity);
         }
         sleep(200);

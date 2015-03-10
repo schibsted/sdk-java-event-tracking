@@ -2,6 +2,7 @@ package no.spt.sdk;
 
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
+import no.spt.sdk.exceptions.CommunicationDataTrackingException;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.models.*;
@@ -183,6 +184,14 @@ public class TestData {
         Map<String, String> header = new HashMap<String, String>();
         header.put("contentType", "application/json");
         DataTrackingResponse response = new DataTrackingResponse(200, header, "Message body");
-        return new DataTrackingException("error", response, ActivitySendingError.GENERAL_ACTIVITY_SENDING_ERROR);
+        return new DataTrackingException("error", ActivitySendingError.GENERAL_ACTIVITY_SENDING_ERROR);
+    }
+
+    public static CommunicationDataTrackingException getCommunicationDataTrackingException() throws IOException {
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("contentType", "application/json");
+        DataTrackingResponse response = new DataTrackingResponse(200, header, "Message body");
+        return new CommunicationDataTrackingException("error", response, getTestDataTrackingPostRequest
+                (getDefaultOptions()), ActivitySendingError.GENERAL_ACTIVITY_SENDING_ERROR);
     }
 }

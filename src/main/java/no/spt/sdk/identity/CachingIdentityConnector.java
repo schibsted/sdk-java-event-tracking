@@ -7,6 +7,7 @@ import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
+import no.spt.sdk.exceptions.CommunicationDataTrackingException;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.error.AnonymousIdentityError;
 import no.spt.sdk.models.AnonymousIdentity;
@@ -61,18 +62,20 @@ public class CachingIdentityConnector implements IdentityConnector {
 
     private AnonymousIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
         DataTrackingResponse response;
+        DataTrackingPostRequest request;
         try {
-            response = httpConnection.send(new DataTrackingPostRequest(options.getAnonymousIdUrl(), null,
-                    jsonConverter.serialize(identifiers)));
+            request = new DataTrackingPostRequest(options.getAnonymousIdUrl(), null,
+                    jsonConverter.serialize(identifiers));
+            response = httpConnection.send(request);
         } catch (IOException e) {
             throw new DataTrackingException(e, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
         if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-            throw new DataTrackingException("Response from Anonymous Identity Service was not OK", response,
-                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Response from Anonymous Identity Service was not OK", response,
+                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         } else if (response.getResponseCode() != HttpStatus.SC_OK) {
-            throw new DataTrackingException("Unexpected response from Anonymous Identity Service", response,
-                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Unexpected response from Anonymous Identity Service", response,
+                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
         AnonymousIdentity anonymousIdentity;
         try {
@@ -82,8 +85,8 @@ public class CachingIdentityConnector implements IdentityConnector {
         }
         if (anonymousIdentity.getData()
                 .isEmpty()) {
-            throw new DataTrackingException("Unexpected data from Anonymous Identity Service", response,
-                    AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Unexpected data from Anonymous Identity Service", response,
+                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
         }
         return anonymousIdentity;
     }

@@ -45,7 +45,17 @@ public class ReportingErrorCollectorTest {
     @Test
     public void testCollectMoreThanMaxQueueSize() throws Exception {
         DataTrackingException e = TestData.getDataTrackingException();
-        for(int i = 0; i <= 20; i++) {
+        for (int i = 0; i <= 5; i++) {
+            errorCollector.collect(e);
+        }
+        sleep(200);
+        verify(httpConnection, times(1)).send(any(DataTrackingPostRequest.class));
+    }
+
+    @Test
+    public void testCollectMoreThanMaxQueueSizeCommunicationDataTrackingException() throws Exception {
+        DataTrackingException e = TestData.getCommunicationDataTrackingException();
+        for (int i = 0; i <= 5; i++) {
             errorCollector.collect(e);
         }
         sleep(200);
@@ -55,7 +65,7 @@ public class ReportingErrorCollectorTest {
     @Test
     public void testCollect100Exceptions() throws Exception {
         DataTrackingException e = TestData.getDataTrackingException();
-        for(int i = 0; i <= 100; i++) {
+        for(int i = 0; i <= 25; i++) {
             errorCollector.collect(e);
         }
         sleep(500);

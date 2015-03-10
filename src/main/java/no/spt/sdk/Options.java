@@ -12,9 +12,11 @@ public class Options {
     private final int maxQueueSize;
     private final int timeout;
     private final int retries;
+    private final int maxActivityBatchSize;
+    private final int maxErrorBatchSize;
 
-    private Options(String clientId, String dataCollectorUrl, String anonymousIdUrl, String errorReportingUrl,
-                    int maxQueueSize, int timeout, int retries) {
+    private Options(String clientId, String dataCollectorUrl, String anonymousIdUrl, String errorReportingUrl, int
+            maxQueueSize, int timeout, int retries, int maxActivityBatchSize, int maxErrorBatchSize) {
         this.clientId = clientId;
         this.dataCollectorUrl = dataCollectorUrl;
         this.anonymousIdUrl = anonymousIdUrl;
@@ -22,10 +24,13 @@ public class Options {
         this.maxQueueSize = maxQueueSize;
         this.timeout = timeout;
         this.retries = retries;
+        this.maxActivityBatchSize = maxActivityBatchSize;
+        this.maxErrorBatchSize = maxErrorBatchSize;
     }
 
     /**
      * Gets the client ID
+     *
      * @return The client ID
      */
     public String getClientId() {
@@ -34,6 +39,7 @@ public class Options {
 
     /**
      * Gets the data collector endpoint
+     *
      * @return The data collector endpoint
      */
     public String getDataCollectorUrl() {
@@ -42,6 +48,7 @@ public class Options {
 
     /**
      * Gets the anonymous identity service endpoint
+     *
      * @return The anonymous identity service endpoint
      */
     public String getAnonymousIdUrl() {
@@ -50,6 +57,7 @@ public class Options {
 
     /**
      * Gets the error reporting endpoint
+     *
      * @return The error reporting endpoint
      */
     public String getErrorReportingUrl() {
@@ -59,6 +67,7 @@ public class Options {
     /**
      * Gets the maximum size of the activity queue waiting to be sent to the data collector.
      * If the queue has reached the maximum size it will no longer accept new activities and those will be dropped.
+     *
      * @return The maximum size of the activity queue waiting to be sent to the data collector
      */
     public int getMaxQueueSize() {
@@ -67,6 +76,7 @@ public class Options {
 
     /**
      * Gets the amount of milliseconds before an HTTP request is marked as timed out
+     *
      * @return The amount of milliseconds before an HTTP request is marked as timed out
      */
     public int getTimeout() {
@@ -75,10 +85,29 @@ public class Options {
 
     /**
      * Gets the amount of times to retry an HTTP request
+     *
      * @return The amount of times to retry an HTTP request
      */
     public int getRetries() {
         return retries;
+    }
+
+    /**
+     * Gets the maximum size of a batch of activities that is sent to the data collector.
+     *
+     * @return The maximum size of a batch of activities that is sent to the data collector.
+     */
+    public int getMaxActivityBatchSize() {
+        return maxActivityBatchSize;
+    }
+
+    /**
+     * Gets the maximum size of a batch of errors that is sent to the central error collector.
+     *
+     * @return The maximum size of a batch of errors that is sent to the central error collector.
+     */
+    public int getMaxErrorBatchSize() {
+        return maxErrorBatchSize;
     }
 
     /**
@@ -93,6 +122,8 @@ public class Options {
         private int maxQueueSize = Defaults.MAX_QUEUE_SIZE;
         private int timeout = Defaults.TIMEOUT;
         private int retries = Defaults.RETRIES;
+        private int maxActivityBatchSize = Defaults.MAX_ACTIVITY_BATCH_SIZE;
+        private int maxErrorBatchSize = Defaults.MAX_ERROR_BATCH_SIZE;
 
         public Builder(String clientId) {
             this.clientId = clientId;
@@ -152,45 +183,78 @@ public class Options {
             return this;
         }
 
+        public Builder setMaxActivityBatchSize(int maxActivityBatchSize) {
+            this.maxActivityBatchSize = maxActivityBatchSize;
+            return this;
+        }
+
+        public Builder setMaxErrorBatchSize(int maxErrorBatchSize) {
+            this.maxErrorBatchSize = maxErrorBatchSize;
+            return this;
+        }
+
         private void validateClientId(String clientId) {
-            if(clientId == null || clientId.equals("")) {
+            if (clientId == null || clientId.equals("")) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#clientId must be a valid client ID.");
             }
         }
 
         private void validateRetries(int retries) {
-            if(retries < 0) {
+            if (retries < 0) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#retries must be greater or equal to 0.");
             }
         }
 
         private void validateTimeout(int timeout) {
-            if(timeout < 500) {
-                throw new IllegalArgumentException("Data-collector-sdk#options#timeout must be at least 500 milliseconds.");
+            if (timeout < 500) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#timeout must be at least 500 " +
+                        "milliseconds.");
             }
         }
 
         private void validateMaxQueueSize(int maxQueueSize) {
-            if(maxQueueSize < 1) {
+            if (maxQueueSize < 1) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#maxQueueSize must be greater than 0.");
             }
         }
 
         private void validateErrorReportingUrl(String errorReportingUrl) {
-            if(errorReportingUrl == null || errorReportingUrl.equals("")) {
+            if (errorReportingUrl == null || errorReportingUrl.equals("")) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#errorReportingUrl must be a valid url.");
             }
         }
 
         private void validateAnonymousIdUrl(String anonymousIdUrl) {
-            if(anonymousIdUrl == null || anonymousIdUrl.equals("")) {
+            if (anonymousIdUrl == null || anonymousIdUrl.equals("")) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#anonymousIdUrl must be a valid url.");
             }
         }
 
         private void validateDataCollectorUrl(String dataCollectorUrl) {
-            if(dataCollectorUrl == null || dataCollectorUrl.equals("")) {
+            if (dataCollectorUrl == null || dataCollectorUrl.equals("")) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#dataCollectorUrl must be a valid url.");
+            }
+        }
+
+        private void validateMaxActivityBatchSize(int maxActivityBatchSize) {
+            if (maxActivityBatchSize < 1) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#maxActivityBatchSize must be greater " +
+                        "than 0.");
+            }
+            if (maxActivityBatchSize > 20) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#maxActivityBatchSize must be less than" +
+                        " 20.");
+            }
+        }
+
+        private void validateMaxErrorBatchSize(int maxErrorBatchSize) {
+            if (maxErrorBatchSize < 1) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#maxErrorBatchSize must be greater than" +
+                        " 0.");
+            }
+            if (maxErrorBatchSize > 20) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#maxErrorBatchSize must be less than 20" +
+                        ".");
             }
         }
 
@@ -202,7 +266,10 @@ public class Options {
             validateMaxQueueSize(maxQueueSize);
             validateTimeout(timeout);
             validateRetries(retries);
-            return new Options(clientId, dataCollectorUrl, anonymousIdUrl, errorReportingUrl, maxQueueSize, timeout, retries);
+            validateMaxActivityBatchSize(maxActivityBatchSize);
+            validateMaxErrorBatchSize(maxErrorBatchSize);
+            return new Options(clientId, dataCollectorUrl, anonymousIdUrl, errorReportingUrl, maxQueueSize, timeout,
+                    retries, maxActivityBatchSize, maxErrorBatchSize);
         }
     }
 

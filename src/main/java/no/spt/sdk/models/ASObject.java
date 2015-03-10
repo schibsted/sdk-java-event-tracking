@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
@@ -81,6 +78,24 @@ public class ASObject {
             return (B)this;
         }
 
+        public B set(String key, List<String> value) {
+            if (value == null || value.isEmpty()) {
+                return (B)this;
+            } else {
+                map.put(key, value);
+            }
+            return (B)this;
+        }
+
+        public B set(String key, JsonString jsonString) {
+            if (jsonString == null) {
+                return (B)this;
+            } else {
+                map.put(key, jsonString);
+            }
+            return (B)this;
+        }
+
         public B id(String id) {
             return set("@id", id);
         }
@@ -121,6 +136,8 @@ public class ASObject {
         public ASObject build() {
             return new ASObject(this);
         }
+
+
     }
 
 }

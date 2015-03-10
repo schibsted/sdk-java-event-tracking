@@ -1,6 +1,5 @@
 package no.spt.sdk.batch;
 
-import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.client.DataTrackingPostRequest;
@@ -77,10 +76,10 @@ public class ManualBatchSenderTest {
     @Test
     public void testEnqueueMoreThanMaxBatchSize() throws Exception {
         Activity activity = TestData.getTestActivity();
-        for(int i = 0; i <= Constants.MAX_BATCH_SIZE; i++) {
+        for(int i = 0; i <= options.getMaxActivityBatchSize(); i++) {
             batchSender.enqueue(activity);
         }
-        assertEquals(Constants.MAX_BATCH_SIZE + 1, batchSender.getQueueDepth());
+        assertEquals(options.getMaxActivityBatchSize() + 1, batchSender.getQueueDepth());
         batchSender.flush();
         assertEquals(0, batchSender.getQueueDepth());
         verify(dataCollectorConnector, times(2)).send(any(DataTrackingPostRequest.class));

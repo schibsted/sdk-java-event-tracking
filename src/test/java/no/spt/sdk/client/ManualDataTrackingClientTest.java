@@ -1,7 +1,6 @@
 package no.spt.sdk.client;
 
 
-import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.TestData;
 import no.spt.sdk.models.Activity;
@@ -75,13 +74,13 @@ public class ManualDataTrackingClientTest {
 
     @Test
     public void testQueueingActivitiesAndSendingManually() throws Exception {
-        int noActivites = Constants.MAX_BATCH_SIZE + 1;
+        int noActivites = options.getMaxActivityBatchSize() + 1;
         trackActivities(noActivites);
         client.send();
         sleep(500);
         mockServer.verify(request().withPath("/")
                                    .withHeaders(new Header("Content-Type", "application/json; charset=utf-8")),
-                VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / Constants.MAX_BATCH_SIZE)));
+                VerificationTimes.exactly((int) Math.ceil(((double) noActivites) / options.getMaxActivityBatchSize())));
     }
 
     @Test

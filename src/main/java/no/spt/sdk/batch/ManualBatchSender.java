@@ -1,11 +1,11 @@
 package no.spt.sdk.batch;
 
 
-import no.spt.sdk.Constants;
 import no.spt.sdk.Options;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
+import no.spt.sdk.exceptions.CommunicationDataTrackingException;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.models.Activity;
@@ -44,9 +44,10 @@ public class ManualBatchSender implements Sender {
      * Blocks until all activities are sent.
      *
      * @throws DataTrackingException If something goes wrong while sending activities
+     * @throws CommunicationDataTrackingException If the Data Collector returns an error
      */
     @Override
-    public void flush() throws DataTrackingException {
+    public void flush() throws DataTrackingException, CommunicationDataTrackingException {
         do {
             List<Activity> current = new LinkedList<Activity>();
             do {
@@ -64,25 +65,27 @@ public class ManualBatchSender implements Sender {
                 if (activity != null) {
                     current.add(activity);
                 }
-            } while (activityQueue.size() > 0 && current.size() < Constants.MAX_BATCH_SIZE);
+            } while (activityQueue.size() > 0 && current.size() < options.getMaxActivityBatchSize());
             boolean success = true;
             int retryCount = 0;
 
             do {
                 try {
                     if (current.size() > 0) {
-                        DataTrackingResponse response = client.send(new DataTrackingPostRequest(options
-                                .getDataCollectorUrl(), null, jsonConverter.serialize(current)));
+                        DataTrackingPostRequest request = new DataTrackingPostRequest(options.getDataCollectorUrl(),
+                                null, jsonConverter.serialize(current));
+                        DataTrackingResponse response = client.send(request);
                         current = new LinkedList<Activity>();
                         if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-                            throw new DataTrackingException("Response from Data Collector was not OK", response,
-                                    ActivitySendingError.BAD_REQUEST);
+                            throw new CommunicationDataTrackingException("Response from Data Collector was not OK",
+                                    response, request, ActivitySendingError.BAD_REQUEST);
                         } else if (response.getResponseCode() == HttpStatus.SC_MULTI_STATUS) {
-                            throw new DataTrackingException("Some of the activities could not be validated by Data " +
-                                    "Collector", response, ActivitySendingError.VALIDATION_ERROR);
+                            throw new CommunicationDataTrackingException("Some of the activities could not be " +
+                                    "validated by Data Collector", response, request, ActivitySendingError
+                                    .VALIDATION_ERROR);
                         } else if (response.getResponseCode() != HttpStatus.SC_OK) {
-                            throw new DataTrackingException("Unexpected response from Data Collector", response,
-                                    ActivitySendingError.UNEXPECTED_RESPONSE);
+                            throw new CommunicationDataTrackingException("Unexpected response from Data Collector",
+                                    response, request, ActivitySendingError.UNEXPECTED_RESPONSE);
                         }
                     }
                     success = true;
