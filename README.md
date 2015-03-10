@@ -19,7 +19,7 @@ To use the SDK in your projects include it in your pom.xml.
 <dependency>
     <groupId>no.spt.sdk</groupId>
     <artifactId>data-collector-sdk-java</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -52,8 +52,8 @@ String clientId = "4cf36fa274dea2117e030000";
 // The url to the data collector endpoint
 String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
 
-// The url to the anonymous identity service endpoint
-String anonymousIdServiceUrl = "http://example.anonymous-id.com/api/v1/identify";
+// The url to the Central Identification Service (CIS) endpoint
+String CISUrl = "http://example.CIS.com/api/v1/identify";
 
 // The url to the error report collector endpoint
 String errorReportingUrl = "http://example.error-reporting.com/api/v1/error";
@@ -70,7 +70,7 @@ int sendRetries = 2;
 
 Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
-             .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setCISUrl(CISUrl)
              .setErrorReportingUrl(errorReportingUrl)
              .setMaxQueueSize(maxActivityQueueSize)
              .setTimeout(sendTimeout)
@@ -87,7 +87,7 @@ public class Example {
   public static void main(String... args) {
     String clientId = "4cf36fa274dea2117e030000";
     String dataTrackerUrl = "http://example.data-collector.com/api/v1/track";
-    String anonymousIdServiceUrl = "http://example.anonymous-id.com/api/v1/identify";
+    String CISUrl = "http://example.CIS.com/api/v1/identify";
     String errorReportingUrl = "http://example.error-reporting.com/api/v1/error";
     int maxActivityQueueSize = 10000;
     int sendTimeout = 1000;
@@ -95,7 +95,7 @@ public class Example {
 
     Options options = new Options.Builder(clientId)
              .setDataCollectorUrl(dataTrackerUrl)
-             .setAnonymousIdUrl(anonymousIdServiceUrl)
+             .setCISUrl(CISUrl)
              .setErrorReportingUrl(errorReportingUrl)
              .setMaxQueueSize(maxActivityQueueSize)
              .setTimeout(sendTimeout)
@@ -107,19 +107,19 @@ public class Example {
              .withAutomaticActivitySender()
              .build();
 
-    AnonymousIdentity anonymousId = null;
+    TrackingIdentity trackingId = null;
     Map<String, String> identifiers = new HashMap<String, String>();
     identifiers.put("SomeKey", "SomeUniqueValue");
     try {
-        anonymousId = client.getAnonymousId(identifiers);
+        trackingId = client.getTrackingId(identifiers);
     } catch (DataTrackingException e) {
         e.printStackTrace();
     }
 
     Activity activity = activity("Read")
             .publishedNow()
-            .actor(actor("Person", "urn:spid.no:person:" + anonymousId.getSessionId())
-                    .displayName("User with ID " + anonymousId.getSessionId()))
+            .actor(actor("Person", "urn:spid.no:person:" + trackingId.getSessionId())
+                    .displayName("User with session ID " + trackingId.getSessionId()))
             .provider(provider("Organization", "urn:spid.no:vg123")
                     .displayName("Example organization"))
             .object(object("Article", "urn:example.no:article:art123")
@@ -162,8 +162,8 @@ The Provider is the entity that is sending the Activity. The type is typically `
  `urn:spid.no:vg123` where the last part is supplied by SPT.
 
 ### Actor
-The Actor is the entity that is carrying out the Activity. For anonymous tracking this is typically a user with the type
-`Person` and an ID on the form `urn:spid.no:person:abc123` where the last part can be fetched from the anonymous identity
+The Actor is the entity that is carrying out the Activity. For user tracking this is typically a user with the type
+`Person` and an ID on the form `urn:spid.no:person:abc123` where the last part can be fetched from the central identity
 service.
 
 ### Target
@@ -177,19 +177,20 @@ import static no.spt.sdk.models.Makers.*;
 By static importing Makers you can use static helper methods for creating objects
 (e.g. `actor("Person", "urn:spid.no:person:abc123").build()` to create an actor)
 
-## Anonymous ID
-To be able to track anonymous users, each user has to be given a unique anonymous ID. This is done based on some
-identifiers that are sent to the Anonymous Identity Service which returns an ID. The Tracking Client has a method for
-fetching an ID from the Anonymous Identity Service based on a `Map<String, String>` of identifiers. These identifiers
-should be enough to uniquely identify the user or the returned ID will only be a temporary ID used for this session.
+## Tracking ID
+To be able to track users, each user has to be given a unique ID. This is done based on some
+identifiers that are sent to the Central Identity Service which returns an environmentId and a sessionId.
+The Tracking Client has a method for fetching an ID from the Central Identity Service based on a
+`Map<String, String>` of identifiers. These identifiers should be enough to uniquely identify the user or the
+returned ID will only be a temporary ID used for this session.
 
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("SomeKey", "SomeUniqueValue");
-AnonymousIdentity anonymousId = client.getAnonymousId(identifiers);
+UserIdentity userId = client.getUserId(identifiers);
 ```
 
-The AnonymousIdentity object contains a sessionId which is the ID that should be used for the actor of the activity.
+The TrackingIdentity object contains a sessionId which is the ID that should be used for the actor of the activity.
 It also contains an environmentId which is unique for this user and can be used to obtain a new sessionId from the
-Anonymous Identity Service by sending it as a property.
+Central Identity Service by sending it as a property.
 
