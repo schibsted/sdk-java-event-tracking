@@ -4,9 +4,9 @@ package no.spt.sdk.serializers;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import no.spt.sdk.models.ASObject;
-import no.spt.sdk.models.AnonymousIdentity;
 import no.spt.sdk.models.JsonString;
 import no.spt.sdk.models.Link;
+import no.spt.sdk.models.TrackingIdentity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -48,9 +48,9 @@ public class GsonASJsonConverter implements ASJsonConverter {
      * {@inheritDoc}
      */
     @Override
-    public AnonymousIdentity deSerializeAnonymousIdentity(String json) {
-        Type anonymousIdentityType = new TypeToken<AnonymousIdentity>(){}.getType();
-        return gson.fromJson(json, anonymousIdentityType);
+    public TrackingIdentity deSerializeTrackingIdentity(String json) {
+        Type trackingIdentityType = new TypeToken<TrackingIdentity>(){}.getType();
+        return gson.fromJson(json, trackingIdentityType);
     }
 
     private static class ASObjectTypeConverter implements JsonSerializer<ASObject> {

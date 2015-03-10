@@ -1,15 +1,15 @@
 package no.spt.sdk.exceptions.error;
 
-public enum AnonymousIdentityError implements DataTrackingError {
+public enum TrackingIdentityError implements DataTrackingError {
 
-    GENERAL_ANONYMOUS_IDENTITY_ERROR(20000),
+    GENERAL_TRACKING_IDENTITY_ERROR(20000),
     CACHE_ERROR(20050),
     HTTP_CONNECTION_ERROR(20100),
     JSON_CONVERTING_ERROR(20200);
 
     private final int errorCode;
 
-    private AnonymousIdentityError(int errorCode) {
+    private TrackingIdentityError(int errorCode) {
         this.errorCode = errorCode;
     }
 

@@ -11,9 +11,9 @@ public class Defaults {
     public static final String DATA_COLLECTOR_URL = "http://localhost:8002/api/v1/track"; // TODO Correct URL
 
     /**
-     * The URL to the anonymous id service
+     * The URL to the CIS
      */
-    public static final String ANONYMOUS_ID_SERVICE_URL = "http://localhost:8003/api/v1/identify"; // TODO Correct URL
+    public static final String CIS_URL = "http://localhost:8003/api/v1/identify"; // TODO Correct URL
 
     /**
      * The URL to the error reports collector

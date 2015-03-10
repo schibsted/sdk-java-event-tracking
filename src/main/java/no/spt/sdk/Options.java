@@ -7,7 +7,7 @@ public class Options {
 
     private final String clientId;
     private final String dataCollectorUrl;
-    private final String anonymousIdUrl;
+    private final String CISUrl;
     private final String errorReportingUrl;
     private final int maxQueueSize;
     private final int timeout;
@@ -15,11 +15,11 @@ public class Options {
     private final int maxActivityBatchSize;
     private final int maxErrorBatchSize;
 
-    private Options(String clientId, String dataCollectorUrl, String anonymousIdUrl, String errorReportingUrl, int
+    private Options(String clientId, String dataCollectorUrl, String CISUrl, String errorReportingUrl, int
             maxQueueSize, int timeout, int retries, int maxActivityBatchSize, int maxErrorBatchSize) {
         this.clientId = clientId;
         this.dataCollectorUrl = dataCollectorUrl;
-        this.anonymousIdUrl = anonymousIdUrl;
+        this.CISUrl = CISUrl;
         this.errorReportingUrl = errorReportingUrl;
         this.maxQueueSize = maxQueueSize;
         this.timeout = timeout;
@@ -47,12 +47,12 @@ public class Options {
     }
 
     /**
-     * Gets the anonymous identity service endpoint
+     * Gets the CIS endpoint
      *
-     * @return The anonymous identity service endpoint
+     * @return The CIS endpoint
      */
-    public String getAnonymousIdUrl() {
-        return anonymousIdUrl;
+    public String getCISUrl() {
+        return CISUrl;
     }
 
     /**
@@ -117,7 +117,7 @@ public class Options {
 
         private final String clientId;
         private String dataCollectorUrl = Defaults.DATA_COLLECTOR_URL;
-        private String anonymousIdUrl = Defaults.ANONYMOUS_ID_SERVICE_URL;
+        private String CISUrl = Defaults.CIS_URL;
         private String errorReportingUrl = Defaults.ERROR_REPORTING_URL;
         private int maxQueueSize = Defaults.MAX_QUEUE_SIZE;
         private int timeout = Defaults.TIMEOUT;
@@ -139,11 +139,11 @@ public class Options {
         }
 
         /**
-         * @param anonymousIdUrl The url to the anonymous identity service endpoint
+         * @param CISUrl The url to the CIS endpoint
          * @return This builder instance for chaining
          */
-        public Builder setAnonymousIdUrl(String anonymousIdUrl) {
-            this.anonymousIdUrl = anonymousIdUrl;
+        public Builder setCISUrl(String CISUrl) {
+            this.CISUrl = CISUrl;
             return this;
         }
 
@@ -224,9 +224,9 @@ public class Options {
             }
         }
 
-        private void validateAnonymousIdUrl(String anonymousIdUrl) {
-            if (anonymousIdUrl == null || anonymousIdUrl.equals("")) {
-                throw new IllegalArgumentException("Data-collector-sdk#options#anonymousIdUrl must be a valid url.");
+        private void validateCISUrl(String CISUrl) {
+            if (CISUrl == null || CISUrl.equals("")) {
+                throw new IllegalArgumentException("Data-collector-sdk#options#CISUrl must be a valid url.");
             }
         }
 
@@ -261,14 +261,14 @@ public class Options {
         public Options build() {
             validateClientId(clientId);
             validateDataCollectorUrl(dataCollectorUrl);
-            validateAnonymousIdUrl(anonymousIdUrl);
+            validateCISUrl(CISUrl);
             validateErrorReportingUrl(errorReportingUrl);
             validateMaxQueueSize(maxQueueSize);
             validateTimeout(timeout);
             validateRetries(retries);
             validateMaxActivityBatchSize(maxActivityBatchSize);
             validateMaxErrorBatchSize(maxErrorBatchSize);
-            return new Options(clientId, dataCollectorUrl, anonymousIdUrl, errorReportingUrl, maxQueueSize, timeout,
+            return new Options(clientId, dataCollectorUrl, CISUrl, errorReportingUrl, maxQueueSize, timeout,
                     retries, maxActivityBatchSize, maxErrorBatchSize);
         }
     }

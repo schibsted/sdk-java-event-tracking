@@ -1,7 +1,7 @@
 package no.spt.sdk.serializers;
 
 import no.spt.sdk.TestData;
-import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.models.TrackingIdentity;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +33,9 @@ public class JacksonASJsonConverterTest {
     }
 
     @Test
-    public void testAnonymousIdentityDeSerializing() throws JSONException, IOException {
-        AnonymousIdentity id = jsonConverter.deSerializeAnonymousIdentity(TestData.getAnonymousIdResponseAsJsonString());
-        assertEquals(TestData.ANONYMOUS_SESSION_ID, id.getSessionId());
-        assertEquals(TestData.ANONYMOUS_ENVIRONMENT_ID, id.getEnvironmentId());
+    public void testTrackingIdentityDeSerializing() throws JSONException, IOException {
+        TrackingIdentity id = jsonConverter.deSerializeTrackingIdentity(TestData.getTrackingIdResponseAsJsonString());
+        assertEquals(TestData.TRACKING_SESSION_ID, id.getSessionId());
+        assertEquals(TestData.TRACKING_ENVIRONMENT_ID, id.getEnvironmentId());
     }
 }

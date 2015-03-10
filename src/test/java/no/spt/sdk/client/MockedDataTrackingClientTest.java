@@ -7,7 +7,7 @@ import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.models.TrackingIdentity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class MockedDataTrackingClientTest {
     @Before
     public void setUp() throws Exception {
         options = new Options.Builder("abc123").setDataCollectorUrl("http://localhost:8090/")
-                .setAnonymousIdUrl("http://localhost:8091/")
+                .setCISUrl("http://localhost:8091/")
                 .setMaxQueueSize(10000)
                 .setTimeout(1000)
                 .setRetries(2)
@@ -80,9 +80,9 @@ public class MockedDataTrackingClientTest {
     }
 
     @Test
-    public void testGetAnonymousId() throws DataTrackingException {
-        when(identityConnector.getAnonymousId(any(Map.class))).thenReturn(new AnonymousIdentity(getDummyMap()));
-        assertEquals("id123", client.getAnonymousId(TestData.getAnonymousIdIdentifiers()).getSessionId());
+    public void testGetTrackingId() throws DataTrackingException {
+        when(identityConnector.getTrackingId(any(Map.class))).thenReturn(new TrackingIdentity(getDummyMap()));
+        assertEquals("id123", client.getTrackingId(TestData.getTrackingIdentifiers()).getSessionId());
     }
 
     private Map<String, Object> getDummyMap() {

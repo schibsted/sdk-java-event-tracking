@@ -9,8 +9,8 @@ import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.CommunicationDataTrackingException;
 import no.spt.sdk.exceptions.DataTrackingException;
-import no.spt.sdk.exceptions.error.AnonymousIdentityError;
-import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.exceptions.error.TrackingIdentityError;
+import no.spt.sdk.models.TrackingIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import org.apache.http.HttpStatus;
 
@@ -20,13 +20,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A connection to the Anonymous Identity Service used to get anonymous IDs that caches fetched IDs.
+ * A connection to the Central Identification Service, used to get tracking IDs that caches fetched IDs.
  */
 public class CachingIdentityConnector implements IdentityConnector {
 
     private static final int CACHE_SIZE = 10000;
     private static final int CACHE_EXPIRATION_IN_MINUTES = 15;
-    private static LoadingCache<Map<String, String>, AnonymousIdentity> cache;
+    private static LoadingCache<Map<String, String>, TrackingIdentity> cache;
     private Options options;
     private HttpConnection httpConnection;
     private ASJsonConverter jsonConverter;
@@ -43,51 +43,51 @@ public class CachingIdentityConnector implements IdentityConnector {
         cache = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
                 .expireAfterWrite(CACHE_EXPIRATION_IN_MINUTES, TimeUnit.MINUTES)
-                .build(new CacheLoader<Map<String, String>, AnonymousIdentity>() {
+                .build(new CacheLoader<Map<String, String>, TrackingIdentity>() {
                     @Override
-                    public AnonymousIdentity load(Map<String, String> cacheKey) throws Exception {
+                    public TrackingIdentity load(Map<String, String> cacheKey) throws Exception {
                         return getIdFromService(cacheKey);
                     }
                 });
     }
 
     @Override
-    public AnonymousIdentity getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
+    public TrackingIdentity getTrackingId(Map<String, String> identifiers) throws DataTrackingException {
         try {
             return cache.get(identifiers);
         } catch (ExecutionException e) {
-            throw new DataTrackingException(e, AnonymousIdentityError.CACHE_ERROR);
+            throw new DataTrackingException(e, TrackingIdentityError.CACHE_ERROR);
         }
     }
 
-    private AnonymousIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
+    private TrackingIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
         DataTrackingResponse response;
         DataTrackingPostRequest request;
         try {
-            request = new DataTrackingPostRequest(options.getAnonymousIdUrl(), null,
+            request = new DataTrackingPostRequest(options.getCISUrl(), null,
                     jsonConverter.serialize(identifiers));
             response = httpConnection.send(request);
         } catch (IOException e) {
-            throw new DataTrackingException(e, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new DataTrackingException(e, TrackingIdentityError.HTTP_CONNECTION_ERROR);
         }
         if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-            throw new CommunicationDataTrackingException("Response from Anonymous Identity Service was not OK", response,
-                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Response from CIS was not OK", response,
+                    request, TrackingIdentityError.HTTP_CONNECTION_ERROR);
         } else if (response.getResponseCode() != HttpStatus.SC_OK) {
-            throw new CommunicationDataTrackingException("Unexpected response from Anonymous Identity Service", response,
-                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Unexpected response from CIS", response,
+                    request, TrackingIdentityError.HTTP_CONNECTION_ERROR);
         }
-        AnonymousIdentity anonymousIdentity;
+        TrackingIdentity trackingIdentity;
         try {
-            anonymousIdentity = jsonConverter.deSerializeAnonymousIdentity(response.getRawBody());
+            trackingIdentity = jsonConverter.deSerializeTrackingIdentity(response.getRawBody());
         } catch (Exception e) {
-            throw new DataTrackingException(e, AnonymousIdentityError.JSON_CONVERTING_ERROR);
+            throw new DataTrackingException(e, TrackingIdentityError.JSON_CONVERTING_ERROR);
         }
-        if (anonymousIdentity.getData()
+        if (trackingIdentity.getData()
                 .isEmpty()) {
-            throw new CommunicationDataTrackingException("Unexpected data from Anonymous Identity Service", response,
-                    request, AnonymousIdentityError.HTTP_CONNECTION_ERROR);
+            throw new CommunicationDataTrackingException("Unexpected data from CIS", response,
+                    request, TrackingIdentityError.HTTP_CONNECTION_ERROR);
         }
-        return anonymousIdentity;
+        return trackingIdentity;
     }
 }

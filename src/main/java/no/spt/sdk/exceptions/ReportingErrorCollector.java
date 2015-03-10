@@ -144,7 +144,7 @@ public class ReportingErrorCollector implements ErrorCollector {
         private ASObject getOptionsObject(Options options) {
             return object("spt:options", "urn:spt.no:options:" +
                     options.getClientId()).set("spt:dataCollectorUrl", options.getDataCollectorUrl())
-                    .set("spt:anonymousIdUrl", options.getAnonymousIdUrl())
+                    .set("spt:CISUrl", options.getCISUrl())
                     .set("spt:errorReportingUrl", options.getErrorReportingUrl())
                     .set("spt:maxQueueSize", String.valueOf(options.getMaxQueueSize()))
                     .set("spt:timeout", String.valueOf(options.getTimeout()))

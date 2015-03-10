@@ -21,8 +21,8 @@ import static no.spt.sdk.models.Makers.*;
 
 public class TestData {
 
-    public static final String ANONYMOUS_SESSION_ID = "abcde123";
-    public static final String ANONYMOUS_ENVIRONMENT_ID = "xyz123";
+    public static final String TRACKING_SESSION_ID = "abcde123";
+    public static final String TRACKING_ENVIRONMENT_ID = "xyz123";
     private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
     private static final String ACTIVITY_TYPE = "Read";
     /// ACTIVITY
@@ -42,7 +42,7 @@ public class TestData {
     private static final String OBJECT_URL = "http://vg.no";
     private static final String OBJECT_DISPLAY_NAME = "Forsiden - VG";
     private static final String DATA_COLLECTOR_URL = "http://localhost:8090/";
-    private static final String ANONYMOUS_ID_SERVICE_URL = "http://localhost:8091/";
+    private static final String CIS_URL = "http://localhost:8091/";
     private static final int MAX_QUEUE_SIZE = 10000;
     private static final int TIMEOUT = 5000;
     private static final int RETRIES = 2;
@@ -139,7 +139,7 @@ public class TestData {
 
     public static Options getDefaultOptions() {
         return new Options.Builder("abc123").setDataCollectorUrl(DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl(ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(CIS_URL)
                 .setMaxQueueSize(MAX_QUEUE_SIZE)
                 .setTimeout(TIMEOUT)
                 .setRetries(RETRIES)
@@ -152,20 +152,20 @@ public class TestData {
                 (getTestActivity()));
     }
 
-    public static Map<String, String> getAnonymousIdIdentifiers() {
+    public static Map<String, String> getTrackingIdentifiers() {
         Map<String, String> identifier = new HashMap<String, String>();
         identifier.put("SomeKey", "SomeValue");
         return identifier;
     }
 
-    public static String getAnonymousIdResponseAsJsonString() {
+    public static String getTrackingIdResponseAsJsonString() {
         return "{\n" +
                 "    \"code\": 200,\n" +
                 "    \"status\": \"OK\",\n" +
-                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"type\": \"cis_identity\",\n" +
                 "    \"data\": {\n" +
                 "        \"someKey\": \"someValue\",\n" +
-                "        \"environmentId\": \"" + ANONYMOUS_ENVIRONMENT_ID + "\",\n" +
+                "        \"environmentId\": \"" + TRACKING_ENVIRONMENT_ID + "\",\n" +
                 "        \"environmentIdUniqScore\": 50,\n" +
                 "        \"environmentIdTemporary\": true,\n" +
                 "        \"missingInput\": [\n" +
@@ -173,7 +173,7 @@ public class TestData {
                 "            \"accept-charset\",\n" +
                 "            \"accept-language\"\n" +
                 "        ],\n" +
-                "        \"sessionId\": \"" + ANONYMOUS_SESSION_ID + "\",\n" +
+                "        \"sessionId\": \"" + TRACKING_SESSION_ID + "\",\n" +
                 "        \"clientIp\": \"127.0.0.1\"\n" +
                 "    },\n" +
                 "    \"errors\": []\n" +

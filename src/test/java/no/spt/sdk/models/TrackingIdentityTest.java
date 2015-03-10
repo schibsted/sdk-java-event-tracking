@@ -8,52 +8,52 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AnonymousIdentityTest {
+public class TrackingIdentityTest {
 
     private static final String SESSION_ID = "abc123";
     private static final String ENVIRONMENT_ID = "xyz123";
 
     @Test
     public void testGetSessionId() throws Exception {
-        AnonymousIdentity id = new AnonymousIdentity(getAnonymousIdProps());
+        TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
         assertEquals(SESSION_ID, id.getSessionId());
     }
 
     @Test
     public void testMissingSessionId() throws Exception {
-        Map<String, Object> data = getAnonymousIdProps();
+        Map<String, Object> data = getTrackingIdProps();
         data.remove("sessionId");
-        AnonymousIdentity id = new AnonymousIdentity(data);
+        TrackingIdentity id = new TrackingIdentity(data);
         assertEquals("", id.getSessionId());
     }
 
     @Test
     public void testGetEnvironmentId() throws Exception {
-        AnonymousIdentity id = new AnonymousIdentity(getAnonymousIdProps());
+        TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
         assertEquals(ENVIRONMENT_ID, id.getEnvironmentId());
     }
 
     @Test
     public void testMissingEnvironmentId() throws Exception {
-        Map<String, Object> data = getAnonymousIdProps();
+        Map<String, Object> data = getTrackingIdProps();
         data.remove("environmentId");
-        AnonymousIdentity id = new AnonymousIdentity(data);
+        TrackingIdentity id = new TrackingIdentity(data);
         assertEquals("", id.getEnvironmentId());
     }
 
     @Test
     public void testGetData() throws Exception {
-        AnonymousIdentity id = new AnonymousIdentity(getAnonymousIdProps());
-        assertEquals(getAnonymousIdProps(), id.getData());
+        TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
+        assertEquals(getTrackingIdProps(), id.getData());
     }
 
     @Test
     public void testMissingData() throws Exception {
-        AnonymousIdentity id = new AnonymousIdentity();
+        TrackingIdentity id = new TrackingIdentity();
         assertTrue(id.getData().isEmpty());
     }
 
-    public static Map<String, Object> getAnonymousIdProps(){
+    public static Map<String, Object> getTrackingIdProps(){
         Map<String, Object> identifier = new HashMap<String, Object>();
         identifier.put("sessionId", SESSION_ID);
         identifier.put("environmentId", ENVIRONMENT_ID);

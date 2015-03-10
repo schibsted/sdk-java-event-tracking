@@ -24,8 +24,8 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
     private static final MapType MAP_TYPE =
             TypeFactory.defaultInstance().constructMapType(Map.class, String.class, Object.class);
 
-    private static final JavaType ANONYMOUS_IDENTITY_TYPE =
-            TypeFactory.defaultInstance().constructType(AnonymousIdentity.class);
+    private static final JavaType TRACKING_IDENTITY_TYPE =
+            TypeFactory.defaultInstance().constructType(TrackingIdentity.class);
 
     public JacksonASJsonConverter() {
         this.mapper = new ObjectMapper();
@@ -37,7 +37,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         module.addSerializer(JsonString.class, new JsonStringSerializer());
         mapper.registerModule(module);
         mapper.addMixIn(Activity.class, ActivityMixIn.class);
-        mapper.addMixIn(AnonymousIdentity.class, AnonymousIdentityMixIn.class);
+        mapper.addMixIn(TrackingIdentity.class, TrackingIdentityMixIn.class);
     }
 
     /**
@@ -60,8 +60,8 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
      * {@inheritDoc}
      */
     @Override
-    public AnonymousIdentity deSerializeAnonymousIdentity(String json) throws IOException {
-        return mapper.readValue(json, ANONYMOUS_IDENTITY_TYPE);
+    public TrackingIdentity deSerializeTrackingIdentity(String json) throws IOException {
+        return mapper.readValue(json, TRACKING_IDENTITY_TYPE);
     }
 
     private static class ASObjectSerializer extends JsonSerializer<ASObject> {
@@ -98,7 +98,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private class AnonymousIdentityMixIn {
+    private class TrackingIdentityMixIn {
 
     }
 }

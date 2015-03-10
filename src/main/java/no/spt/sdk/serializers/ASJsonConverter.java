@@ -1,7 +1,7 @@
 package no.spt.sdk.serializers;
 
 
-import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.models.TrackingIdentity;
 
 import java.io.IOException;
 import java.util.Map;
@@ -30,12 +30,12 @@ public interface ASJsonConverter {
     public Map<String, Object> deSerialize(String json) throws IOException ;
 
     /**
-     * Deserialize a JSON String from the Anonymous Identity Service to an {@link no.spt.sdk.models.AnonymousIdentity}
+     * Deserialize a JSON String from the CIS to a {@link no.spt.sdk.models.TrackingIdentity}
      * object
      *
-     * @param json The response from the Anonymous Identity Service
-     * @return An AnonymousIdentity object that contains sessionId and environmentId
+     * @param json The response from the CIS
+     * @return A TrackingIdentity object that contains sessionId and environmentId
      * @throws IOException If the JSON String could not be deserialized
      */
-    public AnonymousIdentity deSerializeAnonymousIdentity(String json)  throws IOException;
+    public TrackingIdentity deSerializeTrackingIdentity(String json)  throws IOException;
 }

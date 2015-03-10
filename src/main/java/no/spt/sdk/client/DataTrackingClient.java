@@ -13,7 +13,7 @@ import no.spt.sdk.exceptions.ReportingErrorCollector;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.identity.SimpleIdentityConnector;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.models.TrackingIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.JacksonASJsonConverter;
 
@@ -149,8 +149,7 @@ public class DataTrackingClient {
         }
 
         /**
-         * Set the {@link no.spt.sdk.identity.IdentityConnector} to use for getting anonymous IDs from the Anonymous
-         * Identity Service
+         * Set the {@link no.spt.sdk.identity.IdentityConnector} to use for getting tracking IDs from the CIS
          *
          * @param identityConnector The {@link no.spt.sdk.identity.IdentityConnector} to use
          * @return This instance (for method chaining)
@@ -162,7 +161,7 @@ public class DataTrackingClient {
 
         /**
          * Gets the {@link no.spt.sdk.identity.IdentityConnector} this builder is currently configured to use for
-         * getting anonymous IDs from the Anonymous Identity Service
+         * getting tracking IDs from the CIS
          *
          * @return The {@link no.spt.sdk.identity.IdentityConnector} to use
          */
@@ -296,16 +295,16 @@ public class DataTrackingClient {
     }
 
     /**
-     * Takes a {@link java.util.Map} of identifiers and returns an AnonymousIdentity object based on those identifiers
+     * Takes a {@link java.util.Map} of identifiers and returns a TrackingIdentity object based on those identifiers
      * that contains sessionId and environmentId
      *
      * @param identifiers A Map of identifiers
-     * @return An AnonymousIdentity object that contains sessionId and environmentId
+     * @return A TrackingIdentity object that contains sessionId and environmentId
      * @throws DataTrackingException If an ID could not be created
      */
-    public AnonymousIdentity getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
+    public TrackingIdentity getTrackingId(Map<String, String> identifiers) throws DataTrackingException {
         try {
-            return identityConnector.getAnonymousId(identifiers);
+            return identityConnector.getTrackingId(identifiers);
         } catch (DataTrackingException e) {
             handleError(e);
             throw e;

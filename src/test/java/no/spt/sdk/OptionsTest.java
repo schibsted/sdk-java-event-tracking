@@ -8,7 +8,7 @@ public class OptionsTest {
     public void testSetDataCollectorClientIdEmptyString() throws Exception {
         Options options = new Options.Builder("")
                 .setDataCollectorUrl(Defaults.DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl(Defaults.ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(Defaults.CIS_URL)
                 .setMaxQueueSize(Defaults.MAX_QUEUE_SIZE)
                 .setTimeout(Defaults.TIMEOUT)
                 .setRetries(Defaults.RETRIES)
@@ -18,7 +18,7 @@ public class OptionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetDataCollectorUrlEmptyString() throws Exception {
         Options options = new Options.Builder("abc123").setDataCollectorUrl("")
-                .setAnonymousIdUrl(Defaults.ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(Defaults.CIS_URL)
                 .setMaxQueueSize(Defaults.MAX_QUEUE_SIZE)
                 .setTimeout(Defaults.TIMEOUT)
                 .setRetries(Defaults.RETRIES)
@@ -26,9 +26,9 @@ public class OptionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSetAnonymousIdServiceUrlEmptyString() throws Exception {
+    public void testSetCISUrlEmptyString() throws Exception {
         Options options = new Options.Builder("abc123").setDataCollectorUrl(Defaults.DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl("")
+                .setCISUrl("")
                 .setMaxQueueSize(Defaults.MAX_QUEUE_SIZE)
                 .setTimeout(Defaults.TIMEOUT)
                 .setRetries(Defaults.RETRIES)
@@ -48,7 +48,7 @@ public class OptionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetMaxQueueSizeToNegativeValue() throws Exception {
         Options options = new Options.Builder("abc123").setDataCollectorUrl(Defaults.DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl(Defaults.ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(Defaults.CIS_URL)
                 .setMaxQueueSize(-1)
                 .setTimeout(Defaults.TIMEOUT)
                 .setRetries(Defaults.RETRIES)
@@ -58,7 +58,7 @@ public class OptionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetTimeoutToNegativeValue() throws Exception {
         Options options = new Options.Builder("abc123").setDataCollectorUrl(Defaults.DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl(Defaults.ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(Defaults.CIS_URL)
                 .setMaxQueueSize(Defaults.MAX_QUEUE_SIZE)
                 .setTimeout(-1)
                 .setRetries(Defaults.RETRIES)
@@ -68,7 +68,7 @@ public class OptionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetRetriesToNegativeValue() throws Exception {
         Options options = new Options.Builder("abc123").setDataCollectorUrl(Defaults.DATA_COLLECTOR_URL)
-                .setAnonymousIdUrl(Defaults.ANONYMOUS_ID_SERVICE_URL)
+                .setCISUrl(Defaults.CIS_URL)
                 .setMaxQueueSize(Defaults.MAX_QUEUE_SIZE)
                 .setTimeout(Defaults.TIMEOUT)
                 .setRetries(-1)

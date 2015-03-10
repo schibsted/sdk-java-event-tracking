@@ -40,12 +40,12 @@ public class CachingIdentityConnectorTest {
     }
 
     @Test
-    public void testGetAnonymousId() throws Exception {
+    public void testGetTrackingId() throws Exception {
         when(httpConnection.send(any(DataTrackingPostRequest.class))).thenReturn(new DataTrackingResponse(200, null,
                 "{\n" +
                 "    \"code\": 200,\n" +
                 "    \"status\": \"OK\",\n" +
-                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"type\": \"cis_identity\",\n" +
                 "    \"data\": {\n" +
                 "        \"someKey\": \"someValue\",\n" +
                 "        \"environmentId\": \"b3cb8a31-9691-434c-94a5-9a197a3dcc01\",\n" +
@@ -61,14 +61,14 @@ public class CachingIdentityConnectorTest {
                 "    },\n" +
                 "    \"errors\": []\n" +
                 "}"));
-        assertEquals("18ecfe96-ba40-4ebd-84e9-97186711f890", identityConnector.getAnonymousId(TestData
-                .getAnonymousIdIdentifiers()).getSessionId());
+        assertEquals("18ecfe96-ba40-4ebd-84e9-97186711f890", identityConnector.getTrackingId(TestData
+                .getTrackingIdentifiers()).getSessionId());
     }
 
     @Test(expected = DataTrackingException.class)
     public void testHttpConnectionThrowsException() throws Exception {
         when(httpConnection.send(any(DataTrackingPostRequest.class))).thenThrow(new IOException());
-        identityConnector.getAnonymousId(TestData.getAnonymousIdIdentifiers());
+        identityConnector.getTrackingId(TestData.getTrackingIdentifiers());
     }
 
     @Test(expected = DataTrackingException.class)
@@ -77,7 +77,7 @@ public class CachingIdentityConnectorTest {
                 .SC_BAD_REQUEST, null, "{\n" +
                 "    \"code\": 400,\n" +
                 "    \"status\": \"NOTOK\",\n" +
-                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"type\": \"cis_identity\",\n" +
                 "    \"data\": {\n" +
                 "        \"someKey\": \"someValue\",\n" +
                 "        \"environmentId\": \"b3cb8a31-9691-434c-94a5-9a197a3dcc01\",\n" +
@@ -93,7 +93,7 @@ public class CachingIdentityConnectorTest {
                 "    },\n" +
                 "    \"errors\": []\n" +
                 "}"));
-        identityConnector.getAnonymousId(TestData.getAnonymousIdIdentifiers());
+        identityConnector.getTrackingId(TestData.getTrackingIdentifiers());
     }
 
     @Test(expected = DataTrackingException.class)
@@ -102,7 +102,7 @@ public class CachingIdentityConnectorTest {
                 .SC_NOT_IMPLEMENTED, null, "{\n" +
                 "    \"code\": 501,\n" +
                 "    \"status\": \"NOTOK\",\n" +
-                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"type\": \"cis_identity\",\n" +
                 "    \"data\": {\n" +
                 "        \"someKey\": \"someValue\",\n" +
                 "        \"environmentId\": \"b3cb8a31-9691-434c-94a5-9a197a3dcc01\",\n" +
@@ -118,7 +118,7 @@ public class CachingIdentityConnectorTest {
                 "    },\n" +
                 "    \"errors\": []\n" +
                 "}"));
-        identityConnector.getAnonymousId(TestData.getAnonymousIdIdentifiers());
+        identityConnector.getTrackingId(TestData.getTrackingIdentifiers());
     }
 
     @Test(expected = DataTrackingException.class)
@@ -127,7 +127,7 @@ public class CachingIdentityConnectorTest {
                 "{\n" +
                 "    \"code\": 200,\n" +
                 "    \"status\": \"OK\",\n" +
-                "    \"type\": \"anonymous_identity\",\n" +
+                "    \"type\": \"cis_identity\",\n" +
                 "    \"info\": {\n" +                           // Should be data
                 "        \"someKey\": \"someValue\",\n" +
                 "        \"environmentId\": \"b3cb8a31-9691-434c-94a5-9a197a3dcc01\",\n" +
@@ -143,7 +143,7 @@ public class CachingIdentityConnectorTest {
                 "    },\n" +
                 "    \"errors\": []\n" +
                 "}"));
-        identityConnector.getAnonymousId(TestData.getAnonymousIdIdentifiers());
+        identityConnector.getTrackingId(TestData.getTrackingIdentifiers());
     }
 
 }
