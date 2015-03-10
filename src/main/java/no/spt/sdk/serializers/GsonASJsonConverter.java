@@ -5,6 +5,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import no.spt.sdk.models.ASObject;
 import no.spt.sdk.models.AnonymousIdentity;
+import no.spt.sdk.models.JsonString;
 import no.spt.sdk.models.Link;
 
 import java.lang.reflect.Field;
@@ -21,6 +22,7 @@ public class GsonASJsonConverter implements ASJsonConverter {
     public GsonASJsonConverter() {
         this.gson = new GsonBuilder().registerTypeAdapter(ASObject.class, new ASObjectTypeConverter())
                 .registerTypeAdapter(Link.class, new LinkTypeConverter())
+                .registerTypeAdapter(JsonString.class, new JsonStringTypeConverter())
                 .setFieldNamingStrategy(new ActivityNamingStrategy())
                 .create();
     }
@@ -65,6 +67,16 @@ public class GsonASJsonConverter implements ASJsonConverter {
         @Override
         public JsonElement serialize(Link src, Type srcType, JsonSerializationContext context) {
             return context.serialize(src.getMap());
+        }
+
+    }
+
+    private static class JsonStringTypeConverter implements JsonSerializer<JsonString> {
+
+        @Override
+        public JsonElement serialize(JsonString src, Type srcType, JsonSerializationContext context) {
+            JsonParser parser = new JsonParser();
+            return  parser.parse(src.getJson());
         }
 
     }
