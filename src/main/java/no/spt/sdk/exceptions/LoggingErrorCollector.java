@@ -8,8 +8,7 @@ import java.util.logging.Logger;
  */
 public class LoggingErrorCollector implements ErrorCollector {
 
-    private static final Logger logger =
-            Logger.getLogger(LoggingErrorCollector.class.getName());
+    private static final Logger logger = Logger.getLogger(LoggingErrorCollector.class.getName());
 
     private Level logLevel;
 
@@ -24,11 +23,13 @@ public class LoggingErrorCollector implements ErrorCollector {
     @Override
     public void collect(DataTrackingException e) {
         logger.log(logLevel, e.getMessage());
-        if(e.getResponseCode() != null) {
-            logger.log(logLevel, String.format("Response code from data collector was: %s", e.getResponseCode()));
-        }
-        if(e.getResponseBody() != null) {
-            logger.log(logLevel, String.format("Response body from data collector was: %s", e.getResponseBody()));
+        if (e instanceof CommunicationDataTrackingException) {
+            logger.log(logLevel, String.format("Request body to data collector was: %s", (
+                    (CommunicationDataTrackingException) e).getRequestBody()));
+            logger.log(logLevel, String.format("Response code from data collector was: %s", (
+                    (CommunicationDataTrackingException) e).getResponseCode()));
+            logger.log(logLevel, String.format("Response body from data collector was: %s", (
+                    (CommunicationDataTrackingException) e).getResponseBody()));
         }
     }
 }
