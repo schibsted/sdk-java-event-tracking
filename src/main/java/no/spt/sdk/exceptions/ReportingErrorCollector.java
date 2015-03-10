@@ -1,10 +1,11 @@
 package no.spt.sdk.exceptions;
 
 import no.spt.sdk.Options;
+import no.spt.sdk.Util;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
-import no.spt.sdk.exceptions.error.DataTrackingError;
+import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
 
 import java.io.IOException;
@@ -14,10 +15,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static no.spt.sdk.models.Makers.*;
+
 public class ReportingErrorCollector implements ErrorCollector {
 
-    private static final int MAX_ERROR_QUEUE_SIZE = 10000;
-    private static final int MAX_ERROR_BATCH_SIZE = 20;
+    private static final int MAX_ERROR_QUEUE_SIZE = 1000;
 
     private Options options;
     private HttpConnection httpConnection;
@@ -39,9 +41,9 @@ public class ReportingErrorCollector implements ErrorCollector {
         if(errorQueue.size() < MAX_ERROR_QUEUE_SIZE) {
             errorQueue.add(e);
         }
-        if(errorQueue.size() >= MAX_ERROR_BATCH_SIZE) {
+        if(errorQueue.size() >= options.getMaxErrorBatchSize()) {
             List<DataTrackingException> current = new LinkedList<DataTrackingException>();
-            errorQueue.drainTo(current, MAX_ERROR_BATCH_SIZE);
+            errorQueue.drainTo(current, options.getMaxErrorBatchSize());
             executor.execute(new ErrorBatchSender(options, httpConnection, jsonConverter, current));
         }
     }
@@ -82,56 +84,73 @@ public class ReportingErrorCollector implements ErrorCollector {
             // If errors cannot be sent they are dropped
         }
 
-        private List<ErrorReport> convertToErrorReports(List<DataTrackingException> errors) {
-            List<ErrorReport> errorReports = new LinkedList<ErrorReport>();
+        private List<Activity> convertToErrorReports(List<DataTrackingException> errors) {
+            List<Activity> errorReports = new LinkedList<Activity>();
             for(DataTrackingException error : errors) {
-                errorReports.add(new ErrorReport(error, options));
+                if(error instanceof CommunicationDataTrackingException) {
+                    errorReports.add(convertToErrorReport((CommunicationDataTrackingException)error));
+                } else {
+                    errorReports.add(convertToErrorReport(error));
+                }
             }
             return errorReports;
         }
 
-        private static class ErrorReport {
 
-            private final String sdkType;
-            private final String sdkVersion;
-            private final Options options;
-            private final DataTrackingError errorCode;
-            private final String errorMessage;
-            private final String timestamp;
-
-            public ErrorReport(DataTrackingException exception, Options options) {
-                this.errorCode = exception.getErrorCode();
-                this.errorMessage = exception.getMessage();
-                this.options = options;
-                this.sdkVersion = getClass().getPackage().getImplementationVersion();
-                this.timestamp = exception.getTimestamp();
-                this.sdkType = "JAVA";
-            }
-
-            public String getSdkType() {
-                return sdkType;
-            }
-
-            public String getSdkVersion() {
-                return sdkVersion;
-            }
-
-            public Options getOptions() {
-                return options;
-            }
-
-            public DataTrackingError getErrorCode() {
-                return errorCode;
-            }
-
-            public String getErrorMessage() {
-                return errorMessage;
-            }
-
-            public String getTimestamp() {
-                return timestamp;
-            }
+        private Activity convertToErrorReport(DataTrackingException error) {
+            return new Activity.Builder("Create")
+                    .actor(getSdkActor(options))
+                    .object(object("spt:error", "urn:spt.no:error:" + String.valueOf(error.getErrorCode()))
+                            .set("spt:errorCode", String.valueOf(error.getErrorCode()))
+                            .set("spt:errorMessage", error.getMessage())
+                            .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())))
+                    .provider(getProvider(options))
+                    .build();
         }
+
+
+        private Activity convertToErrorReport(CommunicationDataTrackingException error) {
+            return new Activity.Builder("Accept")
+                    .actor(getSdkActor(options))
+                    .object(object("spt:errorResponse", "urn:spt.no:error:" + String.valueOf(error.getErrorCode()))
+                            .set("spt:errorCode", String.valueOf(error.getErrorCode()))
+                            .set("spt:errorMessage", error.getMessage())
+                            .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
+                            .set("spt:responseBody", new JsonString(error.getResponseBody()))
+                            .set("inReplyTo", object("spt:request", null).set("spt:requestBody", new JsonString(error
+                                    .getRequestBody()))))
+                            .provider(getProvider(options))
+                            .target(target("Service", error.getRequestUrl()))
+                            .build();
+        }
+
+        private List<String> stackTracesToStringList(StackTraceElement[] stackTrace) {
+            List<String> list = new LinkedList<String>();
+            for(StackTraceElement elem : stackTrace) {
+                list.add(elem.toString());
+            }
+            return list;
+        }
+
+        private Provider getProvider(Options options) {
+            return provider("Organization", "urn:spid.no:" + options.getClientId()).build();
+        }
+
+        private Actor getSdkActor(Options options) {
+            return actor("Application", "urn:spt.no:sdk:java:" + Util.getSdkVersion()).set("using", getOptionsObject
+                    (options)).build();
+        }
+
+        private ASObject getOptionsObject(Options options) {
+            return object("spt:options", "urn:spt.no:options:" +
+                    options.getClientId()).set("spt:dataCollectorUrl", options.getDataCollectorUrl())
+                    .set("spt:anonymousIdUrl", options.getAnonymousIdUrl())
+                    .set("spt:errorReportingUrl", options.getErrorReportingUrl())
+                    .set("spt:maxQueueSize", String.valueOf(options.getMaxQueueSize()))
+                    .set("spt:timeout", String.valueOf(options.getTimeout()))
+                    .set("spt:retries", String.valueOf(options.getRetries())).build();
+        }
+
     }
 
 }
