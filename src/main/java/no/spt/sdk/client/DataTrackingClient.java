@@ -10,8 +10,8 @@ import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.ReportingErrorCollector;
-import no.spt.sdk.identity.CachingIdentityConnector;
 import no.spt.sdk.identity.IdentityConnector;
+import no.spt.sdk.identity.SimpleIdentityConnector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.models.AnonymousIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
@@ -211,7 +211,7 @@ public class DataTrackingClient {
                 errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter);
             }
             if(identityConnector == null) {
-                this.identityConnector = new CachingIdentityConnector(options, httpConnection, jsonConverter);
+                this.identityConnector = new SimpleIdentityConnector(options, httpConnection, jsonConverter);
             }
             if(ActivitySenderType.MANUAL_ACTIVITY_SENDER.equals(activitySenderType)) {
                 activitySender = new ManualBatchSender(options, httpConnection, jsonConverter);
@@ -304,7 +304,12 @@ public class DataTrackingClient {
      * @throws DataTrackingException If an ID could not be created
      */
     public AnonymousIdentity getAnonymousId(Map<String, String> identifiers) throws DataTrackingException {
-        return identityConnector.getAnonymousId(identifiers);
+        try {
+            return identityConnector.getAnonymousId(identifiers);
+        } catch (DataTrackingException e) {
+            handleError(e);
+            throw e;
+        }
     }
 
     /**
