@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import no.spt.sdk.models.ASObject;
-import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.AnonymousIdentity;
-import no.spt.sdk.models.Link;
+import no.spt.sdk.models.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,6 +34,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         SimpleModule module = new SimpleModule();
         module.addSerializer(ASObject.class, new ASObjectSerializer());
         module.addSerializer(Link.class, new LinkSerializer());
+        module.addSerializer(JsonString.class, new JsonStringSerializer());
         mapper.registerModule(module);
         mapper.addMixIn(Activity.class, ActivityMixIn.class);
         mapper.addMixIn(AnonymousIdentity.class, AnonymousIdentityMixIn.class);
@@ -79,6 +77,14 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         public void serialize(Link value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
             jgen.writeObject(value.getMap());
+        }
+    }
+
+    private static class JsonStringSerializer extends JsonSerializer<JsonString> {
+        @Override
+        public void serialize(JsonString value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeRawValue(value.getJson());
         }
     }
 
