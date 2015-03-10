@@ -5,8 +5,4 @@ package no.spt.sdk;
  */
 public class Constants {
 
-    /**
-     * The maximum number of activities that a batch can contain
-     */
-    public static final int MAX_BATCH_SIZE = 20;
 }
