@@ -1,6 +1,8 @@
 package no.spt.sdk.models;
 
 
+import no.spt.sdk.Util;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -30,7 +32,7 @@ public class Activity {
         Map<String, String> map = new HashMap<String, String>();
         map.put("spt", "http://schema.schibsted.com/activitystreams");
         map.put("spt:sdkType", "JAVA");
-        map.put("spt:sdkVersion", getClass().getPackage().getImplementationVersion());
+        map.put("spt:sdkVersion", Util.getSdkVersion());
         context = Arrays.asList("http://www.w3.org/ns/activitystreams", map);
         id = randomUUID().toString();
     }
