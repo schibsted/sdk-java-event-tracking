@@ -52,7 +52,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
      * {@inheritDoc}
      */
     @Override
-    public TrackingIdentity deSerializeTrackingIdentity(String json) throws IOException {
+    public TrackingIdentity deserializeTrackingIdentity(String json) throws IOException {
         return mapper.readValue(json, TRACKING_IDENTITY_TYPE);
     }
 

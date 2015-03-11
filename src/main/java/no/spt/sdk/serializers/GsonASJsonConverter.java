@@ -38,7 +38,7 @@ public class GsonASJsonConverter implements ASJsonConverter {
      * {@inheritDoc}
      */
     @Override
-    public TrackingIdentity deSerializeTrackingIdentity(String json) {
+    public TrackingIdentity deserializeTrackingIdentity(String json) {
         Type trackingIdentityType = new TypeToken<TrackingIdentity>(){}.getType();
         return gson.fromJson(json, trackingIdentityType);
     }

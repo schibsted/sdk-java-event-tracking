@@ -54,7 +54,7 @@ public class SimpleIdentityConnector implements IdentityConnector {
         }
         TrackingIdentity trackingIdentity;
         try {
-            trackingIdentity = jsonConverter.deSerializeTrackingIdentity(response.getRawBody());
+            trackingIdentity = jsonConverter.deserializeTrackingIdentity(response.getRawBody());
         } catch (Exception e) {
             throw new DataTrackingException(e, TrackingIdentityError.JSON_CONVERTING_ERROR);
         }

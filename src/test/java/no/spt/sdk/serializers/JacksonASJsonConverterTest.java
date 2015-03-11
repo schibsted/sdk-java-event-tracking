@@ -34,7 +34,7 @@ public class JacksonASJsonConverterTest {
 
     @Test
     public void testTrackingIdentityDeSerializing() throws JSONException, IOException {
-        TrackingIdentity id = jsonConverter.deSerializeTrackingIdentity(TestData.getTrackingIdResponseAsJsonString());
+        TrackingIdentity id = jsonConverter.deserializeTrackingIdentity(TestData.getTrackingIdResponseAsJsonString());
         assertEquals(TestData.TRACKING_SESSION_ID, id.getSessionId());
         assertEquals(TestData.TRACKING_ENVIRONMENT_ID, id.getEnvironmentId());
     }

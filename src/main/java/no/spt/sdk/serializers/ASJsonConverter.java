@@ -27,5 +27,5 @@ public interface ASJsonConverter {
      * @return A TrackingIdentity object that contains sessionId and environmentId
      * @throws IOException If the JSON String could not be deserialized
      */
-    public TrackingIdentity deSerializeTrackingIdentity(String json)  throws IOException;
+    public TrackingIdentity deserializeTrackingIdentity(String json)  throws IOException;
 }
