@@ -30,7 +30,7 @@ public class HttpClientConnection implements HttpConnection {
     private Options options;
 
     /**
-     * Constructs a DataCollectorConnector using the provided options
+     * Constructs an HttpClientConnection using the provided options
      *
      * @param options The options used to configure the connector
      */
