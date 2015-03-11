@@ -17,6 +17,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static no.spt.sdk.models.Makers.*;
 
+/**
+ * An Error Collector that collects and reports errors that occur in the SDK to a central error collector service
+ * on a separate thread.
+ */
 public class ReportingErrorCollector implements ErrorCollector {
 
     private static final int MAX_ERROR_QUEUE_SIZE = 1000;
@@ -36,10 +40,14 @@ public class ReportingErrorCollector implements ErrorCollector {
         this.errorQueue = new LinkedBlockingQueue<DataTrackingException>();
     }
 
+    /**
+     * Collects and reports an error to a central error collector service.
+     * @param exception
+     */
     @Override
-    public void collect(DataTrackingException e) {
+    public void collect(DataTrackingException exception) {
         if(errorQueue.size() < MAX_ERROR_QUEUE_SIZE) {
-            errorQueue.add(e);
+            errorQueue.add(exception);
         }
         if(errorQueue.size() >= options.getMaxErrorBatchSize()) {
             List<DataTrackingException> current = new LinkedList<DataTrackingException>();
