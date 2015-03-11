@@ -12,7 +12,7 @@ public final class Makers {
     }
 
     public static Actor.Builder actor(TrackingIdentity id) {
-        return actor("Person", "urn:spid:person:" + id.getSessionId());
+        return actor("Person", "urn:spid.no:person:" + id.getSessionId());
     }
 
     public static Target.Builder target(String type, String id) {
