@@ -3,7 +3,11 @@ package no.spt.sdk;
 /**
  * Defaults contains default values that can be used in the SDK
  */
-public class Defaults {
+public final class Defaults {
+
+    private Defaults() {
+
+    }
 
     /**
      * The URL to the data collector
