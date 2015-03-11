@@ -1,7 +1,7 @@
 package no.spt.sdk.exceptions;
 
 import no.spt.sdk.Options;
-import no.spt.sdk.Util;
+import no.spt.sdk.TrackingUtil;
 import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
@@ -141,7 +141,7 @@ public class ReportingErrorCollector implements ErrorCollector {
         }
 
         private Actor getSdkActor(Options options) {
-            return actor("Application", "urn:spt.no:sdk:java:" + Util.getSdkVersion())
+            return actor("Application", "urn:spt.no:sdk:java:" + TrackingUtil.getSdkVersion())
                     .set("using", getOptionsObject(options))
                     .build();
         }
