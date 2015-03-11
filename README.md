@@ -150,14 +150,14 @@ Activity activity = activity("Read")
              .build();
 ```
 
-__Example: User sends an email__
+__Example: User sends a message__
 ```java
 Activity activity = activity("Send")
              .provider(provider("Organization", "urn:spid.no:sp123"))
              .actor(actor("Person", "urn:spid.no:person:abc123"))
-             .object(object("spt:email", "urn:spid.no:email:abc123")
-                 .title("<Email title>")
-                 .content("<Email content>"))
+             .object(object("Content", "urn:spid.no:message:abc123")
+                 .title("<Message title>")
+                 .content("<Message content>"))
              .target(target("Person", "urn:example@email.com"))
              .build());
 ```
