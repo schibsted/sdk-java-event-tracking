@@ -11,6 +11,10 @@ public final class Makers {
         return new Actor.Builder(type, id);
     }
 
+    public static Actor.Builder actor(TrackingIdentity id) {
+        return actor("Person", "urn:spid:person:" + id.getSessionId());
+    }
+
     public static Target.Builder target(String type, String id) {
         return new Target.Builder(type, id);
     }
