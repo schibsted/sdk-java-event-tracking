@@ -50,6 +50,7 @@ public class ReportingErrorCollector implements ErrorCollector {
 
     private static class ErrorBatchSender implements Runnable {
 
+        private static final int MAXIMUM_STACK_TRACE_ELEMENTS = 10;
         private Options options;
         private HttpConnection httpConnection;
         private ASJsonConverter jsonConverter;
@@ -100,8 +101,8 @@ public class ReportingErrorCollector implements ErrorCollector {
         private Activity convertToErrorReport(DataTrackingException error) {
             return new Activity.Builder("Create")
                     .actor(getSdkActor(options))
-                    .object(object("spt:error", "urn:spt.no:error:" + String.valueOf(error.getErrorCode()))
-                            .set("spt:errorCode", String.valueOf(error.getErrorCode()))
+                    .object(object("spt:error", "urn:spt.no:error:" + error.getErrorCode()).set("spt:errorCode",
+                            String.valueOf(error.getErrorCode()))
                             .set("spt:errorMessage", error.getMessage())
                             .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())))
                     .provider(getProvider(options))
@@ -112,8 +113,8 @@ public class ReportingErrorCollector implements ErrorCollector {
         private Activity convertToErrorReport(CommunicationDataTrackingException error) {
             return new Activity.Builder("Accept")
                     .actor(getSdkActor(options))
-                    .object(object("spt:errorResponse", "urn:spt.no:error:" + String.valueOf(error.getErrorCode()))
-                            .set("spt:errorCode", String.valueOf(error.getErrorCode()))
+                    .object(object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
+                            ("spt:errorCode", String.valueOf(error.getErrorCode()))
                             .set("spt:errorMessage", error.getMessage())
                             .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
                             .set("spt:responseBody", new JsonString(error.getResponseBody()))
@@ -126,8 +127,11 @@ public class ReportingErrorCollector implements ErrorCollector {
 
         private List<String> stackTracesToStringList(StackTraceElement[] stackTrace) {
             List<String> list = new LinkedList<String>();
+            int cnt = 0;
             for(StackTraceElement elem : stackTrace) {
-                list.add(elem.toString());
+                if(cnt++ < MAXIMUM_STACK_TRACE_ELEMENTS) {
+                    list.add(elem.toString());
+                }
             }
             return list;
         }
@@ -137,8 +141,9 @@ public class ReportingErrorCollector implements ErrorCollector {
         }
 
         private Actor getSdkActor(Options options) {
-            return actor("Application", "urn:spt.no:sdk:java:" + Util.getSdkVersion()).set("using", getOptionsObject
-                    (options)).build();
+            return actor("Application", "urn:spt.no:sdk:java:" + Util.getSdkVersion())
+                    .set("using", getOptionsObject(options))
+                    .build();
         }
 
         private ASObject getOptionsObject(Options options) {
