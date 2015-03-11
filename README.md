@@ -178,19 +178,28 @@ By static importing Makers you can use static helper methods for creating object
 (e.g. `actor("Person", "urn:spid.no:person:abc123").build()` to create an actor)
 
 ## Tracking ID
-To be able to track users, each user has to be given a unique ID. This is done based on some
+To be able to track users, each user has to be given a unique tracking ID. This is done based on some
 identifiers that are sent to the Central Identity Service which returns an environmentId and a sessionId.
-The Tracking Client has a method for fetching an ID from the Central Identity Service based on a
+The environmentId is unique to the user's environment and should be included in future requests for tracking IDs.
+The sessionId is unique to this user's current session and should be used as ID for the actor of the activity.
+
+The Tracking Client has a method for fetching a tracking ID from the Central Identity Service based on a
 `Map<String, String>` of identifiers. These identifiers should be enough to uniquely identify the user or the
 returned ID will only be a temporary ID used for this session.
 
+__Example: No existing tracking ID__
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
-identifiers.put("SomeKey", "SomeUniqueValue");
-UserIdentity userId = client.getUserId(identifiers);
+identifiers.put("clientIp", "127.0.0.1");
+identifiers.put("userId", "abc123");
+TrackingIdentity trackingId = client.getTrackingId(identifiers);
 ```
 
-The TrackingIdentity object contains a sessionId which is the ID that should be used for the actor of the activity.
-It also contains an environmentId which is unique for this user and can be used to obtain a new sessionId from the
-Central Identity Service by sending it as a property.
+__Example: Existing tracking ID__
+```java
+Map<String, String> identifiers = new HashMap<String, String>();
+identifiers.put("environmentId", oldTrackingId.getEnvironmentId());
+identifiers.put("sessionId", oldTrackingId.getSessionId());
+TrackingIdentity trackingId = client.getTrackingId(identifiers);
+```
 
