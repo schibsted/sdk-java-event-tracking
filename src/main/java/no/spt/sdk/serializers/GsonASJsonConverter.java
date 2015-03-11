@@ -10,7 +10,6 @@ import no.spt.sdk.models.TrackingIdentity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * A JSON converter that uses {@link com.google.gson}
@@ -33,15 +32,6 @@ public class GsonASJsonConverter implements ASJsonConverter {
     @Override
     public String serialize(Object object) {
         return gson.toJson(object);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, Object> deSerialize(String json) {
-        Type stringStringMap = new TypeToken<Map<String, Object>>(){}.getType();
-        return gson.fromJson(json, stringStringMap);
     }
 
     /**

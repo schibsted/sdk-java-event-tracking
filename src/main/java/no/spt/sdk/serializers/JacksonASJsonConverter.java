@@ -52,14 +52,6 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> deSerialize(String json) throws IOException {
-        return mapper.readValue(json, MAP_TYPE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public TrackingIdentity deSerializeTrackingIdentity(String json) throws IOException {
         return mapper.readValue(json, TRACKING_IDENTITY_TYPE);
     }
