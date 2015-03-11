@@ -138,8 +138,7 @@ public class AutomaticBatchSender implements Runnable, Sender {
     }
 
     /**
-     * Sends all activities in the queue to the data collector.
-     * Blocks until all activities are sent, maximum 2 minutes.
+     * Sends all activities in the queue to the data collector. Blocks until all activities are sent, maximum 2 minutes.
      *
      * @throws DataTrackingException If interrupted while waiting
      */
