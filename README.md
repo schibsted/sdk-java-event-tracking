@@ -140,14 +140,28 @@ The activities are based on the [SPT ActivityStreams format](https://github.com/
 An activity is created using a Builder with a fluent interface. It requires a type and that at least the actor, object
 and provider are set.
 
+__Example: User reads an article__
 ```java
 Activity activity = activity("Read")
              .publishedNow()
-             .actor(actor("Person", "urn:spid.no:person:abc123"))
              .provider(provider("Organization", "urn:spid.no:vg123"))
+             .actor(actor("Person", "urn:spid.no:person:abc123"))
              .object(object("Article", "urn:example.no:article:art123"))
              .build();
 ```
+
+__Example: User sends an email__
+```java
+Activity activity = activity("Send")
+             .provider(provider("Organization", "urn:spid.no:sp123"))
+             .actor(actor("Person", "urn:spid.no:person:abc123"))
+             .object(object("spt:email", "urn:spid.no:email:abc123")
+                 .title("<Email title>")
+                 .content("<Email content>"))
+             .target(target("Person", "urn:example@email.com"))
+             .build());
+```
+
 ### Object
 The Object is the primary object of the Activity. For available Object types and properties, see the
 [SPT ActivityStreams format](https://github.com/schibsted/activitystream-events).
