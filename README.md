@@ -159,7 +159,7 @@ Activity activity = activity("Send")
                  .title("<Message title>")
                  .content("<Message content>"))
              .target(target("Person", "urn:example@email.com"))
-             .build());
+             .build();
 ```
 
 ### Object
