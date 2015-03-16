@@ -20,7 +20,7 @@ public class ASObject {
 
     protected final Map<String,Object> map;
 
-    public ASObject(ASObject.AbstractBuilder<?,?> builder) {
+    protected ASObject(ASObject.AbstractBuilder<?,?> builder) {
         this.map = ImmutableMap.copyOf(builder.map);
     }
 

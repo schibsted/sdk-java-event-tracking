@@ -6,7 +6,7 @@ package no.spt.sdk.models;
  */
 public class Provider extends ASObject {
 
-    public Provider(Builder builder) {
+    private Provider(Builder builder) {
         super(builder);
     }
 

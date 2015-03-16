@@ -6,7 +6,7 @@ package no.spt.sdk.models;
  */
 public class Target extends ASObject {
 
-    public Target(Builder builder) {
+    private Target(Builder builder) {
         super(builder);
     }
 

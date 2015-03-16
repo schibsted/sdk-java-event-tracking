@@ -7,7 +7,7 @@ package no.spt.sdk.models;
  */
 public class Actor extends ASObject {
 
-    public Actor(Builder builder) {
+    private Actor(Builder builder) {
         super(builder);
     }
 
