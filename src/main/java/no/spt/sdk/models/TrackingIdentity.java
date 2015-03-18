@@ -51,6 +51,30 @@ public class TrackingIdentity {
     }
 
     /**
+     * Returns the userId for the tracking identity
+     *
+     * @return The userId for the tracking identity. If userId doesn't exist an empty string is returned
+     */
+    public String getUserId() {
+        if(data == null || data.get("userId") == null) {
+            return "";
+        }
+        return data.get("userId").toString();
+    }
+
+    /**
+     * Returns the visitorId for the tracking identity
+     *
+     * @return The visitorId for the tracking identity. If visitorId doesn't exist an empty string is returned
+     */
+    public String getVisitorId() {
+        if(data == null || data.get("visitorId") == null) {
+            return "";
+        }
+        return data.get("visitorId").toString();
+    }
+
+    /**
      * Returns all data that the CIS responded with
      *
      * @return All data that the CIS responded with

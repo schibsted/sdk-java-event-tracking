@@ -26,10 +26,15 @@ public class ActorTest {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("environmentId", "abc123");
         data.put("sessionId", "xyz321");
+        data.put("userId", "urn:spid.no:user:user123");
+        data.put("visitorId", "visitor123");
         TrackingIdentity trackingId = new TrackingIdentity(data);
         Actor actor = actor(trackingId).build();
         Map properties = actor.getMap();
         assertEquals("Person", properties.get("@type"));
-        assertEquals("urn:spid.no:person:xyz321", properties.get("@id"));
+        assertEquals("urn:spid.no:person:visitor123", properties.get("@id"));
+        assertEquals("urn:spid.no:session:xyz321", properties.get("spt:sessionId"));
+        assertEquals("urn:spid.no:environment:abc123", properties.get("spt:environmentId"));
+        assertEquals("urn:spid.no:user:user123", properties.get("spt:userId"));
     }
 }

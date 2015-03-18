@@ -12,6 +12,8 @@ public class TrackingIdentityTest {
 
     private static final String SESSION_ID = "abc123";
     private static final String ENVIRONMENT_ID = "xyz123";
+    private static final String USER_ID = "user123";
+    private static final String VISITOR_ID = "visitor123";
 
     @Test
     public void testGetSessionId() throws Exception {
@@ -42,6 +44,34 @@ public class TrackingIdentityTest {
     }
 
     @Test
+    public void testGetUserId() throws Exception {
+        TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
+        assertEquals(USER_ID, id.getUserId());
+    }
+
+    @Test
+    public void testMissingUserId() throws Exception {
+        Map<String, Object> data = getTrackingIdProps();
+        data.remove("userId");
+        TrackingIdentity id = new TrackingIdentity(data);
+        assertEquals("", id.getUserId());
+    }
+
+    @Test
+    public void testGetVisitorId() throws Exception {
+        TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
+        assertEquals(VISITOR_ID, id.getVisitorId());
+    }
+
+    @Test
+    public void testMissingVisitorId() throws Exception {
+        Map<String, Object> data = getTrackingIdProps();
+        data.remove("visitorId");
+        TrackingIdentity id = new TrackingIdentity(data);
+        assertEquals("", id.getVisitorId());
+    }
+
+    @Test
     public void testGetData() throws Exception {
         TrackingIdentity id = new TrackingIdentity(getTrackingIdProps());
         assertEquals(getTrackingIdProps(), id.getData());
@@ -57,6 +87,8 @@ public class TrackingIdentityTest {
         Map<String, Object> identifier = new HashMap<String, Object>();
         identifier.put("sessionId", SESSION_ID);
         identifier.put("environmentId", ENVIRONMENT_ID);
+        identifier.put("userId", USER_ID);
+        identifier.put("visitorId", VISITOR_ID);
         return identifier;
     }
 }
