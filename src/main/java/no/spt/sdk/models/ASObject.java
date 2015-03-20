@@ -1,6 +1,7 @@
 package no.spt.sdk.models;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  */
 public class ASObject {
 
+    public static final ASObject EMPTY = new ASObject(new Builder(null, null));
+
     private static final DateFormat ISO_8601_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
@@ -24,7 +27,7 @@ public class ASObject {
         this.map = ImmutableMap.copyOf(builder.map);
     }
 
-    public Map getMap() {
+    public Map<String, Object> getMap() {
         return this.map;
     }
 
@@ -36,15 +39,20 @@ public class ASObject {
     }
 
     public static abstract class AbstractBuilder<A extends ASObject, B extends AbstractBuilder<A,B>> {
-        private final Map<String, Object> map = newLinkedHashMap();
+        private final Map<String, Object> map;
 
         public AbstractBuilder(String type, String id) {
+            map = newLinkedHashMap();
             type(type);
             id(id);
         }
 
+        protected AbstractBuilder(Map<String, Object> properties) {
+            map = Maps.newLinkedHashMap(properties);
+        }
+
         public B set(String key, ASObject value) {
-            if (value == null) {
+            if (value == null || EMPTY.equals(value)) {
                 return (B)this;
             } else {
                 map.put(key, value);
