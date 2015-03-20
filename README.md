@@ -19,7 +19,7 @@ To use the SDK in your projects include it in your pom.xml.
 <dependency>
     <groupId>no.spt.sdk</groupId>
     <artifactId>data-collector-sdk-java</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
