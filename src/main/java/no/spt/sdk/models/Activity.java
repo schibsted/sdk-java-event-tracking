@@ -77,6 +77,10 @@ public class Activity {
             type(type);
         }
 
+        public Builder(Activity activity) {
+            _temp = activity;
+        }
+
         public Builder object(ASObject object) {
             _temp.object = object;
             return this;
