@@ -183,7 +183,6 @@ public class AutomaticBatchSender implements Runnable, Sender {
         flush();
         shouldSend = false;
         activityQueue.clear();
-        client.close();
     }
 
     /**

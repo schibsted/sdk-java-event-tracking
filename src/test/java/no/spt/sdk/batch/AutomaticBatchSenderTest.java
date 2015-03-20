@@ -103,7 +103,6 @@ public class AutomaticBatchSenderTest {
         batchSender.enqueue(activity);
         batchSender.close();
         assertEquals(0, batchSender.getQueueDepth());
-        verify(dataCollectorConnector, times(1)).close();
     }
 
     @Test

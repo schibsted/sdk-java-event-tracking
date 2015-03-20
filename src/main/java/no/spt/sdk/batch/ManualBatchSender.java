@@ -129,7 +129,6 @@ public class ManualBatchSender implements Sender {
     @Override
     public void close() throws DataTrackingException {
         flush();
-        client.close();
     }
 
     /**
