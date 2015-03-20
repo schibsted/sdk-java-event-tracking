@@ -30,6 +30,8 @@ public class DataTrackingClient {
     private final Sender activitySender;
     private final ErrorCollector errorCollector;
     private final IdentityConnector identityConnector;
+    private final IdentifyingDataTracker identifyingDataTracker;
+    private final HttpConnection httpConnection;
 
     /**
      * Builder for instantiating DataTrackingClients.
@@ -49,6 +51,7 @@ public class DataTrackingClient {
         private ActivitySenderType activitySenderType;
         private IdentityConnector identityConnector;
         private ASJsonConverter jsonConverter;
+        private IdentifyingDataTracker identifyingDataTracker;
 
         /**
          * Sets the {@link no.spt.sdk.Options} to use for the client
@@ -218,7 +221,7 @@ public class DataTrackingClient {
                 activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector, jsonConverter);
             }
             this.activitySender.init();
-
+            this.identifyingDataTracker = new AsynchronousIdentifyingDataTracker(options, activitySender, identityConnector, errorCollector);
             return new DataTrackingClient(this);
         }
 
@@ -238,6 +241,8 @@ public class DataTrackingClient {
         this.activitySender = builder.activitySender;
         this.options = builder.options;
         this.identityConnector = builder.identityConnector;
+        this.identifyingDataTracker = builder.identifyingDataTracker;
+        this.httpConnection = builder.httpConnection;
     }
 
     /**
@@ -279,7 +284,9 @@ public class DataTrackingClient {
      */
     public void close() {
         try {
+            this.identifyingDataTracker.close();
             this.activitySender.close();
+            this.httpConnection.close();
         } catch (DataTrackingException e) {
             handleError(e);
         }
@@ -312,6 +319,17 @@ public class DataTrackingClient {
     }
 
     /**
+     * Takes a {@link java.util.Map} of identifiers used to get a TrackingIdentity which is added to the actor of the
+     * activity before it is tracked
+     *
+     * @param identifiers
+     * @param activity
+     */
+    public void identifyActorAndTrack(Map<String, String> identifiers, Activity activity) {
+        identifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+    }
+
+    /**
      * Handle errors that occur in the client
      *
      * @param e an exception to handle
@@ -319,5 +337,4 @@ public class DataTrackingClient {
     private void handleError(DataTrackingException e) {
         errorCollector.collect(e);
     }
-
 }

@@ -5,6 +5,7 @@ import no.spt.sdk.TestData;
 import no.spt.sdk.batch.Sender;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
+import no.spt.sdk.exceptions.error.TrackingIdentityError;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.models.TrackingIdentity;
@@ -85,10 +86,36 @@ public class MockedDataTrackingClientTest {
         assertEquals("id123", client.getTrackingId(TestData.getTrackingIdentifiers()).getSessionId());
     }
 
+    @Test(expected = DataTrackingException.class)
+    public void testGetTrackingIdIdentityConnectorThrowsDTE() throws DataTrackingException {
+        when(identityConnector.getTrackingId(any(Map.class))).thenThrow(new DataTrackingException("An error",
+            TrackingIdentityError.GENERAL_TRACKING_IDENTITY_ERROR));
+        client.getTrackingId(TestData.getTrackingIdentifiers());
+    }
+
+    @Test
+    public void testidentifyActorAndTrack() throws Exception {
+        Activity activity = TestData.getTestActivity();
+        Map<String, String> identifiers = TestData.getTrackingIdentifiers();
+        when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
+        client.identifyActorAndTrack(identifiers, activity);
+        sleep(200);
+        verify(identityConnector, times(1)).getTrackingId(identifiers);
+        verify(sender, times(1)).enqueue(any(Activity.class));
+    }
+
     private Map<String, Object> getDummyMap() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sessionId", "id123");
         return map;
+    }
+
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
