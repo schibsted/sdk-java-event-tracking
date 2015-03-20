@@ -5,7 +5,8 @@ public enum TrackingIdentityError implements DataTrackingError {
     GENERAL_TRACKING_IDENTITY_ERROR(20000),
     CACHE_ERROR(20050),
     HTTP_CONNECTION_ERROR(20100),
-    JSON_CONVERTING_ERROR(20200);
+    JSON_CONVERTING_ERROR(20200),
+    QUEUE_MAX_SIZE_REACHED(20250);
 
     private final int errorCode;
 
