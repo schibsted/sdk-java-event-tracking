@@ -1,5 +1,7 @@
 package no.spt.sdk.models;
 
+import java.util.UUID;
+
 /**
  * Represents an Activity Streams 2.0 Actor
  *
@@ -39,15 +41,15 @@ public class Actor extends ASObject {
     }
 
     private static String toIriVisitorId(String visitorId) {
-        return !visitorId.isEmpty() ? "urn:spid.no:person:" + visitorId : null;
+        return "urn:spid.no:person:" + (!visitorId.isEmpty() ? visitorId : UUID.randomUUID().toString());
     }
 
     private static String toIriEnvironmentId(String environmentId) {
-        return !environmentId.isEmpty() ? "urn:spid.no:environment:" + environmentId : null;
+        return "urn:spid.no:environment:" + (!environmentId.isEmpty() ? environmentId : UUID.randomUUID().toString());
     }
 
     private static String toIriSessionId(String sessionId) {
-        return !sessionId.isEmpty() ? "urn:spid.no:session:" + sessionId : null;
+        return "urn:spid.no:session:" + (!sessionId.isEmpty() ? sessionId : UUID.randomUUID().toString());
     }
 
 }
