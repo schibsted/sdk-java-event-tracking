@@ -32,4 +32,9 @@ public class LoggingErrorCollector implements ErrorCollector {
                     (CommunicationDataTrackingException) e).getResponseBody()));
         }
     }
+
+    @Override
+    public void close() throws DataTrackingException {
+        // Do nothing
+    }
 }

@@ -44,8 +44,11 @@ public class AsynchronousIdentifyingDataTracker implements IdentifyingDataTracke
     public void close() throws DataTrackingException {
         executor.shutdown();
         try {
-            executor.awaitTermination(2, TimeUnit.MINUTES);
+            if(!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
         } catch (InterruptedException e) {
+            executor.shutdownNow();
             throw new DataTrackingException(e, ActivitySendingError.CLOSING_CLIENT_ERROR);
         }
     }

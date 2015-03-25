@@ -11,9 +11,10 @@ import no.spt.sdk.serializers.ASJsonConverter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static no.spt.sdk.models.Makers.*;
 
@@ -29,7 +30,7 @@ public class ReportingErrorCollector implements ErrorCollector {
     private HttpConnection httpConnection;
     private ASJsonConverter jsonConverter;
     private LinkedBlockingQueue<DataTrackingException> errorQueue;
-    private Executor executor;
+    private ExecutorService executor;
 
     public ReportingErrorCollector(Options options, HttpConnection httpConnection,
                                    ASJsonConverter jsonConverter) {
@@ -53,6 +54,18 @@ public class ReportingErrorCollector implements ErrorCollector {
             List<DataTrackingException> current = new LinkedList<DataTrackingException>();
             errorQueue.drainTo(current, options.getMaxErrorBatchSize());
             executor.execute(new ErrorBatchSender(options, httpConnection, jsonConverter, current));
+        }
+    }
+
+    @Override
+    public void close() {
+        executor.shutdown();
+        try {
+            if(!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
         }
     }
 

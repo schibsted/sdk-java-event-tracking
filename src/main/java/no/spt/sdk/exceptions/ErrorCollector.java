@@ -11,4 +11,5 @@ public interface ErrorCollector {
      */
     void collect(DataTrackingException e);
 
+    void close() throws DataTrackingException;
 }

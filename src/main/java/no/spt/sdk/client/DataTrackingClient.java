@@ -285,10 +285,23 @@ public class DataTrackingClient {
     public void close() {
         try {
             this.identifyingDataTracker.close();
-            this.activitySender.close();
-            this.httpConnection.close();
         } catch (DataTrackingException e) {
             handleError(e);
+        }
+        try {
+            this.activitySender.close();
+        } catch (DataTrackingException e) {
+            handleError(e);
+        }
+        try {
+            this.errorCollector.close();
+        } catch (DataTrackingException e) {
+            // Ignore
+        }
+        try {
+            this.httpConnection.close();
+        } catch (DataTrackingException e) {
+            // Ignore
         }
     }
 
