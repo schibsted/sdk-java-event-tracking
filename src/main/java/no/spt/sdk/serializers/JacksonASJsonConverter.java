@@ -43,7 +43,7 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         mapper.registerModule(module);
         mapper.addMixIn(Activity.class, ActivityMixIn.class);
         mapper.addMixIn(TrackingIdentity.class, TrackingIdentityMixIn.class);
-        mapper.addMixIn(DataCollectorResponse.class, DataCollectorErrorMixIn.class);
+        mapper.addMixIn(DataCollectorResponse.class, DataCollectorResponseMixIn.class);
         mapper.addMixIn(DataCollectorError.class, DataCollectorErrorMixIn.class);
     }
 
