@@ -1,6 +1,7 @@
 package no.spt.sdk.serializers;
 
 
+import no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse;
 import no.spt.sdk.models.TrackingIdentity;
 
 import java.io.IOException;
@@ -28,4 +29,14 @@ public interface ASJsonConverter {
      * @throws IOException If the JSON String could not be deserialized
      */
     public TrackingIdentity deserializeTrackingIdentity(String json)  throws IOException;
+
+    /**
+     * Deserialize a JSON String from the data collector to a
+     * {@link no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse} object
+     *
+     * @param json The response from the data collector
+     * @return A DataCollectorResponse object
+     * @throws IOException If the JSON String could not be deserialized
+     */
+    public DataCollectorResponse deserializeDataCollectorResponse(String json) throws IOException;
 }

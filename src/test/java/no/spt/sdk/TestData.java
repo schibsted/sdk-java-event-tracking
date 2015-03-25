@@ -180,6 +180,70 @@ public class TestData {
                 "}";
     }
 
+    public static String getDataCollectorMultiStatusAsJsonString() {
+        return "{\n" +
+            "                        \"code\": 207,\n" +
+            "                        \"status\": \"PARTIAL SUCCESS\",\n" +
+            "                        \"type\": \"\",\n" +
+            "                        \"errors\": [\n" +
+            "                            {\n" +
+            "                                \"status\": \"ERROR\",\n" +
+            "                                \"errors\": [\n" +
+            "                                    {\n" +
+            "                                        \"field\": \"data.actor\",\n" +
+            "                                        \"message\": \"is required\"\n" +
+            "                                    }\n" +
+            "                                ],\n" +
+            "                                \"type\": \"invalid_activitystream_format\"\n" +
+            "                            },\n" +
+            "                            {\n" +
+            "                                \"status\": \"ERROR\",\n" +
+            "                                \"errors\": [\n" +
+            "                                    {\n" +
+            "                                        \"field\": \"data.actor\",\n" +
+            "                                        \"message\": \"is required\"\n" +
+            "                                    }\n" +
+            "                                ],\n" +
+            "                                \"type\": \"invalid_activitystream_format\"\n" +
+            "                            }\n" +
+            "                        ],\n" +
+            "                        \"success\": [\n" +
+            "                            {\n" +
+            "                                \"status\": \"SUCCESS\"\n" +
+            "                            },\n" +
+            "                            {\n" +
+            "                                \"status\": \"SUCCESS\"\n" +
+            "                            },\n" +
+            "                            {\n" +
+            "                                \"status\": \"SUCCESS\"\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    }";
+    }
+
+    public static String getDataCollectorBadRequestAsJsonString() {
+        return "{\n" +
+            "                        \"code\": 400,\n" +
+            "                        \"status\": \"ERROR\",\n" +
+            "                        \"type\": \"\",\n" +
+            "                        \"errors\": [\n" +
+            "                            {\n" +
+            "                                \"status\": \"ERROR\",\n" +
+            "                                \"errors\": [\n" +
+            "                                    {\n" +
+            "                                        \"field\": \"data.actor\",\n" +
+            "                                        \"message\": \"is required\"\n" +
+            "                                    }\n" +
+            "                                ],\n" +
+            "                                \"type\": \"invalid_activitystream_format\"\n" +
+            "                            }\n" +
+            "                        ],\n" +
+            "                        \"success\": []\n" +
+            "                    }";
+    }
+
+
+
     public static DataTrackingException getDataTrackingException() {
         Map<String, String> header = new HashMap<String, String>();
         header.put("contentType", "application/json");

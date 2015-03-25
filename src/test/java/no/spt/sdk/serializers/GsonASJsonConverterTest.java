@@ -1,6 +1,7 @@
 package no.spt.sdk.serializers;
 
 import no.spt.sdk.TestData;
+import no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse;
 import no.spt.sdk.models.TrackingIdentity;
 import org.json.JSONException;
 import org.junit.Before;
@@ -37,6 +38,20 @@ public class GsonASJsonConverterTest {
         TrackingIdentity id = jsonConverter.deserializeTrackingIdentity(TestData.getTrackingIdResponseAsJsonString());
         assertEquals(TestData.TRACKING_SESSION_ID, id.getSessionId());
         assertEquals(TestData.TRACKING_ENVIRONMENT_ID, id.getEnvironmentId());
+    }
+
+    @Test
+    public void testDataCollectorResponse207DeSerializing() throws JSONException, IOException {
+        DataCollectorResponse response = jsonConverter.deserializeDataCollectorResponse(TestData
+            .getDataCollectorMultiStatusAsJsonString());
+        assertEquals(207, response.getCode());
+    }
+
+    @Test
+    public void testDataCollectorResponse400DeSerializing() throws JSONException, IOException {
+        DataCollectorResponse response = jsonConverter.deserializeDataCollectorResponse(TestData
+            .getDataCollectorBadRequestAsJsonString());
+        assertEquals(400, response.getCode());
     }
 
 }

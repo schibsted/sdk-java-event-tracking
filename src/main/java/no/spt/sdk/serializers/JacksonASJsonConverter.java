@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import no.spt.sdk.client.DataCollectorResponse.DataCollectorError;
+import no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse;
 import no.spt.sdk.models.*;
 
 import java.io.IOException;
@@ -27,6 +29,9 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
     private static final JavaType TRACKING_IDENTITY_TYPE =
             TypeFactory.defaultInstance().constructType(TrackingIdentity.class);
 
+    private static final JavaType DATA_COLLECTOR_RESPONSE_TYPE =
+            TypeFactory.defaultInstance().constructType(DataCollectorResponse.class);
+
     public JacksonASJsonConverter() {
         this.mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
@@ -38,6 +43,8 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
         mapper.registerModule(module);
         mapper.addMixIn(Activity.class, ActivityMixIn.class);
         mapper.addMixIn(TrackingIdentity.class, TrackingIdentityMixIn.class);
+        mapper.addMixIn(DataCollectorResponse.class, DataCollectorErrorMixIn.class);
+        mapper.addMixIn(DataCollectorError.class, DataCollectorErrorMixIn.class);
     }
 
     /**
@@ -54,6 +61,14 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
     @Override
     public TrackingIdentity deserializeTrackingIdentity(String json) throws IOException {
         return mapper.readValue(json, TRACKING_IDENTITY_TYPE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataCollectorResponse deserializeDataCollectorResponse(String json) throws IOException {
+        return mapper.readValue(json, DATA_COLLECTOR_RESPONSE_TYPE);
     }
 
     private static class ASObjectSerializer extends JsonSerializer<ASObject> {
@@ -91,6 +106,16 @@ public class JacksonASJsonConverter implements  ASJsonConverter {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private class TrackingIdentityMixIn {
+
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private class DataCollectorResponseMixIn {
+
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private class DataCollectorErrorMixIn {
 
     }
 }

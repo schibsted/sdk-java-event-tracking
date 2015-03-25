@@ -6,6 +6,7 @@ import no.spt.sdk.client.DataTrackingPostRequest;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.JacksonASJsonConverter;
+import no.spt.sdk.stats.DataTrackingStats;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +26,14 @@ public class ReportingErrorCollectorTest {
     ASJsonConverter jsonConverter;
     ReportingErrorCollector errorCollector;
     Options options;
+    DataTrackingStats stats = new DataTrackingStats();
 
 
     @Before
     public void setUp() throws Exception {
         options = new Options.Builder("abc123").build();
         jsonConverter = new JacksonASJsonConverter();
-        errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter);
+        errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter, stats);
     }
 
     @Test

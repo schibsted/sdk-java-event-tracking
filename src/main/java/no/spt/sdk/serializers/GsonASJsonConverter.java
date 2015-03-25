@@ -3,6 +3,7 @@ package no.spt.sdk.serializers;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse;
 import no.spt.sdk.models.ASObject;
 import no.spt.sdk.models.JsonString;
 import no.spt.sdk.models.Link;
@@ -41,6 +42,15 @@ public class GsonASJsonConverter implements ASJsonConverter {
     public TrackingIdentity deserializeTrackingIdentity(String json) {
         Type trackingIdentityType = new TypeToken<TrackingIdentity>(){}.getType();
         return gson.fromJson(json, trackingIdentityType);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataCollectorResponse deserializeDataCollectorResponse(String json) {
+        Type DataCollectorResponseType = new TypeToken<DataCollectorResponse>(){}.getType();
+        return gson.fromJson(json, DataCollectorResponseType);
     }
 
     private static class ASObjectTypeConverter implements JsonSerializer<ASObject> {

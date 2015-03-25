@@ -16,6 +16,8 @@ import no.spt.sdk.models.Activity;
 import no.spt.sdk.models.TrackingIdentity;
 import no.spt.sdk.serializers.ASJsonConverter;
 import no.spt.sdk.serializers.JacksonASJsonConverter;
+import no.spt.sdk.stats.DataTrackingClientStats;
+import no.spt.sdk.stats.DataTrackingStats;
 
 import java.util.Map;
 
@@ -32,6 +34,7 @@ public class DataTrackingClient {
     private final IdentityConnector identityConnector;
     private final IdentifyingDataTracker identifyingDataTracker;
     private final HttpConnection httpConnection;
+    private final DataTrackingStats stats;
 
     /**
      * Builder for instantiating DataTrackingClients.
@@ -52,6 +55,7 @@ public class DataTrackingClient {
         private IdentityConnector identityConnector;
         private ASJsonConverter jsonConverter;
         private IdentifyingDataTracker identifyingDataTracker;
+        private DataTrackingStats stats;
 
         /**
          * Sets the {@link no.spt.sdk.Options} to use for the client
@@ -200,25 +204,26 @@ public class DataTrackingClient {
          * @return A newly constructed DataTrackingClient
          */
         public DataTrackingClient build() {
+            stats = new DataTrackingStats();
             if (options == null) {
                 throw new IllegalArgumentException("Data-collector-sdk#DataTrackingClient#options cannot be null.");
             }
-            if (httpConnection == null) {
+            if(httpConnection == null) {
                 httpConnection = new HttpClientConnection(options);
             }
             if(jsonConverter == null) {
                 this.jsonConverter = new JacksonASJsonConverter();
             }
-            if (errorCollector == null) {
-                errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter);
+            if(errorCollector == null) {
+                errorCollector = new ReportingErrorCollector(options, httpConnection, jsonConverter, stats);
             }
             if(identityConnector == null) {
                 this.identityConnector = new SimpleIdentityConnector(options, httpConnection, jsonConverter);
             }
             if(ActivitySenderType.MANUAL_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new ManualBatchSender(options, httpConnection, jsonConverter);
+                activitySender = new ManualBatchSender(options, httpConnection, jsonConverter, stats);
             } else if (activitySender == null || ActivitySenderType.AUTOMATIC_ACTIVITY_SENDER.equals(activitySenderType)) {
-                activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector, jsonConverter);
+                activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector, jsonConverter, stats);
             }
             this.activitySender.init();
             this.identifyingDataTracker = new AsynchronousIdentifyingDataTracker(options, activitySender, identityConnector, errorCollector);
@@ -243,6 +248,7 @@ public class DataTrackingClient {
         this.identityConnector = builder.identityConnector;
         this.identifyingDataTracker = builder.identifyingDataTracker;
         this.httpConnection = builder.httpConnection;
+        this.stats = builder.stats;
     }
 
     /**
@@ -340,6 +346,15 @@ public class DataTrackingClient {
      */
     public void identifyActorAndTrack(Map<String, String> identifiers, Activity activity) {
         identifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+    }
+
+    /**
+     * Returns a DataTrackingClientStats objects which contains counters for events that occur in the tracking client
+     *
+     * @return A DataTrackingClientStats objects which contains counters for events that occur in the tracking client
+     */
+    public DataTrackingClientStats getStats() {
+        return stats;
     }
 
     /**

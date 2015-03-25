@@ -7,6 +7,7 @@ import no.spt.sdk.client.DataTrackingResponse;
 import no.spt.sdk.connection.HttpConnection;
 import no.spt.sdk.models.*;
 import no.spt.sdk.serializers.ASJsonConverter;
+import no.spt.sdk.stats.DataTrackingStats;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -31,12 +32,14 @@ public class ReportingErrorCollector implements ErrorCollector {
     private ASJsonConverter jsonConverter;
     private LinkedBlockingQueue<DataTrackingException> errorQueue;
     private ExecutorService executor;
+    private DataTrackingStats stats;
 
     public ReportingErrorCollector(Options options, HttpConnection httpConnection,
-                                   ASJsonConverter jsonConverter) {
+                                   ASJsonConverter jsonConverter, DataTrackingStats stats) {
         this.options = options;
         this.httpConnection = httpConnection;
         this.jsonConverter = jsonConverter;
+        this.stats = stats;
         this.executor = Executors.newSingleThreadExecutor();
         this.errorQueue = new LinkedBlockingQueue<DataTrackingException>();
     }
@@ -53,7 +56,7 @@ public class ReportingErrorCollector implements ErrorCollector {
         if(errorQueue.size() >= options.getMaxErrorBatchSize()) {
             List<DataTrackingException> current = new LinkedList<DataTrackingException>();
             errorQueue.drainTo(current, options.getMaxErrorBatchSize());
-            executor.execute(new ErrorBatchSender(options, httpConnection, jsonConverter, current));
+            executor.execute(new ErrorBatchSender(options, httpConnection, jsonConverter, current, stats));
         }
     }
 
@@ -76,13 +79,16 @@ public class ReportingErrorCollector implements ErrorCollector {
         private HttpConnection httpConnection;
         private ASJsonConverter jsonConverter;
         private List<DataTrackingException> errors;
+        private DataTrackingStats stats;
 
         public ErrorBatchSender(Options options, HttpConnection httpConnection,
-                                ASJsonConverter jsonConverter, List<DataTrackingException> errors) {
+                                ASJsonConverter jsonConverter, List<DataTrackingException> errors,
+                                DataTrackingStats stats) {
             this.options = options;
             this.httpConnection = httpConnection;
             this.jsonConverter = jsonConverter;
             this.errors = errors;
+            this.stats = stats;
         }
 
         @Override
@@ -94,8 +100,9 @@ public class ReportingErrorCollector implements ErrorCollector {
                 try {
                     if (errors.size() > 0) {
                         DataTrackingResponse response = httpConnection.send(
-                                new DataTrackingPostRequest(options.getErrorReportingUrl(), null,
-                                        jsonConverter.serialize(convertToErrorReports(errors))));
+                            new DataTrackingPostRequest(options.getErrorReportingUrl(), null,
+                                jsonConverter.serialize(convertToErrorReports(errors))));
+                        stats.addToErrorReports(errors.size());
                     }
                     success = true;
                 } catch (IOException e) {
@@ -121,29 +128,29 @@ public class ReportingErrorCollector implements ErrorCollector {
 
         private Activity convertToErrorReport(DataTrackingException error) {
             return new Activity.Builder("Create")
-                    .actor(getSdkActor(options))
-                    .object(object("spt:error", "urn:spt.no:error:" + error.getErrorCode()).set("spt:errorCode",
-                            String.valueOf(error.getErrorCode()))
-                            .set("spt:errorMessage", error.getMessage())
-                            .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())))
-                    .provider(getProvider(options))
-                    .build();
+                .actor(getSdkActor(options))
+                .object(object("spt:error", "urn:spt.no:error:" + error.getErrorCode()).set("spt:errorCode",
+                    String.valueOf(error.getErrorCode()))
+                    .set("spt:errorMessage", error.getMessage())
+                    .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())))
+                .provider(getProvider(options))
+                .build();
         }
 
 
         private Activity convertToErrorReport(CommunicationDataTrackingException error) {
             return new Activity.Builder("Accept")
-                    .actor(getSdkActor(options))
-                    .object(object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
-                            ("spt:errorCode", String.valueOf(error.getErrorCode()))
-                            .set("spt:errorMessage", error.getMessage())
-                            .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
-                            .set("spt:responseBody", new JsonString(error.getResponseBody()))
-                            .set("inReplyTo", object("spt:request", null).set("spt:requestBody", new JsonString(error
-                                    .getRequestBody()))))
-                            .provider(getProvider(options))
-                            .target(target("Service", error.getRequestUrl()))
-                            .build();
+                .actor(getSdkActor(options))
+                .object(object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
+                    ("spt:errorCode", String.valueOf(error.getErrorCode()))
+                    .set("spt:errorMessage", error.getMessage())
+                    .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
+                    .set("spt:responseBody", new JsonString(error.getResponseBody()))
+                    .set("inReplyTo", object("spt:request", null).set("spt:requestBody", new JsonString(error
+                        .getRequestBody()))))
+                .provider(getProvider(options))
+                .target(target("Service", error.getRequestUrl()))
+                .build();
         }
 
         private List<String> stackTracesToStringList(StackTraceElement[] stackTrace) {
@@ -163,18 +170,18 @@ public class ReportingErrorCollector implements ErrorCollector {
 
         private Actor getSdkActor(Options options) {
             return actor("Application", "urn:spt.no:sdk:java:" + TrackingUtil.getSdkVersion())
-                    .set("using", getOptionsObject(options))
-                    .build();
+                .set("using", getOptionsObject(options))
+                .build();
         }
 
         private ASObject getOptionsObject(Options options) {
             return object("spt:options", "urn:spt.no:options:" +
-                    options.getClientId()).set("spt:dataCollectorUrl", options.getDataCollectorUrl())
-                    .set("spt:CISUrl", options.getCISUrl())
-                    .set("spt:errorReportingUrl", options.getErrorReportingUrl())
-                    .set("spt:maxQueueSize", String.valueOf(options.getMaxQueueSize()))
-                    .set("spt:timeout", String.valueOf(options.getTimeout()))
-                    .set("spt:retries", String.valueOf(options.getRetries())).build();
+                options.getClientId()).set("spt:dataCollectorUrl", options.getDataCollectorUrl())
+                .set("spt:CISUrl", options.getCISUrl())
+                .set("spt:errorReportingUrl", options.getErrorReportingUrl())
+                .set("spt:maxQueueSize", String.valueOf(options.getMaxQueueSize()))
+                .set("spt:timeout", String.valueOf(options.getTimeout()))
+                .set("spt:retries", String.valueOf(options.getRetries())).build();
         }
 
     }
