@@ -286,7 +286,7 @@ public class DataTrackingClient {
     }
 
     /**
-     * Close the client
+     * Close the client. This will block while internal queues are flushed.
      */
     public void close() {
         try {

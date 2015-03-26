@@ -42,7 +42,19 @@ and send batches of activities to the data collector if the queue contains multi
 See the API documentation for more details.
 
 ### Error reporting
-By default the client is setup to report errors to a central error collector for easy monitoring.
+By default the client is setup with a reporting error collector that reports errors to a central error collecting
+service for easy monitoring.
+
+For development and debugging purposes the client can be set up with a logging error collector which uses
+ a java.util.logging.Logger to log errors to console. This will replace the reporting error collector and should
+ therefore not be used in production.
+
+ ```java
+ DataTrackingClient client = new DataTrackingClient.Builder()
+                     .withOptions(options)
+                     .withErrorCollector(new LoggingErrorCollector())
+                     .build();
+ ```
 
 ### Options
 ```java
@@ -132,6 +144,22 @@ public class Example {
   }
 
 }
+```
+### Closing the client
+The client uses internal queues for tracked activities and separate threads for sending asynchronous to the data
+collector. When closing your application you should also close the client to allow these queues to be flushed and
+the threads to be shutdown. Note that once you have closed the client there is no way to restart it so you will have to
+build a new client.
+
+```java
+client.close();
+```
+
+### Stats
+The client keeps stats of tracked activities and errors.
+
+```java
+client.getStats();
 ```
 
 ## Creating activities
