@@ -13,15 +13,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
-import static no.spt.sdk.models.Makers.activity;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -97,22 +93,6 @@ public class AsynchronousIdentifyingDataTrackerTest {
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(1)).enqueue(any(Activity.class));
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
-    }
-
-    @Test
-    public void testActivityMissingActor() throws Exception {
-        Activity activity = activity("Test")
-            .object(TestData.createObject())
-            .provider(TestData.createProvider()).build();
-        ArgumentCaptor<Activity> activityArgument = ArgumentCaptor.forClass(Activity.class);
-        Map<String, String> identifiers = TestData.getTrackingIdentifiers();
-        when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
-        sleep(200);
-        verify(identityConnector, times(1)).getTrackingId(identifiers);
-        verify(sender, times(1)).enqueue(activityArgument.capture());
-        assertNotNull(activityArgument.getValue().getActor());
-        assertEquals("Person", activityArgument.getValue().getActor().getMap().get("@type"));
     }
 
     private void sleep(int millis) {

@@ -142,6 +142,15 @@ public class Activity {
             if(_temp.published == null || "".equals(_temp.published)) {
                 publishedNow();
             }
+            if(_temp.actor == null) {
+                throw new IllegalStateException("The Activity builder is missing an actor");
+            }
+            if(_temp.object == null) {
+                throw new IllegalStateException("The Activity builder is missing an object");
+            }
+            if(_temp.type == null || "".equals(_temp.type)) {
+                throw new IllegalStateException("The Activity builder is missing a type");
+            }
             return _temp;
         }
     }
