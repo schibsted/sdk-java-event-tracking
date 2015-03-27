@@ -155,8 +155,11 @@ public class Activity {
         }
 
         public Activity build() {
-            if(published == null || "".equals(published)) {
+            if(published == null || published.isEmpty()) {
                 publishedNow();
+            }
+            if(provider == null) {
+                throw new IllegalStateException("The Activity builder is missing a provider");
             }
             if(actor == null) {
                 throw new IllegalStateException("The Activity builder is missing an actor");
@@ -164,7 +167,7 @@ public class Activity {
             if(object == null) {
                 throw new IllegalStateException("The Activity builder is missing an object");
             }
-            if(type == null || "".equals(type)) {
+            if(type == null || type.isEmpty()) {
                 throw new IllegalStateException("The Activity builder is missing a type");
             }
             return new Activity(type, published, actor, provider, object, target);

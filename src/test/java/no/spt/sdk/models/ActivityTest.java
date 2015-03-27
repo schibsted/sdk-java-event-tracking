@@ -11,7 +11,9 @@ public class ActivityTest {
     public void testCreatingActivity() throws Exception {
         ASObject.Builder objectBuilder = object("objectType", "objectId");
         Actor.Builder actorBuilder = actor("actorType", "actorId");
+        Provider.Builder providerBuilder = provider("providerType", "providerId");
         Activity activity = activity("type")
+            .provider(providerBuilder)
             .object(objectBuilder)
             .actor(actorBuilder)
             .build();
@@ -23,8 +25,17 @@ public class ActivityTest {
     }
 
     @Test(expected = IllegalStateException.class )
-    public void testThatIsActorIsRequired() {
+    public void testThatProviderIsRequired() {
         activity("type")
+            .object(object("objectType", "objectId"))
+            .actor(actor("actorType", "actorId"))
+            .build();
+    }
+
+    @Test(expected = IllegalStateException.class )
+    public void testThatActorIsRequired() {
+        activity("type")
+            .provider(provider("providerType", "providerId"))
             .object(object("objectType", "objectId"))
             .build();
     }
@@ -32,6 +43,7 @@ public class ActivityTest {
     @Test(expected = IllegalStateException.class )
     public void testThatObjectIsRequired() {
         activity("type")
+            .provider(provider("providerType", "providerId"))
             .actor(actor("actorType", "actorId"))
             .build();
     }
