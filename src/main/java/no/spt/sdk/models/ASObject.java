@@ -36,6 +36,10 @@ public class ASObject {
         public Builder(String type, String id) {
             super(type, id);
         }
+
+        public ASObject build() {
+            return new ASObject(this);
+        }
     }
 
     public static abstract class AbstractBuilder<A extends ASObject, B extends AbstractBuilder<A,B>> {
@@ -51,6 +55,8 @@ public class ASObject {
             map = Maps.newLinkedHashMap(properties);
         }
 
+        public abstract A build();
+
         public B set(String key, ASObject value) {
             if (value == null || EMPTY.equals(value)) {
                 return (B)this;
@@ -60,7 +66,7 @@ public class ASObject {
             return (B)this;
         }
 
-        public B set(String key, ASObject.AbstractBuilder value) {
+        public B set(String key, AbstractBuilder value) {
             return set(key, value.build());
         }
 
@@ -140,11 +146,6 @@ public class ASObject {
             Calendar currentTime = Calendar.getInstance();
             return published(ISO_8601_FORMAT.format(currentTime.getTime()));
         }
-
-        public ASObject build() {
-            return new ASObject(this);
-        }
-
 
     }
 
