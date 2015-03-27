@@ -12,10 +12,7 @@ public final class Makers {
     }
 
     public static Actor.Builder actor(TrackingIdentity id) {
-        return actor("Person", toIriVisitorId(id.getVisitorId()))
-                .set("spt:sessionId", toIriSessionId(id.getSessionId()))
-                .set("spt:environmentId", toIriEnvironmentId(id.getEnvironmentId()))
-                .set("spt:userId", id.getUserId().isEmpty() ? null : id.getUserId());
+        return new Actor.Builder(id);
     }
 
     public static Target.Builder target(String type, String id) {
@@ -38,15 +35,4 @@ public final class Makers {
         return new Link.Builder(href);
     }
 
-    private static String toIriVisitorId(String visitorId) {
-        return !visitorId.isEmpty() ? "urn:spid.no:person:" + visitorId : null;
-    }
-
-    private static String toIriEnvironmentId(String environmentId) {
-        return !environmentId.isEmpty() ? "urn:spid.no:environment:" + environmentId : null;
-    }
-
-    private static String toIriSessionId(String sessionId) {
-        return !sessionId.isEmpty() ? "urn:spid.no:session:" + sessionId : null;
-    }
 }
