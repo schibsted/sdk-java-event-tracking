@@ -158,19 +158,20 @@ public class Activity {
             if(published == null || published.isEmpty()) {
                 publishedNow();
             }
-            if(provider == null) {
-                throw new IllegalStateException("The Activity builder is missing a provider");
+            Activity activity = new Activity(type, published, actor, provider, object, target);
+            if(activity.getProvider() == null) {
+                throw new IllegalStateException("Provider must be set");
             }
-            if(actor == null) {
-                throw new IllegalStateException("The Activity builder is missing an actor");
+            if(activity.getActor() == null) {
+                throw new IllegalStateException("Actor must be set");
             }
-            if(object == null) {
-                throw new IllegalStateException("The Activity builder is missing an object");
+            if(activity.getObject() == null) {
+                throw new IllegalStateException("Object must be set");
             }
-            if(type == null || type.isEmpty()) {
-                throw new IllegalStateException("The Activity builder is missing a type");
+            if(activity.getType() == null || activity.getType().isEmpty()) {
+                throw new IllegalStateException("Type must be set");
             }
-            return new Activity(type, published, actor, provider, object, target);
+            return activity;
         }
     }
 

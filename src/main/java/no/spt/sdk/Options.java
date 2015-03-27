@@ -259,17 +259,18 @@ public class Options {
         }
 
         public Options build() {
-            validateClientId(clientId);
-            validateDataCollectorUrl(dataCollectorUrl);
-            validateCISUrl(CISUrl);
-            validateErrorReportingUrl(errorReportingUrl);
-            validateMaxQueueSize(maxQueueSize);
-            validateTimeout(timeout);
-            validateRetries(retries);
-            validateMaxActivityBatchSize(maxActivityBatchSize);
-            validateMaxErrorBatchSize(maxErrorBatchSize);
-            return new Options(clientId, dataCollectorUrl, CISUrl, errorReportingUrl, maxQueueSize, timeout,
-                    retries, maxActivityBatchSize, maxErrorBatchSize);
+            Options options = new Options(clientId, dataCollectorUrl, CISUrl, errorReportingUrl, maxQueueSize, timeout,
+                retries, maxActivityBatchSize, maxErrorBatchSize);
+            validateClientId(options.getClientId());
+            validateDataCollectorUrl(options.getDataCollectorUrl());
+            validateCISUrl(options.getCISUrl());
+            validateErrorReportingUrl(options.getErrorReportingUrl());
+            validateMaxQueueSize(options.getMaxQueueSize());
+            validateTimeout(options.getTimeout());
+            validateRetries(options.getRetries());
+            validateMaxActivityBatchSize(options.getMaxActivityBatchSize());
+            validateMaxErrorBatchSize(options.getMaxErrorBatchSize());
+            return options;
         }
     }
 
