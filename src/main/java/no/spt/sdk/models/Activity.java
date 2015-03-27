@@ -19,16 +19,22 @@ public class Activity {
 
     private static final DateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
 
-    private List<Object> context;
-    private String id;
-    private String type;
-    private String published;
-    private ASObject actor;
-    private ASObject provider;
-    private ASObject object;
-    private ASObject target;
+    private final List<Object> context;
+    private final String id;
+    private final String type;
+    private final String published;
+    private final ASObject actor;
+    private final ASObject provider;
+    private final ASObject object;
+    private final ASObject target;
 
-    private Activity() {
+    private Activity(String type, String published, ASObject actor, ASObject provider, ASObject object, ASObject target) {
+        this.type = type;
+        this.published = published;
+        this.actor = actor;
+        this.provider = provider;
+        this.object = object;
+        this.target = target;
         Map<String, String> map = new HashMap<String, String>();
         map.put("spt", "http://schema.schibsted.com/activitystreams");
         map.put("spt:sdkType", "JAVA");
@@ -71,18 +77,28 @@ public class Activity {
 
     public static class Builder {
 
-        private Activity _temp = new Activity();
+        private String type;
+        private String published;
+        private ASObject actor;
+        private ASObject provider;
+        private ASObject object;
+        private ASObject target;
 
         public Builder(String type) {
-            type(type);
+            this.type = type;
         }
 
         public Builder(Activity activity) {
-            _temp = activity;
+            this.type = activity.getType();
+            this.published = activity.getPublished();
+            this.actor = activity.getActor();
+            this.provider = activity.getProvider();
+            this.object = activity.getObject();
+            this.target = activity.getTarget();
         }
 
         public Builder object(ASObject object) {
-            _temp.object = object;
+            this.object = object;
             return this;
         }
 
@@ -91,7 +107,7 @@ public class Activity {
         }
 
         public Builder actor(Actor actor) {
-            _temp.actor = actor;
+            this.actor = actor;
             return this;
         }
 
@@ -100,7 +116,7 @@ public class Activity {
         }
 
         public Builder provider(Provider provider) {
-            _temp.provider = provider;
+            this.provider = provider;
             return this;
         }
 
@@ -109,7 +125,7 @@ public class Activity {
         }
 
         public Builder target(Target target) {
-            _temp.target = target;
+            this.target = target;
             return this;
         }
 
@@ -118,40 +134,40 @@ public class Activity {
         }
 
         public Builder type(String type) {
-            _temp.type = type;
+            this.type = type;
             return this;
         }
 
         public Builder published(String published) {
-            _temp.published = published;
+            this.published = published;
             return this;
         }
 
         public Builder published(Date published) {
-            _temp.published = ISO_8601_FORMAT.format(published);
+            this.published = ISO_8601_FORMAT.format(published);
             return this;
         }
 
         public Builder publishedNow() {
             Calendar currentTime = Calendar.getInstance();
-            _temp.published = ISO_8601_FORMAT.format(currentTime.getTime());
+            this.published = ISO_8601_FORMAT.format(currentTime.getTime());
             return this;
         }
 
         public Activity build() {
-            if(_temp.published == null || "".equals(_temp.published)) {
+            if(published == null || "".equals(published)) {
                 publishedNow();
             }
-            if(_temp.actor == null) {
+            if(actor == null) {
                 throw new IllegalStateException("The Activity builder is missing an actor");
             }
-            if(_temp.object == null) {
+            if(object == null) {
                 throw new IllegalStateException("The Activity builder is missing an object");
             }
-            if(_temp.type == null || "".equals(_temp.type)) {
+            if(type == null || "".equals(type)) {
                 throw new IllegalStateException("The Activity builder is missing a type");
             }
-            return _temp;
+            return new Activity(type, published, actor, provider, object, target);
         }
     }
 
