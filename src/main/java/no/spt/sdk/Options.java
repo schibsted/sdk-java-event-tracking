@@ -194,7 +194,7 @@ public class Options {
         }
 
         private void validateClientId(String clientId) {
-            if (clientId == null || clientId.equals("")) {
+            if (clientId == null || clientId.isEmpty()) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#clientId must be a valid client ID.");
             }
         }
@@ -219,19 +219,19 @@ public class Options {
         }
 
         private void validateErrorReportingUrl(String errorReportingUrl) {
-            if (errorReportingUrl == null || errorReportingUrl.equals("")) {
+            if (errorReportingUrl == null || errorReportingUrl.isEmpty()) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#errorReportingUrl must be a valid url.");
             }
         }
 
         private void validateCISUrl(String CISUrl) {
-            if (CISUrl == null || CISUrl.equals("")) {
+            if (CISUrl == null || CISUrl.isEmpty()) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#CISUrl must be a valid url.");
             }
         }
 
         private void validateDataCollectorUrl(String dataCollectorUrl) {
-            if (dataCollectorUrl == null || dataCollectorUrl.equals("")) {
+            if (dataCollectorUrl == null || dataCollectorUrl.isEmpty()) {
                 throw new IllegalArgumentException("Data-collector-sdk#options#dataCollectorUrl must be a valid url.");
             }
         }
