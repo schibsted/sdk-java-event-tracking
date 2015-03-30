@@ -27,8 +27,8 @@ public final class Makers {
         return new ASObject.Builder(type, id);
     }
 
-    public static Activity.Builder activity(String type) {
-        return new Activity.Builder(type);
+    public static Activity.Builder activity(String type, Provider provider, Actor actor, ASObject object) {
+        return new Activity.Builder(type, provider, actor, object);
     }
 
     public static Link.Builder link(String href) {

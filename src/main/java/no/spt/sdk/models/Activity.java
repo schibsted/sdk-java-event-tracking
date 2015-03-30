@@ -23,12 +23,12 @@ public class Activity {
     private final String id;
     private final String type;
     private final String published;
-    private final ASObject actor;
-    private final ASObject provider;
+    private final Actor actor;
+    private final Provider provider;
     private final ASObject object;
-    private final ASObject target;
+    private final Target target;
 
-    private Activity(String type, String published, ASObject actor, ASObject provider, ASObject object, ASObject target) {
+    private Activity(String type, String published, Actor actor, Provider provider, ASObject object, Target target) {
         this.type = type;
         this.published = published;
         this.actor = actor;
@@ -59,11 +59,11 @@ public class Activity {
         return published;
     }
 
-    public ASObject getActor() {
+    public Actor getActor() {
         return actor;
     }
 
-    public ASObject getProvider() {
+    public Provider getProvider() {
         return provider;
     }
 
@@ -71,7 +71,7 @@ public class Activity {
         return object;
     }
 
-    public ASObject getTarget() {
+    public Target getTarget() {
         return target;
     }
 
@@ -79,13 +79,16 @@ public class Activity {
 
         private String type;
         private String published;
-        private ASObject actor;
-        private ASObject provider;
+        private Actor actor;
+        private Provider provider;
         private ASObject object;
-        private ASObject target;
+        private Target target;
 
-        public Builder(String type) {
+        public Builder(String type, Provider provider, Actor actor, ASObject object) {
             this.type = type;
+            this.provider = provider;
+            this.actor = actor;
+            this.object = object;
         }
 
         public Builder(Activity activity) {
@@ -160,16 +163,16 @@ public class Activity {
             }
             Activity activity = new Activity(type, published, actor, provider, object, target);
             if(activity.getProvider() == null) {
-                throw new IllegalStateException("Provider must be set");
-            }
-            if(activity.getActor() == null) {
-                throw new IllegalStateException("Actor must be set");
+                throw new IllegalStateException("Provider must be not null");
             }
             if(activity.getObject() == null) {
-                throw new IllegalStateException("Object must be set");
+                throw new IllegalStateException("Object must be not null");
+            }
+            if(activity.getActor() == null) {
+                throw new IllegalStateException("Actor must be not null");
             }
             if(activity.getType() == null || activity.getType().isEmpty()) {
-                throw new IllegalStateException("Type must be set");
+                throw new IllegalStateException("Type must be not null and not empty");
             }
             return activity;
         }

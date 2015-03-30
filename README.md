@@ -128,15 +128,14 @@ public class Example {
         e.printStackTrace();
     }
 
-    Activity activity = activity("Read")
-            .publishedNow()
-            .actor(actor("Person", "urn:spid.no:person:" + trackingId.getSessionId())
-                    .displayName("User with session ID " + trackingId.getSessionId()))
-            .provider(provider("Organization", "urn:spid.no:vg123")
-                    .displayName("Example organization"))
-            .object(object("Article", "urn:example.no:article:art123")
+    Activity activity = activity("Read",
+            provider("Organization", "urn:spid.no:vg123")
+                    .displayName("Example organization").build(),
+            actor("Person", "urn:spid.no:person:" + trackingId.getSessionId())
+                    .displayName("User with session ID " + trackingId.getSessionId()).build(),
+            object("Article", "urn:example.no:article:art123")
                     .url("http://www.example.com/article/art123")
-                    .displayName("An example article"))
+                    .displayName("An example article").build())
             .build();
 
     client.track(activity);
@@ -165,27 +164,27 @@ client.getStats();
 ## Creating activities
 The activities are based on the [SPT ActivityStreams format](https://github.com/schibsted/activitystream-events).
 
-An activity is created using a Builder with a fluent interface. It requires a type and that at least the actor, object
-and provider are set.
+An activity is created using a Builder with a fluent interface. It requires a type, provider, actor, and object
+as constructor parameters.
 
 __Example: User reads an article__
 ```java
-Activity activity = activity("Read")
-             .publishedNow()
-             .provider(provider("Organization", "urn:spid.no:vg123"))
-             .actor(actor("Person", "urn:spid.no:person:abc123"))
-             .object(object("Article", "urn:example.no:article:art123"))
+Activity activity = new Activity.Builder("Read",
+             provider("Organization", "urn:spid.no:vg123").build(),
+             actor("Person", "urn:spid.no:person:abc123").build(),
+             object("Article", "urn:example.no:article:art123").build())
              .build();
 ```
 
 __Example: User sends a message__
 ```java
-Activity activity = activity("Send")
-             .provider(provider("Organization", "urn:spid.no:sp123"))
-             .actor(actor("Person", "urn:spid.no:person:abc123"))
-             .object(object("Content", "urn:spid.no:message:abc123")
+Activity activity = activity("Send",
+             provider("Organization", "urn:spid.no:sp123").build(),
+             actor("Person", "urn:spid.no:person:abc123").build(),
+             object("Content", "urn:spid.no:message:abc123")
                  .title("<Message title>")
-                 .content("<Message content>"))
+                 .content("<Message content>")
+                 .build())
              .target(target("Person", "urn:example@email.com"))
              .build();
 ```
@@ -221,11 +220,11 @@ By static importing Makers you can use static helper methods for creating object
 
 ## Tracking ID
 To be able to track users, each user has to be given a unique tracking ID. This is done based on some
-identifiers that are sent to the Central Identity Service which returns an environmentId and a sessionId.
+identifiers that are sent to the Central Identification Service which returns an environmentId and a sessionId.
 The environmentId is unique to the user's environment and should be included in future requests for tracking IDs.
 The sessionId is unique to this user's current session and should be used as ID for the actor of the activity.
 
-The Tracking Client has a method for fetching a tracking ID from the Central Identity Service based on a
+The Tracking Client has a method for fetching a tracking ID from the Central Identification Service based on a
 `Map<String, String>` of identifiers. These identifiers should be enough to uniquely identify the user or the
 returned ID will only be a temporary ID used for this session.
 
@@ -233,7 +232,7 @@ __Example: No existing tracking ID__
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("clientIp", "127.0.0.1");
-identifiers.put("userId", "abc123");
+identifiers.put("userId", "urn:spid.no:person:abc123");
 TrackingIdentity trackingId = client.getTrackingId(identifiers);
 ```
 
@@ -243,5 +242,11 @@ Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("environmentId", oldTrackingId.getEnvironmentId());
 identifiers.put("sessionId", oldTrackingId.getSessionId());
 TrackingIdentity trackingId = client.getTrackingId(identifiers);
+```
+
+The actor can then be built with the tracking ID as an argument
+```java
+TrackingIdentity trackingId = client.getTrackingId(identifiers);
+Actor actor = actor(trackingId).build();
 ```
 

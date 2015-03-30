@@ -127,28 +127,28 @@ public class ReportingErrorCollector implements ErrorCollector {
 
 
         private Activity convertToErrorReport(DataTrackingException error) {
-            return new Activity.Builder("Create")
-                .actor(getSdkActor(options))
-                .object(object("spt:error", "urn:spt.no:error:" + error.getErrorCode()).set("spt:errorCode",
-                    String.valueOf(error.getErrorCode()))
+            return new Activity.Builder("Create",
+                getProvider(options),
+                getSdkActor(options),
+                object("spt:error", "urn:spt.no:error:" + error.getErrorCode())
+                    .set("spt:errorCode", String.valueOf(error.getErrorCode()))
                     .set("spt:errorMessage", error.getMessage())
-                    .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())))
-                .provider(getProvider(options))
+                    .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())).build())
                 .build();
         }
 
 
         private Activity convertToErrorReport(CommunicationDataTrackingException error) {
-            return new Activity.Builder("Accept")
-                .actor(getSdkActor(options))
-                .object(object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
+            return new Activity.Builder("Accept",
+                getProvider(options),
+                getSdkActor(options),
+                object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
                     ("spt:errorCode", String.valueOf(error.getErrorCode()))
                     .set("spt:errorMessage", error.getMessage())
                     .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
                     .set("spt:responseBody", new JsonString(error.getResponseBody()))
                     .set("inReplyTo", object("spt:request", null).set("spt:requestBody", new JsonString(error
-                        .getRequestBody()))))
-                .provider(getProvider(options))
+                        .getRequestBody()))).build())
                 .target(target("Service", error.getRequestUrl()))
                 .build();
         }

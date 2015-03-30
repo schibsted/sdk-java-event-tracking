@@ -78,24 +78,26 @@ public class TestData {
     }
 
     public static Activity getTestActivity() {
-        return activity(ACTIVITY_TYPE).published(new Date(0L))
-                .actor(actor(ACTOR_TYPE, ACTOR_ID).set("spt:ip", ACTOR_IP)
-                        .set("spt:deviceLanguage", ACTOR_DEVICE_LANGAUGE)
-                        .set("spt:userAgent", ACTOR_USER_AGENT))
-                .provider(provider(PROVIDER_TYPE, PROVIDER_ID).set("spt:ip", PROVIDER_IP)
-                        .displayName(PROVIDER_DISPLAY_NAME)
-                        .url(PROVIDER_URL))
-                .object(object(OBJECT_TYPE, OBJECT_ID).url(OBJECT_URL)
-                        .displayName(OBJECT_DISPLAY_NAME))
-                .build();
+        return activity(ACTIVITY_TYPE,
+            provider(PROVIDER_TYPE, PROVIDER_ID)
+                .set("spt:ip", PROVIDER_IP)
+                .displayName(PROVIDER_DISPLAY_NAME)
+                .url(PROVIDER_URL).build(),
+            actor(ACTOR_TYPE, ACTOR_ID)
+                .set("spt:ip", ACTOR_IP)
+                .set("spt:deviceLanguage", ACTOR_DEVICE_LANGAUGE)
+                .set("spt:userAgent", ACTOR_USER_AGENT).build(),
+            object(OBJECT_TYPE, OBJECT_ID)
+                .url(OBJECT_URL)
+                .displayName(OBJECT_DISPLAY_NAME).build())
+            .published(new Date(0L))
+            .build();
     }
 
     public static Activity createActivity() {
-        return activity("Login").publishedNow()
-                .actor(createActor())
-                .object(createObject())
-                .provider(createProvider())
-                .build();
+        return activity("Login", createProvider(), createActor(), createObject())
+            .publishedNow()
+            .build();
     }
 
     /// OPTIONS

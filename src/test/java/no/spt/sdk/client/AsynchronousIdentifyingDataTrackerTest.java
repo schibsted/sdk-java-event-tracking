@@ -8,6 +8,7 @@ import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.error.TrackingIdentityError;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
+import no.spt.sdk.models.Actor;
 import no.spt.sdk.models.TrackingIdentity;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
+import static no.spt.sdk.models.Makers.activity;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -93,6 +95,18 @@ public class AsynchronousIdentifyingDataTrackerTest {
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(1)).enqueue(any(Activity.class));
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
+    }
+
+    @Test
+    public void testIdentifyAndTrackUsingUnidentifiedActorBuilder() throws Exception {
+        Activity activity = activity("Send", TestData.createProvider(), Actor.getUnidentifiedActorBuilder().build(),
+            TestData.createObject()).build();
+        Map<String, String> identifiers = TestData.getTrackingIdentifiers();
+        when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
+        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+        sleep(200);
+        verify(identityConnector, times(1)).getTrackingId(identifiers);
+        verify(sender, times(1)).enqueue(any(Activity.class));
     }
 
     private void sleep(int millis) {

@@ -4,10 +4,7 @@ package no.spt.sdk.serializers;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import no.spt.sdk.client.DataCollectorResponse.DataCollectorResponse;
-import no.spt.sdk.models.ASObject;
-import no.spt.sdk.models.JsonString;
-import no.spt.sdk.models.Link;
-import no.spt.sdk.models.TrackingIdentity;
+import no.spt.sdk.models.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -20,11 +17,15 @@ public class GsonASJsonConverter implements ASJsonConverter {
     private final Gson gson;
 
     public GsonASJsonConverter() {
-        this.gson = new GsonBuilder().registerTypeAdapter(ASObject.class, new ASObjectTypeConverter())
-                .registerTypeAdapter(Link.class, new LinkTypeConverter())
-                .registerTypeAdapter(JsonString.class, new JsonStringTypeConverter())
-                .setFieldNamingStrategy(new ActivityNamingStrategy())
-                .create();
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(ASObject.class, new ASObjectTypeConverter())
+            .registerTypeAdapter(Actor.class, new ASObjectTypeConverter())
+            .registerTypeAdapter(Provider.class, new ASObjectTypeConverter())
+            .registerTypeAdapter(Target.class, new ASObjectTypeConverter())
+            .registerTypeAdapter(Link.class, new LinkTypeConverter())
+            .registerTypeAdapter(JsonString.class, new JsonStringTypeConverter())
+            .setFieldNamingStrategy(new ActivityNamingStrategy())
+            .create();
     }
 
     /**
