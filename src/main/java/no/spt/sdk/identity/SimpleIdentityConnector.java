@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public class SimpleIdentityConnector implements IdentityConnector {
 
-    private Options options;
-    private HttpConnection httpConnection;
-    private ASJsonConverter jsonConverter;
+    Options options;
+    HttpConnection httpConnection;
+    ASJsonConverter jsonConverter;
 
 
     public SimpleIdentityConnector(Options options, HttpConnection httpConnection, ASJsonConverter jsonConverter) {
@@ -35,7 +35,7 @@ public class SimpleIdentityConnector implements IdentityConnector {
         return getIdFromService(identifiers);
     }
 
-    private TrackingIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
+    TrackingIdentity getIdFromService(Map<String, String> identifiers) throws DataTrackingException {
         DataTrackingResponse response;
         DataTrackingPostRequest request;
         try {
