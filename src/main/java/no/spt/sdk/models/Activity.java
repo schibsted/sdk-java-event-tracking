@@ -91,15 +91,6 @@ public class Activity {
             this.object = object;
         }
 
-        public Builder(Activity activity) {
-            this.type = activity.getType();
-            this.published = activity.getPublished();
-            this.actor = activity.getActor();
-            this.provider = activity.getProvider();
-            this.object = activity.getObject();
-            this.target = activity.getTarget();
-        }
-
         public Builder object(ASObject object) {
             this.object = object;
             return this;
