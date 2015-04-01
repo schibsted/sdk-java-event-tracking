@@ -1,29 +1,23 @@
 package no.spt.sdk.client;
 
 import no.spt.sdk.Options;
-import no.spt.sdk.batch.Sender;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.exceptions.error.TrackingIdentityError;
 import no.spt.sdk.identity.IdentityConnector;
-import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Actor;
 import no.spt.sdk.models.TrackingIdentity;
 
 import java.util.Map;
 import java.util.concurrent.*;
 
-public class AsynchronousIdentifyingDataTracker implements IdentifyingDataTracker {
+public class AsynchronousIdentifier implements Identifier {
 
-    private Sender activitySender;
     private IdentityConnector identityConnector;
     private ErrorCollector errorCollector;
     private ExecutorService executor;
 
-    public AsynchronousIdentifyingDataTracker(Options options, Sender activitySender, IdentityConnector
-        identityConnector, ErrorCollector errorCollector) {
-        this.activitySender = activitySender;
+    public AsynchronousIdentifier(Options options, IdentityConnector identityConnector, ErrorCollector errorCollector) {
         this.identityConnector = identityConnector;
         this.errorCollector = errorCollector;
         this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>
@@ -31,9 +25,9 @@ public class AsynchronousIdentifyingDataTracker implements IdentifyingDataTracke
     }
 
     @Override
-    public void identifyActorAndTrack(Map<String, String> identifiers, Activity activity) {
+    public void identifyActorAsync(Map<String, String> identifiers, IdentityCallback callback) {
         try {
-            executor.execute(new IdentifyingDataTrackingTask(identifiers, activity));
+            executor.execute(new IdentifyingCallbackTask(identifiers, callback));
         } catch (RejectedExecutionException e) {
             errorCollector.collect(new DataTrackingException("AsynchronousIdentityDataTracker queue is full", e,
                 TrackingIdentityError.QUEUE_MAX_SIZE_REACHED));
@@ -53,25 +47,21 @@ public class AsynchronousIdentifyingDataTracker implements IdentifyingDataTracke
         }
     }
 
-    private class IdentifyingDataTrackingTask implements Runnable {
+    private class IdentifyingCallbackTask implements Runnable {
 
         private Map<String, String> identifiers;
-        private Activity activity;
+        private IdentityCallback callback;
 
-        public IdentifyingDataTrackingTask(Map<String, String> identifiers, Activity activity) {
+        public IdentifyingCallbackTask(Map<String, String> identifiers, IdentityCallback callback) {
             this.identifiers = identifiers;
-            this.activity = activity;
+            this.callback = callback;
         }
 
         @Override
         public void run() {
             try {
                 TrackingIdentity trackingId = identityConnector.getTrackingId(identifiers);
-                activitySender.enqueue(new Activity.Builder(activity).actor(
-                    activity.getActor() != null ?
-                        new Actor.Builder(trackingId, activity.getActor()).build()
-                    : new Actor.Builder(trackingId).build()
-                ).build());
+                callback.onSuccess(trackingId);
             } catch (DataTrackingException e) {
                 errorCollector.collect(e);
             }

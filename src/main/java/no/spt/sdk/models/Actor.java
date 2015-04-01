@@ -9,10 +9,6 @@ import java.util.UUID;
  */
 public class Actor extends ASObject {
 
-    public static Builder getUnidentifiedActorBuilder() {
-        return new Builder((String)null, (String)null);
-    }
-
     private Actor(Builder builder) {
         super(builder);
     }

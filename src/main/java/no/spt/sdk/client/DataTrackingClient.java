@@ -32,7 +32,7 @@ public class DataTrackingClient {
     private final Sender activitySender;
     private final ErrorCollector errorCollector;
     private final IdentityConnector identityConnector;
-    private final IdentifyingDataTracker identifyingDataTracker;
+    private final Identifier identifier;
     private final HttpConnection httpConnection;
     private final DataTrackingStats stats;
 
@@ -54,7 +54,7 @@ public class DataTrackingClient {
         private ActivitySenderType activitySenderType;
         private IdentityConnector identityConnector;
         private ASJsonConverter jsonConverter;
-        private IdentifyingDataTracker identifyingDataTracker;
+        private Identifier identifier;
         private DataTrackingStats stats;
 
         /**
@@ -226,7 +226,7 @@ public class DataTrackingClient {
                 activitySender = new AutomaticBatchSender(options, httpConnection, errorCollector, jsonConverter, stats);
             }
             this.activitySender.init();
-            this.identifyingDataTracker = new AsynchronousIdentifyingDataTracker(options, activitySender, identityConnector, errorCollector);
+            this.identifier = new AsynchronousIdentifier(options, identityConnector, errorCollector);
             return new DataTrackingClient(this);
         }
 
@@ -246,7 +246,7 @@ public class DataTrackingClient {
         this.activitySender = builder.activitySender;
         this.options = builder.options;
         this.identityConnector = builder.identityConnector;
-        this.identifyingDataTracker = builder.identifyingDataTracker;
+        this.identifier = builder.identifier;
         this.httpConnection = builder.httpConnection;
         this.stats = builder.stats;
     }
@@ -290,7 +290,7 @@ public class DataTrackingClient {
      */
     public void close() {
         try {
-            this.identifyingDataTracker.close();
+            this.identifier.close();
         } catch (DataTrackingException e) {
             handleError(e);
         }
@@ -338,14 +338,14 @@ public class DataTrackingClient {
     }
 
     /**
-     * Takes a {@link java.util.Map} of identifiers used to get a TrackingIdentity which is added to the actor of the
-     * activity before it is tracked
+     * Takes a {@link java.util.Map} of identifiers used to get a TrackingIdentity, and an IdentityCallback which has
+     * an onSuccess method which will be called with the TrackingIdentity when it is returned from CIS
      *
-     * @param identifiers
-     * @param activity
+     * @param identifiers A Map of identifiers
+     * @param callback A callback which will be used when the TrackingIdentity is returned from CIS
      */
-    public void identifyActorAndTrack(Map<String, String> identifiers, Activity activity) {
-        identifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+    public void identifyActorAsync(Map<String, String> identifiers, IdentityCallback callback) {
+        identifier.identifyActorAsync(identifiers, callback);
     }
 
     /**

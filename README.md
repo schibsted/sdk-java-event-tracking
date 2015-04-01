@@ -232,7 +232,7 @@ __Example: No existing tracking ID__
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("clientIp", "127.0.0.1");
-identifiers.put("userId", "urn:spid.no:person:abc123");
+identifiers.put("userId", "urn:spid.no:user:abc123");
 TrackingIdentity trackingId = client.getTrackingId(identifiers);
 ```
 

@@ -8,7 +8,6 @@ import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.error.TrackingIdentityError;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
-import no.spt.sdk.models.Actor;
 import no.spt.sdk.models.TrackingIdentity;
 import org.junit.After;
 import org.junit.Before;
@@ -20,13 +19,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Map;
 
 import static no.spt.sdk.models.Makers.activity;
+import static no.spt.sdk.models.Makers.actor;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AsynchronousIdentifyingDataTrackerTest {
+public class AsynchronousIdentifierTest {
 
-    private AsynchronousIdentifyingDataTracker asynchronousIdentifyingDataTracker;
     Options options;
     @Mock
     Sender sender;
@@ -34,11 +33,12 @@ public class AsynchronousIdentifyingDataTrackerTest {
     IdentityConnector identityConnector;
     @Mock
     ErrorCollector errorCollector;
+    private AsynchronousIdentifier asynchronousIdentifyingDataTracker;
 
     @Before
     public void setUp() throws Exception {
         options = TestData.getDefaultOptions();
-        asynchronousIdentifyingDataTracker = new AsynchronousIdentifyingDataTracker(options, sender, identityConnector, errorCollector);
+        asynchronousIdentifyingDataTracker = new AsynchronousIdentifier(options, identityConnector, errorCollector);
     }
 
     @After
@@ -48,10 +48,19 @@ public class AsynchronousIdentifyingDataTrackerTest {
 
     @Test
     public void testIdentifyAndTrack() throws Exception {
-        Activity activity = TestData.getTestActivity();
         Map<String, String> identifiers = TestData.getTrackingIdentifiers();
         when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+        asynchronousIdentifyingDataTracker.identifyActorAsync(identifiers, new IdentityCallback() {
+            @Override
+            public void onSuccess(TrackingIdentity trackingId) {
+                try {
+                    sender.enqueue(activity("Send", TestData.createProvider(), actor(trackingId).build(), TestData
+                        .createObject()).build());
+                } catch (DataTrackingException e) {
+                    errorCollector.collect(e);
+                }
+            }
+        });
         sleep(200);
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(1)).enqueue(any(Activity.class));
@@ -66,17 +75,35 @@ public class AsynchronousIdentifyingDataTrackerTest {
         }
         sleep(1000);
         Map<String, String> identifiers = TestData.getTrackingIdentifiers();
-        Activity activity = TestData.getTestActivity();
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+        asynchronousIdentifyingDataTracker.identifyActorAsync(identifiers, new IdentityCallback() {
+            @Override
+            public void onSuccess(TrackingIdentity trackingId) {
+                try {
+                    sender.enqueue(activity("Send", TestData.createProvider(), actor(trackingId).build(), TestData
+                        .createObject()).build());
+                } catch (DataTrackingException e) {
+                    errorCollector.collect(e);
+                }
+            }
+        });
     }
 
     @Test
     public void testIdentityConnectorThrowsDataTrackingException() throws Exception {
-        Activity activity = TestData.getTestActivity();
         Map<String, String> identifiers = TestData.getTrackingIdentifiers();
         when(identityConnector.getTrackingId(identifiers)).thenThrow(new DataTrackingException("An error",
             TrackingIdentityError.HTTP_CONNECTION_ERROR));
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+        asynchronousIdentifyingDataTracker.identifyActorAsync(identifiers, new IdentityCallback() {
+            @Override
+            public void onSuccess(TrackingIdentity trackingId) {
+                try {
+                    sender.enqueue(activity("Send", TestData.createProvider(), actor(trackingId).build(), TestData
+                        .createObject()).build());
+                } catch (DataTrackingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         sleep(200);
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(0)).enqueue(any(Activity.class));
@@ -85,28 +112,25 @@ public class AsynchronousIdentifyingDataTrackerTest {
 
     @Test
     public void testSenderThrowsDataTrackingException() throws Exception {
-        Activity activity = TestData.getTestActivity();
         Map<String, String> identifiers = TestData.getTrackingIdentifiers();
-        doThrow(new DataTrackingException("An error", TrackingIdentityError.HTTP_CONNECTION_ERROR))
-            .when(sender).enqueue(any(Activity.class));
+        doThrow(new DataTrackingException("An error", TrackingIdentityError.HTTP_CONNECTION_ERROR)).when(sender)
+            .enqueue(any(Activity.class));
         when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
+        asynchronousIdentifyingDataTracker.identifyActorAsync(identifiers, new IdentityCallback() {
+            @Override
+            public void onSuccess(TrackingIdentity trackingId) {
+                try {
+                    sender.enqueue(activity("Send", TestData.createProvider(), actor(trackingId).build(), TestData
+                        .createObject()).build());
+                } catch (DataTrackingException e) {
+                    errorCollector.collect(e);
+                }
+            }
+        });
         sleep(200);
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(1)).enqueue(any(Activity.class));
         verify(errorCollector, times(1)).collect(any(DataTrackingException.class));
-    }
-
-    @Test
-    public void testIdentifyAndTrackUsingUnidentifiedActorBuilder() throws Exception {
-        Activity activity = activity("Send", TestData.createProvider(), Actor.getUnidentifiedActorBuilder().build(),
-            TestData.createObject()).build();
-        Map<String, String> identifiers = TestData.getTrackingIdentifiers();
-        when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
-        asynchronousIdentifyingDataTracker.identifyActorAndTrack(identifiers, activity);
-        sleep(200);
-        verify(identityConnector, times(1)).getTrackingId(identifiers);
-        verify(sender, times(1)).enqueue(any(Activity.class));
     }
 
     private void sleep(int millis) {

@@ -19,6 +19,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.spt.sdk.models.Makers.activity;
+import static no.spt.sdk.models.Makers.actor;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -95,10 +97,15 @@ public class MockedDataTrackingClientTest {
 
     @Test
     public void testidentifyActorAndTrack() throws Exception {
-        Activity activity = TestData.getTestActivity();
         Map<String, String> identifiers = TestData.getTrackingIdentifiers();
         when(identityConnector.getTrackingId(identifiers)).thenReturn(new TrackingIdentity());
-        client.identifyActorAndTrack(identifiers, activity);
+        client.identifyActorAsync(identifiers, new IdentityCallback() {
+            @Override
+            public void onSuccess(TrackingIdentity trackingId) {
+                client.track(activity("Send", TestData.createProvider(), actor(trackingId).build(), TestData
+                    .createObject()).build());
+            }
+        });
         sleep(200);
         verify(identityConnector, times(1)).getTrackingId(identifiers);
         verify(sender, times(1)).enqueue(any(Activity.class));
