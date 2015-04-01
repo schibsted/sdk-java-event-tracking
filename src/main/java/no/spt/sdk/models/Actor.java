@@ -19,15 +19,6 @@ public class Actor extends ASObject {
             super(type, id);
         }
 
-        public Builder(TrackingIdentity trackingId, ASObject actor) {
-            super(actor.getMap());
-            type("Person");
-            id(toIriVisitorId(trackingId.getVisitorId()));
-            set("spt:sessionId", toIriSessionId(trackingId.getSessionId()));
-            set("spt:environmentId", toIriEnvironmentId(trackingId.getEnvironmentId()));
-            set("spt:userId", trackingId.getUserId().isEmpty() ? null : trackingId.getUserId());
-        }
-
         public Builder(TrackingIdentity trackingId) {
             super("Person", toIriVisitorId(trackingId.getVisitorId()));
             set("spt:sessionId", toIriSessionId(trackingId.getSessionId()));

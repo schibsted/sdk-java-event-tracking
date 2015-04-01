@@ -1,7 +1,6 @@
 package no.spt.sdk.models;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,10 +48,6 @@ public class ASObject {
             map = newLinkedHashMap();
             type(type);
             id(id);
-        }
-
-        protected AbstractBuilder(Map<String, Object> properties) {
-            map = Maps.newLinkedHashMap(properties);
         }
 
         public abstract A build();
