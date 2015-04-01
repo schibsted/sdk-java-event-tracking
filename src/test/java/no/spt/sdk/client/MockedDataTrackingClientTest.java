@@ -6,6 +6,7 @@ import no.spt.sdk.batch.Sender;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.error.TrackingIdentityError;
+import no.spt.sdk.identity.IdentityCallback;
 import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.Activity;
 import no.spt.sdk.models.TrackingIdentity;

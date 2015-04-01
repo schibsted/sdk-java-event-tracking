@@ -1,11 +1,10 @@
-package no.spt.sdk.client;
+package no.spt.sdk.identity;
 
 import no.spt.sdk.Options;
 import no.spt.sdk.exceptions.DataTrackingException;
 import no.spt.sdk.exceptions.ErrorCollector;
 import no.spt.sdk.exceptions.error.ActivitySendingError;
 import no.spt.sdk.exceptions.error.TrackingIdentityError;
-import no.spt.sdk.identity.IdentityConnector;
 import no.spt.sdk.models.TrackingIdentity;
 
 import java.util.Map;

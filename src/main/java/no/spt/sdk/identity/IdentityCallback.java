@@ -1,4 +1,4 @@
-package no.spt.sdk.client;
+package no.spt.sdk.identity;
 
 import no.spt.sdk.models.TrackingIdentity;
 
