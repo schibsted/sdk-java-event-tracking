@@ -155,10 +155,17 @@ client.close();
 ```
 
 ### Stats
-The client keeps stats of tracked activities and errors.
+The client keeps stats of tracked activities and errors. Currently the following stats are tracked:
+- The number of activities that has been added to the tracking queue
+- The number of batches that has been sent to the data collector
+- The number activities that has been successfully sent to the data collector
+- The number of activities that has been rejected by the data collector due to validation errors
+- The number of activities that could not be sent to the data collector due to an error
+- The number of activities that has been dropped because the activity queue was full
+- The number of error reports that has been sent to the error reporting service
 
 ```java
-client.getStats();
+DataTrackingStats stats = client.getStats();
 ```
 
 ## Creating activities
