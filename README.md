@@ -250,3 +250,28 @@ TrackingIdentity trackingId = client.getTrackingId(identifiers);
 Actor actor = actor(trackingId).build();
 ```
 
+### Asynchronous fetching Tracking ID
+In cases where it is important that the tracking client is not blocking the application using it, the tracking ID can be
+fetched asynchronously and then the activity can be tracked using a callback where the tracking ID is used to create
+the actor.
+```java
+Map<String, String> identifiers = new HashMap<String, String>();
+identifiers.put("clientIp", "127.0.0.1");
+identifiers.put("userId", "urn:spid.no:user:abc123");
+client.identifyActorAsync(map, new IdentityCallback() {
+    @Override
+    public void onSuccess(TrackingIdentity trackingId) {
+        client.track(activity("Send",
+                provider("Organization", "urn:spid.no:sp123")
+                    .build(),
+                actor(trackingId)
+                    .build(),
+                object("Content", "urn:spid.no:message:abc123")
+                    .title("<Message title>")
+                    .build())
+                .target(target("Person", "urn:example@email.com")
+                    .build())
+                .build());
+    }
+});
+```
