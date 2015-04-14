@@ -12,6 +12,7 @@
     <url>https://github.com/schibsted/sdk-java-event-tracking</url>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.6</jdk.version>
 
         <repackage.base>no.spt.sdk</repackage.base>
