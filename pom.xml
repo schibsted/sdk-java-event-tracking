@@ -11,6 +11,13 @@
     <name>Data Collector SDK Java</name>
     <url>https://github.com/schibsted/sdk-java-event-tracking</url>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.6</jdk.version>
