@@ -120,4 +120,17 @@ public class DataTrackingStats implements DataTrackingClientStats {
     public void addToErrorReports(long count) {
         counters.addAndGet(ERROR_REPORTS_SENT_KEY, count);
     }
+
+    @Override
+    public String toString() {
+        return "------------------------ Data Tracking Stats ------------------------" + "\n" +
+            getQueuedActivitiesCount() + " activities have been added to the tracking queue \n" +
+            getSentBatchesCount() + " batches have been sent to the data collector \n" +
+            getSuccessfulCount() + " activities have been successfully sent to the data collector \n" +
+            getValidationFailedCount() + " activities have been rejected by the data collector due to validation errors \n" +
+            getSendingFailedCount() + " activities could not be sent to the data collector due to error(s) \n" +
+            getDroppedCount() + " activities have been dropped because the activity queue was full \n" +
+            getErrorReportsCount() + " error reports have been sent to the error reporting service \n" +
+            "---------------------------------------------------------------------";
+    }
 }
