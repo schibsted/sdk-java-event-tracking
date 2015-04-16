@@ -265,7 +265,7 @@ the actor.
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("clientIp", "127.0.0.1");
 identifiers.put("userId", "urn:spid.no:user:abc123");
-client.identifyActorAsync(map, new IdentityCallback() {
+client.identifyActorAsync(identifiers, new IdentityCallback() {
     @Override
     public void onSuccess(TrackingIdentity trackingId) {
         client.track(activity("Send",

@@ -4,7 +4,6 @@
 
     <groupId>no.spt.sdk</groupId>
     <artifactId>data-collector-sdk-java</artifactId>
-    <!-- Remember to change version in TrackingUtil when updating version -->
     <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -85,6 +84,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources/</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
