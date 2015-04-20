@@ -27,14 +27,17 @@ public class Activity {
     private final Provider provider;
     private final ASObject object;
     private final Target target;
+    private final Result result;
 
-    private Activity(String type, String published, Actor actor, Provider provider, ASObject object, Target target) {
+    private Activity(String type, String published, Actor actor, Provider provider, ASObject object, Target target,
+                     Result result) {
         this.type = type;
         this.published = published;
         this.actor = actor;
         this.provider = provider;
         this.object = object;
         this.target = target;
+        this.result = result;
         Map<String, String> map = new HashMap<String, String>();
         map.put("spt", "http://schema.schibsted.com/activitystreams");
         map.put("spt:sdkType", "JAVA");
@@ -75,6 +78,10 @@ public class Activity {
         return target;
     }
 
+    public Result getResult() {
+        return result;
+    }
+
     public static class Builder {
 
         private String type;
@@ -83,6 +90,7 @@ public class Activity {
         private Provider provider;
         private ASObject object;
         private Target target;
+        private Result result;
 
         public Builder(String type, Provider provider, Actor actor, ASObject object) {
             this.type = type;
@@ -127,6 +135,15 @@ public class Activity {
             return target(builder.build());
         }
 
+        public Builder result(Result result) {
+            this.result = result;
+            return this;
+        }
+
+        public Builder result(Result.Builder builder) {
+            return result(builder.build());
+        }
+
         public Builder type(String type) {
             this.type = type;
             return this;
@@ -152,7 +169,7 @@ public class Activity {
             if(published == null || published.isEmpty()) {
                 publishedNow();
             }
-            Activity activity = new Activity(type, published, actor, provider, object, target);
+            Activity activity = new Activity(type, published, actor, provider, object, target, result);
             if(activity.getProvider() == null) {
                 throw new IllegalStateException("Provider must be not null");
             }

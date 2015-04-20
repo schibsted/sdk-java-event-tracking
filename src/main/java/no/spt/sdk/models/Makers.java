@@ -19,6 +19,10 @@ public final class Makers {
         return new Target.Builder(type, id);
     }
 
+    public static Result.Builder result(String type, String id) {
+        return new Result.Builder(type, id);
+    }
+
     public static Provider.Builder provider(String type, String id) {
         return new Provider.Builder(type, id);
     }
