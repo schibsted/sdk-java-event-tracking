@@ -26,11 +26,11 @@ public class Activity {
     private final Actor actor;
     private final Provider provider;
     private final ASObject object;
-    private final Target target;
-    private final Result result;
+    private final ASObject target;
+    private final ASObject result;
 
-    private Activity(String type, String published, Actor actor, Provider provider, ASObject object, Target target,
-                     Result result) {
+    private Activity(String type, String published, Actor actor, Provider provider, ASObject object, ASObject target,
+                     ASObject result) {
         this.type = type;
         this.published = published;
         this.actor = actor;
@@ -74,11 +74,11 @@ public class Activity {
         return object;
     }
 
-    public Target getTarget() {
+    public ASObject getTarget() {
         return target;
     }
 
-    public Result getResult() {
+    public ASObject getResult() {
         return result;
     }
 
@@ -89,8 +89,8 @@ public class Activity {
         private Actor actor;
         private Provider provider;
         private ASObject object;
-        private Target target;
-        private Result result;
+        private ASObject target;
+        private ASObject result;
 
         public Builder(String type, Provider provider, Actor actor, ASObject object) {
             this.type = type;
@@ -126,21 +126,21 @@ public class Activity {
             return provider(builder.build());
         }
 
-        public Builder target(Target target) {
+        public Builder target(ASObject target) {
             this.target = target;
             return this;
         }
 
-        public Builder target(Target.Builder builder) {
+        public Builder target(ASObject.AbstractBuilder builder) {
             return target(builder.build());
         }
 
-        public Builder result(Result result) {
+        public Builder result(ASObject result) {
             this.result = result;
             return this;
         }
 
-        public Builder result(Result.Builder builder) {
+        public Builder result(ASObject.AbstractBuilder builder) {
             return result(builder.build());
         }
 

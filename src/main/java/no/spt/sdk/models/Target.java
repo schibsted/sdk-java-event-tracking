@@ -16,6 +16,10 @@ public class Target extends ASObject {
             super(type, id);
         }
 
+        public Builder(String type) {
+            super(type);
+        }
+
         public Target build() {
             return new Target(this);
         }

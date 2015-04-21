@@ -16,6 +16,10 @@ public class Result extends ASObject {
             super(type, id);
         }
 
+        public Builder(String type) {
+            super(type);
+        }
+
         public Result build() {
             return new Result(this);
         }

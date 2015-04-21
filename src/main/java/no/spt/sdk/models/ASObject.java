@@ -36,6 +36,10 @@ public class ASObject {
             super(type, id);
         }
 
+        public Builder(String type) {
+            super(type);
+        }
+
         public ASObject build() {
             return new ASObject(this);
         }
@@ -50,7 +54,20 @@ public class ASObject {
             id(id);
         }
 
+        public AbstractBuilder(String type) {
+            this(type, null);
+        }
+
         public abstract A build();
+
+        B set(String key, Object value) {
+            if (value == null || EMPTY.equals(value)) {
+                return (B)this;
+            } else {
+                map.put(key, value);
+            }
+            return (B)this;
+        }
 
         public B set(String key, ASObject value) {
             if (value == null || EMPTY.equals(value)) {
@@ -101,6 +118,15 @@ public class ASObject {
                 return (B)this;
             } else {
                 map.put(key, jsonString);
+            }
+            return (B)this;
+        }
+
+        public B set(String key, Collection collection) {
+            if (collection == null) {
+                return (B)this;
+            } else {
+                map.put(key, collection);
             }
             return (B)this;
         }
