@@ -35,9 +35,9 @@ DataTrackingClient client = new DataTrackingClient.Builder()
 ```
 
 The client can be configured to use either an automatic or a manual activity sender. The automatic sender will send
-activities asynchronously on a non blocking separate thread as soon as they are tracked, and will be used by default. The manual
-sender will queue activities and only send when being instructed to do so. Both activity senders will queue activities
-and send batches of activities to the data collector if the queue contains multiple activities.
+activities asynchronously on a non blocking separate thread as soon as they are tracked, and will be used by default.
+The manual sender will queue activities and only send when being instructed to do so. Both activity senders will queue
+activities and send batches of activities to the data collector if the queue contains multiple activities.
 
 See the API documentation for more details.
 
@@ -131,7 +131,7 @@ public class Example {
     Activity activity = activity("Read",
             provider("Organization", "urn:spid.no:vg123")
                     .displayName("Example organization").build(),
-            actor("Person", "urn:spid.no:person:" + trackingId.getSessionId())
+            actor("Person", "urn:spid.no:person:" + trackingId.getVisitorId())
                     .displayName("User with session ID " + trackingId.getSessionId()).build(),
             object("Article", "urn:example.no:article:art123")
                     .url("http://www.example.com/article/art123")
@@ -146,7 +146,7 @@ public class Example {
 ```
 ### Closing the client
 The client uses internal queues for tracked activities and separate threads for sending asynchronous to the data
-collector. When closing your application you should also close the client to allow these queues to be flushed and
+collector. When closing your application you should first close the client to allow these queues to be flushed and
 the threads to be shutdown. Note that once you have closed the client there is no way to restart it so you will have to
 build a new client.
 
@@ -207,7 +207,7 @@ other attributes as long as they are defined in the [SPT ActivityStreams format]
 
 ### Provider
 The Provider is the entity that is sending the Activity. The type is typically `Organization` and the ID is on the form
- `urn:spid.no:vg123` where the last part is supplied by SPT.
+ `urn:spid.no:vg123` where the last part is the clientId supplied by SPT.
 
 ### Actor
 The Actor is the entity that is carrying out the Activity. For user tracking this is typically a user with the type
@@ -218,6 +218,9 @@ service.
 The Target is the indirect object, or target, of the Activity. Target is a subclass of Object so all available Objects
  can also be Targets.
 
+### Result
+The result is the result of the Activity. Result is a subclass of Object so all available Objects can also be Results.
+
 ### Helper methods
 ```java
 import static no.spt.sdk.models.Makers.*;
@@ -227,9 +230,14 @@ By static importing Makers you can use static helper methods for creating object
 
 ## Tracking ID
 To be able to track users, each user has to be given a unique tracking ID. This is done based on some
-identifiers that are sent to the Central Identification Service which returns an environmentId and a sessionId.
-The environmentId is unique to the user's environment and should be included in future requests for tracking IDs.
-The sessionId is unique to this user's current session and should be used as ID for the actor of the activity.
+identifiers that are sent to the Central Identification Service which returns an environmentId, sessionId, visitorId and
+ potentially userId.
+The environmentId is unique to the user's environment.
+The sessionId is unique to this user's current session.
+The visitorId is unique to this user and should be used as ID for the actor of the activity.
+The userId is the user's login ID which depends on the login solution that is used. Typically this is the user's
+ SPiD ID.
+These IDs should be included in future requests for tracking IDs
 
 The Tracking Client has a method for fetching a tracking ID from the Central Identification Service based on a
 `Map<String, String>` of identifiers. These identifiers should be enough to uniquely identify the user or the
@@ -248,6 +256,8 @@ __Example: Existing tracking ID__
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("environmentId", oldTrackingId.getEnvironmentId());
 identifiers.put("sessionId", oldTrackingId.getSessionId());
+identifiers.put("userId", oldTrackingId.getUserId());
+identifiers.put("visitorId", oldTrackingId.getVisitorId());
 TrackingIdentity trackingId = client.getTrackingId(identifiers);
 ```
 
