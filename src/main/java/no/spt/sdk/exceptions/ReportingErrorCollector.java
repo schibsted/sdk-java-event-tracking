@@ -130,7 +130,7 @@ public class ReportingErrorCollector implements ErrorCollector {
             return new Activity.Builder("Create",
                 getProvider(options),
                 getSdkActor(options),
-                object("spt:error", "urn:spt.no:error:" + error.getErrorCode())
+                object("spt:error", "urn:schibsted.com:error:" + error.getErrorCode())
                     .set("spt:errorCode", String.valueOf(error.getErrorCode()))
                     .set("spt:errorMessage", error.getMessage())
                     .set("spt:stackTrace", stackTracesToStringList(error.getStackTrace())).build())
@@ -142,7 +142,7 @@ public class ReportingErrorCollector implements ErrorCollector {
             return new Activity.Builder("Accept",
                 getProvider(options),
                 getSdkActor(options),
-                object("spt:errorResponse", "urn:spt.no:error:" + error.getErrorCode()).set
+                object("spt:errorResponse", "urn:schibsted.com:error:" + error.getErrorCode()).set
                     ("spt:errorCode", String.valueOf(error.getErrorCode()))
                     .set("spt:errorMessage", error.getMessage())
                     .set("spt:httpStatusCode", String.valueOf(error.getResponseCode()))
@@ -165,17 +165,17 @@ public class ReportingErrorCollector implements ErrorCollector {
         }
 
         private Provider getProvider(Options options) {
-            return provider("Organization", "urn:spid.no:" + options.getClientId()).build();
+            return provider("Organization", "urn:schibsted.com:" + options.getClientId()).build();
         }
 
         private Actor getSdkActor(Options options) {
-            return actor("Application", "urn:spt.no:sdk:java:" + TrackingUtil.getSdkVersion())
+            return actor("Application", "urn:schibsted.com:sdk:java:" + TrackingUtil.getSdkVersion())
                 .set("using", getOptionsObject(options))
                 .build();
         }
 
         private ASObject getOptionsObject(Options options) {
-            return object("spt:options", "urn:spt.no:options:" +
+            return object("spt:options", "urn:schibsted.com:options:" +
                 options.getClientId()).set("spt:dataCollectorUrl", options.getDataCollectorUrl())
                 .set("spt:CISUrl", options.getCISUrl())
                 .set("spt:errorReportingUrl", options.getErrorReportingUrl())

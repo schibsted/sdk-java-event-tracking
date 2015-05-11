@@ -32,15 +32,15 @@ public class Actor extends ASObject {
     }
 
     private static String toIriVisitorId(String visitorId) {
-        return "urn:spid.no:person:" + (!visitorId.isEmpty() ? visitorId : UUID.randomUUID().toString());
+        return "urn:schibsted.com:person:" + (!visitorId.isEmpty() ? visitorId : UUID.randomUUID().toString());
     }
 
     private static String toIriEnvironmentId(String environmentId) {
-        return "urn:spid.no:environment:" + (!environmentId.isEmpty() ? environmentId : UUID.randomUUID().toString());
+        return "urn:schibsted.com:environment:" + (!environmentId.isEmpty() ? environmentId : UUID.randomUUID().toString());
     }
 
     private static String toIriSessionId(String sessionId) {
-        return "urn:spid.no:session:" + (!sessionId.isEmpty() ? sessionId : UUID.randomUUID().toString());
+        return "urn:schibsted.com:session:" + (!sessionId.isEmpty() ? sessionId : UUID.randomUUID().toString());
     }
 
 }

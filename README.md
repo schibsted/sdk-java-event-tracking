@@ -129,9 +129,9 @@ public class Example {
     }
 
     Activity activity = activity("Read",
-            provider("Organization", "urn:spid.no:vg123")
+            provider("Organization", "urn:schibsted.com:vg123")
                     .displayName("Example organization").build(),
-            actor("Person", "urn:spid.no:person:" + trackingId.getVisitorId())
+            actor("Person", "urn:schibsted.com:person:" + trackingId.getVisitorId())
                     .displayName("User with session ID " + trackingId.getSessionId()).build(),
             object("Article", "urn:example.no:article:art123")
                     .url("http://www.example.com/article/art123")
@@ -177,8 +177,8 @@ as constructor parameters.
 __Example: User reads an article__
 ```java
 Activity activity = new Activity.Builder("Read",
-             provider("Organization", "urn:spid.no:vg123").build(),
-             actor("Person", "urn:spid.no:person:abc123").build(),
+             provider("Organization", "urn:schibsted.com:vg123").build(),
+             actor("Person", "urn:schibsted.com:person:abc123").build(),
              object("Article", "urn:example.no:article:art123").build())
              .build();
 ```
@@ -186,9 +186,9 @@ Activity activity = new Activity.Builder("Read",
 __Example: User sends a message__
 ```java
 Activity activity = activity("Send",
-             provider("Organization", "urn:spid.no:sp123").build(),
-             actor("Person", "urn:spid.no:person:abc123").build(),
-             object("Content", "urn:spid.no:message:abc123")
+             provider("Organization", "urn:schibsted.com:sp123").build(),
+             actor("Person", "urn:schibsted.com:person:abc123").build(),
+             object("Content", "urn:schibsted.com:message:abc123")
                  .title("<Message title>")
                  .content("<Message content>")
                  .build())
@@ -207,11 +207,11 @@ other attributes as long as they are defined in the [SPT ActivityStreams format]
 
 ### Provider
 The Provider is the entity that is sending the Activity. The type is typically `Organization` and the ID is on the form
- `urn:spid.no:vg123` where the last part is the clientId supplied by SPT.
+ `urn:schibsted.com:vg123` where the last part is the clientId supplied by SPT.
 
 ### Actor
 The Actor is the entity that is carrying out the Activity. For user tracking this is typically a user with the type
-`Person` and an ID on the form `urn:spid.no:person:abc123` where the last part can be fetched from the central identity
+`Person` and an ID on the form `urn:schibsted.com:person:abc123` where the last part can be fetched from the central identity
 service.
 
 ### Target
@@ -226,7 +226,7 @@ The result is the result of the Activity. Result is a subclass of Object so all 
 import static no.spt.sdk.models.Makers.*;
 ```
 By static importing Makers you can use static helper methods for creating objects
-(e.g. `actor("Person", "urn:spid.no:person:abc123").build()` to create an actor)
+(e.g. `actor("Person", "urn:schibsted.com:person:abc123").build()` to create an actor)
 
 ## Tracking ID
 To be able to track users, each user has to be given a unique tracking ID. This is done based on some
@@ -235,8 +235,8 @@ identifiers that are sent to the Central Identification Service which returns an
 The environmentId is unique to the user's environment.
 The sessionId is unique to this user's current session.
 The visitorId is unique to this user and should be used as ID for the actor of the activity.
-The userId is the user's login ID which depends on the login solution that is used. Typically this is the user's
- SPiD ID.
+The userId is the user's login ID which depends on the identity provider that is used. Typically this is the user's
+ SPiD ID if SPiD is used for authentication.
 These IDs should be included in future requests for tracking IDs
 
 The Tracking Client has a method for fetching a tracking ID from the Central Identification Service based on a
@@ -247,7 +247,7 @@ __Example: No existing tracking ID__
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("clientIp", "127.0.0.1");
-identifiers.put("userId", "urn:spid.no:user:abc123");
+identifiers.put("userId", "urn:schibsted.com:user:abc123");
 TrackingIdentity trackingId = client.getTrackingId(identifiers);
 ```
 
@@ -274,16 +274,16 @@ the actor.
 ```java
 Map<String, String> identifiers = new HashMap<String, String>();
 identifiers.put("clientIp", "127.0.0.1");
-identifiers.put("userId", "urn:spid.no:user:abc123");
+identifiers.put("userId", "urn:schibsted.com:user:abc123");
 client.identifyActorAsync(identifiers, new IdentityCallback() {
     @Override
     public void onSuccess(TrackingIdentity trackingId) {
         client.track(activity("Send",
-                provider("Organization", "urn:spid.no:sp123")
+                provider("Organization", "urn:schibsted.com:sp123")
                     .build(),
                 actor(trackingId)
                     .build(),
-                object("Content", "urn:spid.no:message:abc123")
+                object("Content", "urn:schibsted.com:message:abc123")
                     .title("<Message title>")
                     .build())
                 .target(target("Person", "urn:example@email.com")

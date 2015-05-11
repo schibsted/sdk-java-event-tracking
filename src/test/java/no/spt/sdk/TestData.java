@@ -33,11 +33,11 @@ public class TestData {
     private static final String ACTOR_DEVICE_LANGAUGE = "no";
     private static final String ACTOR_IP = "127.0.0.1";
     private static final String PROVIDER_TYPE = "Organization";
-    private static final String PROVIDER_ID = "urn:spid:no:organizations:sp123";
+    private static final String PROVIDER_ID = "urn:schibsted.com:organizations:sp123";
     private static final String PROVIDER_URL = "http://vg.no";
     private static final String PROVIDER_DISPLAY_NAME = "VG";
     private static final String PROVIDER_IP = "127.0.0.1";
-    private static final String OBJECT_ID = "urn:spid:no:abc123";
+    private static final String OBJECT_ID = "urn:schibsted.com:abc123";
     private static final String OBJECT_TYPE = "Page";
     private static final String OBJECT_URL = "http://vg.no";
     private static final String OBJECT_DISPLAY_NAME = "Forsiden - VG";
@@ -103,18 +103,18 @@ public class TestData {
     /// OPTIONS
 
     public static Provider createProvider() {
-        return provider("Organization", "urn:spid:no:4cf36fa274dea2117e030000").build();
+        return provider("Organization", "urn:schibsted.com:4cf36fa274dea2117e030000").build();
     }
 
     public static ASObject createObject() {
-        return object("Organization", "urn:spid:47001:4cf36fa274dea2117e030000").displayName("Verdens Gang")
+        return object("Organization", "urn:schibsted.com:47001:4cf36fa274dea2117e030000").displayName("Verdens Gang")
                 .set("spt:merchant", "47001")
                 .set("spt:client", "4cf36fa274dea2117e030000")
                 .build();
     }
 
     public static Actor createActor() {
-        return actor("Person", "urn:spid:no:286668").set("spt:userAgent", "Mozilla/5.0 (Macintosh; Intel Mac OS X " +
+        return actor("Person", "urn:schibsted.com:286668").set("spt:userAgent", "Mozilla/5.0 (Macintosh; Intel Mac OS X " +
                 "10_10_2)AppleWebKit/537.36 (KHTML, like" + " Gecko) Chrome/40.0.2214.93 Safari/537.36")
                 .set("spt:ip", "127.0.0.1")
                 .set("spt:gender", "male")
