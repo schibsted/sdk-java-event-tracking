@@ -23,7 +23,7 @@
 
         <repackage.base>no.spt.sdk</repackage.base>
 
-        <httpcomponents.version>4.3.5</httpcomponents.version>
+        <httpcomponents.version>4.5.2</httpcomponents.version>
         <gson.version>2.3</gson.version>
         <jackson.databind.version>2.5.1</jackson.databind.version>
         <guava.version>18.0</guava.version>
